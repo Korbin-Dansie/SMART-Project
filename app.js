@@ -4,6 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// support to call database
+require('dotenv').config();
+var session = require('express-session');
+var MySQLStore = require('express-mysql-session')(session);
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -18,6 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+// This will set up the database if it doesn't already exist
+var dbCon = require('./lib/database');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
