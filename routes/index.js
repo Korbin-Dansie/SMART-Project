@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
   databaseString = rows[0].some_text;
 
-  res.render('index', { title: 'Express', databaseString: databaseString });
+  res.render('LandingPage', { title: 'Express', databaseString: databaseString });
 
   });
 });
