@@ -11,7 +11,10 @@ var MySQLStore = require('express-mysql-session')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
 var instructorDBRouter = require('./routes/InstructorDashboard');
+var socialWorkerDBRouter = require('./routes/SocialWorkerDashboard');
+
 var loginRouter = require('./routes/login');
 var applicationRouter = require('./routes/application');
 var studentRouter = require('./routes/student');
@@ -40,7 +43,10 @@ var dbCon = require('./lib/database');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/instructorDB', instructorDBRouter);
+
+app.use('/instructorDashboard', instructorDBRouter);
+app.use('/socialWorkerDashvoard', socialWorkerDBRouter);
+
 app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
 app.use('/student', studentRouter);
