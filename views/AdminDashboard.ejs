@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+    <title>Admin Dashboard</title>
+  </head>
+  <body>
+    <div class="container-fluid vh-100" style="margin-top: 10px">
+      <div class="" style="margin-top: 100px">
+        <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+            <div class="text-center">
+              <h3 class="text-primary">Admin Dashboard</h3>
+            </div>
+            <div class="text-center">
+              <h4 class="text-primary">Manage people</h4>
+            </div>
+            <div class="d-flex p-2 justify-content-around">
+              <a class="btn btn-primary" href="#" role="button">Social Workers</a>
+              <a class="btn btn-primary" href="#" role="button">Instructors</a>
+              <a class="btn btn-primary" href="#" role="button">Feedings</a>
+              <a class="btn btn-primary" href="#" role="button">Create Account</a>
+              <a class="btn btn-primary" href="#" role="button">Attendance</a>
+            </div>
+            <!-- Start of applications -->
+            <div>
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th colspan="4">Applications</th>
+                  </tr>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Grade</th>
+                    <th scope="col">Date Applied</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for(var i = 0; i < locals.applications.length; i++) {%>
+                  <tr>
+                    <td><%= locals.applications[i].name %></td>
+                    <td><%= locals.applications[i].age %></td>
+                    <td><%= locals.applications[i].grade %></td>
+                    <td><%= locals.applications[i].date_of_application %></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+            <!-- End of applications -->
+            <!-- Start of page buttons -->
+            <div class="d-flex justify-content-center ms-5 me-5">
+              <a class="btn btn-info ms-1 me-1" href="#" role="button">Prev</a>
+              <a class="btn btn-info ms-1 me-1" href="#" role="button">1</a>
+              <a class="btn btn-info ms-1 me-1" href="#" role="button">2</a>
+              <a class="btn btn-info ms-1 me-1" href="#" role="button">3</a>
+              <a class="btn btn-info ms-1 me-1" href="#" role="button">Next</a>
+            </div>
+            <!-- End of page buttons -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

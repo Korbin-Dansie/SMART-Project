@@ -12,6 +12,13 @@ var MySQLStore = require('express-mysql-session')(session);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var instructorDBRouter = require('./routes/InstructorDashboard');
+var loginRouter = require('./routes/login');
+var applicationRouter = require('./routes/application');
+var studentRouter = require('./routes/student');
+var courseRouter = require('./routes/course');
+
+var adminDashboardRouter = require('./routes/AdminDashboard');
+var ownerDashboardRouter = require('./routes/OwnerDashboard');
 
 var app = express();
 
@@ -24,6 +31,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'node_modules/bootstrap/dist/')));
+app.use(express.static(path.join(__dirname, 'node_modules/bootstrap-icons/')));
 
 
 // This will set up the database if it doesn't already exist
@@ -32,6 +41,12 @@ var dbCon = require('./lib/database');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/instructorDB', instructorDBRouter);
+app.use('/login', loginRouter);
+app.use('/apply', applicationRouter);
+app.use('/student', studentRouter);
+app.use('/course', courseRouter);
 
+app.use('/adminDashboard', adminDashboardRouter);
+app.use('/ownerDashboard', ownerDashboardRouter);
 
 module.exports = app;
