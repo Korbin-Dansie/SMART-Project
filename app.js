@@ -45,7 +45,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 app.use('/instructorDashboard', instructorDBRouter);
-app.use('/socialWorkerDashvoard', socialWorkerDBRouter);
+app.use('/socialWorkerDashboard', socialWorkerDBRouter);
 
 app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
