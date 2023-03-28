@@ -16,6 +16,11 @@ var applicationRouter = require('./routes/application');
 var studentRouter = require('./routes/student');
 var courseRouter = require('./routes/course');
 
+
+var adminDashboardRouter = require('./routes/AdminDashboard');
+var ownerDashboardRouter = require('./routes/OwnerDashboard');
+
+
 var app = express();
 
 // view engine setup
@@ -40,5 +45,8 @@ app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
 app.use('/student', studentRouter);
 app.use('/course', courseRouter);
+
+app.use('/adminDashboard', adminDashboardRouter);
+app.use('/ownerDashboard', ownerDashboardRouter);
 
 module.exports = app;
