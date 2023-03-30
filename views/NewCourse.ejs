@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S. M. A. R. T. New Course</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+</head>
+
+<script>
+</script>
+
+<body>
+    <div class="container-fluid vh-100" style="margin-top:10px">
+        <div class="" style="margin-top:100px">
+            <div class="rounded d-flex justify-content-center">
+                <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+                    <div class="text-center">
+                        <h3 class="text-primary">Create New Course</h3>
+                    </div>
+                    <form method="post" action="" onSubmit="">
+
+                        <div class="row pt-4">
+                            <div class="col-md-10 mx-auto">
+                                <!--Class Subject-->
+                                <div class="input-group mt-4">
+                                    <select class="form-select" name="classSubject" id="classSubject">
+                                      <option value="" selected disabled hidden>Class Subject</option>
+                                      <option value="english">English</option>
+                                      <option value="it">IT</option>
+                                    </select>
+                                </div>
+
+                                <!--Class Level-->
+                                <div class="input-group mt-4 mb-3">
+                                    <select class="form-select" name="classLevel" id="classLevel">
+                                      <option value="" selected disabled hidden>Class Level</option>
+                                      <option value="1">1</option>
+                                      <option value="2">2</option>
+                                      <option value="3">3</option>
+                                    </select>
+                                </div>
+
+                                <!--Meeting Times-->
+                                <div>
+                                    <label>Meeting Times:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-calendar-date text-white"></i></span>
+                                        <input id="classMeetingTimes" name="classMeetingTimes" type="text"
+                                            class="form-control" placeholder="Tuesdays and Thursdays 2:00 PM - 4:00 PM">
+                                    </div>
+                                </div>
+
+                                <!--Meeting Location-->
+                                <div>
+                                    <label>Meeting Location:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-geo-alt text-white"></i></span>
+                                        <input id="classMeetingPlace" name="classMeetingPlace" type="text" class="form-control"
+                                            placeholder="Room 7">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <p id="message" class="text-danger" style="height:25px">
+                                <%- locals.message %>
+                            </p>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-primary mt-2" type="submit">
+                                Create Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

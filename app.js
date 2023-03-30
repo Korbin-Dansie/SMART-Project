@@ -15,10 +15,17 @@ var usersRouter = require('./routes/users');
 var instructorDBRouter = require('./routes/InstructorDashboard');
 var socialWorkerDBRouter = require('./routes/SocialWorkerDashboard');
 
-var loginRouter = require('./routes/login');
-var applicationRouter = require('./routes/application');
-var studentRouter = require('./routes/student');
-var courseRouter = require('./routes/course');
+var loginRouter = require('./routes/Login');
+var applicationRouter = require('./routes/Application');
+var studentRouter = require('./routes/Student');
+var courseRouter = require('./routes/Course');
+var newAssignmentRouter = require('./routes/NewAssignment');
+var newCourseRouter = require('./routes/NewCourse');
+var certificateRouter = require('./routes/Certificate');
+var studentScheduleRouter = require('./routes/StudentSchedule');
+var socialNoteRouter = require('./routes/NewSocialNote');
+var assignmentRouter = require('./routes/Assignment');
+var gradebookRouter = require('./routes/Gradebook');
 
 var adminDashboardRouter = require('./routes/AdminDashboard');
 var ownerDashboardRouter = require('./routes/OwnerDashboard');
@@ -51,6 +58,13 @@ app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
 app.use('/student', studentRouter);
 app.use('/course', courseRouter);
+app.use('/newAssignment', newAssignmentRouter);
+app.use('/newCourse', newCourseRouter);
+app.use('/certificate', certificateRouter);
+app.use('/studentSchedule', studentScheduleRouter);
+app.use('/newSocialNote', socialNoteRouter);
+app.use('/assignment', assignmentRouter);
+app.use('/gradebook', gradebookRouter);
 
 app.use('/adminDashboard', adminDashboardRouter);
 app.use('/ownerDashboard', ownerDashboardRouter);
