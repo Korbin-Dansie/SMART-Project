@@ -12,8 +12,10 @@ var MySQLStore = require('express-mysql-session')(session);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var instructorDBRouter = require('./routes/InstructorDashboard');
-var socialWorkerDBRouter = require('./routes/SocialWorkerDashboard');
+var instructorDashboardRouter = require('./routes/InstructorDashboard');
+var socialWorkerDashboardRouter = require('./routes/SocialWorkerDashboard');
+var sponsorDashboardRouter = require('./routes/SponsorDashboard');
+var personListRouter = require('./routes/PersonList');
 
 var loginRouter = require('./routes/Login');
 var applicationRouter = require('./routes/Application');
@@ -51,8 +53,10 @@ var dbCon = require('./lib/database');
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.use('/instructorDashboard', instructorDBRouter);
-app.use('/socialWorkerDashboard', socialWorkerDBRouter);
+app.use('/instructorDashboard', instructorDashboardRouter);
+app.use('/socialWorkerDashboard', socialWorkerDashboardRouter);
+app.use('/sponsorDashboard', sponsorDashboardRouter);
+app.use('/personResults', personListRouter);
 
 app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
