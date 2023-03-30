@@ -31,6 +31,10 @@ var gradebookRouter = require('./routes/Gradebook');
 
 var adminDashboardRouter = require('./routes/AdminDashboard');
 var ownerDashboardRouter = require('./routes/OwnerDashboard');
+var manageAccountRouter = require('./routes/ManageAccount');
+var applicationListRouter = require('./routes/ApplicationList');
+var manageApplicationRouter = require('./routes/ManageApplication');
+
 
 var app = express();
 
@@ -72,5 +76,8 @@ app.use('/gradebook', gradebookRouter);
 
 app.use('/adminDashboard', adminDashboardRouter);
 app.use('/ownerDashboard', ownerDashboardRouter);
+app.use('/manageAccount', manageAccountRouter);
+app.use('/ApplicationList', applicationListRouter);
+app.use('/manageApplication', manageApplicationRouter);
 
 module.exports = app;
