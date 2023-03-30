@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People list</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
+  <script type="text/javascript" src="crypto-js.js"></script>
+</head>
+
+<body>
+  <div class="container-fluid vh-100" style="margin-top:10px">
+    <div class="" style="margin-top:100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+          <div style="text-align:center"><h1>Create An Account</h1></div>
+          <form>
+            <div class="p-4">
+            <Label for="accountType">Account Type</Label><br><br>
+            <select name="accountType" id="accountType" class="form-control" style="appearance:menulist">
+              <option value="socialWorker">Social Worker</option>
+              <option value="instructor">Instructor</option>
+              <option value="admin">Admin</option>
+            </select> <br>
+            <p>Email address</p>
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-primary">
+                <i class="bi bi-person-circle text-white"></i>
+              </span>
+              <input id="emailAddress" name="emailAddress" type="text" class="form-control" placeholder="Email Address">
+            </div>
+            <p>Password</p>
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-primary">
+                  <i class="bi bi-lock-fill text-white"></i>
+              </span>
+              <input id="password" type="password" class="form-control" placeholder="Password">
+            </div>
+            <p>Confirm Password</p>
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-primary">
+                  <i class="bi bi-lock-fill text-white"></i>
+              </span>
+              <input id="confirmPassword" type="password" class="form-control" placeholder="Confirm Password">
+            </div>
+            <button class="btn btn-primary mt-2" type="submit">
+              Submit
+            </button>
+            <button class="btn btn-primary mt-2">
+              Back
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
