@@ -15,6 +15,7 @@ var usersRouter = require('./routes/users');
 var instructorDashboardRouter = require('./routes/InstructorDashboard');
 var socialWorkerDashboardRouter = require('./routes/SocialWorkerDashboard');
 var sponsorDashboardRouter = require('./routes/SponsorDashboard');
+var personListRouter = require('./routes/PersonList');
 
 var loginRouter = require('./routes/login');
 var applicationRouter = require('./routes/application');
@@ -48,6 +49,7 @@ app.use('/users', usersRouter);
 app.use('/instructorDashboard', instructorDashboardRouter);
 app.use('/socialWorkerDashboard', socialWorkerDashboardRouter);
 app.use('/sponsorDashboard', sponsorDashboardRouter);
+app.use('/personResults', personListRouter);
 
 app.use('/login', loginRouter);
 app.use('/apply', applicationRouter);
