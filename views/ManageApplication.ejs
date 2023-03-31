@@ -10,6 +10,203 @@
     <title>Manage Applications</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <div class="container-fluid vh-100" style="margin-top:10px">
+      <div class="" style="margin-top:100px">
+          <div class="rounded d-flex justify-content-center">
+              <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+                  <div class="text-center">
+                      <h3 class="text-primary">Mange Application</h3>
+                  </div>
+                  <form method="post" action="" onSubmit="">
+
+                      <div class="row pt-4">
+                          <div class="col-md-6">
+                              <!--First Name-->
+                              <div>
+                                  <label>First Name:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-person-circle text-white"></i></span>
+                                      <input id="applicantFirstName" name="applicantFirstName" type="text"
+                                          class="form-control" placeholder="Jane" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Last Name-->
+                              <div>
+                                  <label>Last Name:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-person-circle text-white"></i></span>
+                                      <input id="applicantLastName" name="applicantLastName" type="text"
+                                          class="form-control" placeholder="Doe" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Date of Birth-->
+                              <div>
+                                  <label>Date of Birth:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-calendar-date text-white"></i></span>
+                                      <input id="applicantDoB" name="applicantDoB" type="text" class="form-control"
+                                          placeholder="MM/DD/YYYY" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Address-->
+                              <div>
+                                  <label>Address:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-house-door text-white"></i></span>
+                                      <input id="applicantAddress" name="applicantAddress" type="text"
+                                          class="form-control" placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"  readonly>
+                                  </div>
+                              </div>
+
+                              <!--Public School Level-->
+                              <div>
+                                  <label>Public School Level:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-mortarboard text-white"></i></span>
+                                      <input id="applicantSchoolLevel" name="applicantSchoolLevel" type="text"
+                                          class="form-control" placeholder="10" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Public School GPA-->
+                              <div>
+                                  <label>Public School GPA:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-mortarboard text-white"></i></span>
+                                      <input id="applicantGPA" name="applicantGPA" type="text" class="form-control"
+                                          placeholder="15" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Contact Information-->
+                              <div>
+                                  <label>Contact Information (optional):</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-telephone text-white"></i></span>
+                                      <input id="applicantContact" name="applicantContact" type="text" class="form-control"
+                                          placeholder="123-456-7890"  readonly>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div class="col-md-6">
+                              <!--Guardian-->
+                              <div>
+                                  <label>Parent / Guardian:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-person-circle text-white"></i></span>
+                                      <input id="applicantGuardian" name="applicantGuardian" type="text" class="form-control"
+                                          placeholder="Janet Doe" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Guardian Income-->
+                              <div>
+                                  <label>Parent / Guardian Annual Income:</label>
+                                  <div class="input-group mb-3">
+                                      <span class="input-group-text bg-primary"><i
+                                              class="bi bi-cash text-white"></i></span>
+                                      <input id="applicantGuardianIncome" name="applicantGuardianIncome" type="text" class="form-control"
+                                          placeholder="MT 20,000" readonly>
+                                  </div>
+                              </div>
+
+                              <!--Transportation Assistance Radio Buttons-->
+                              <div class="p-2">
+                                  <label>Do you need Transportation Assistance?</label>
+                                  <div class="input-group mb-1">
+                                      <div class="form-check mx-1">
+                                          <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                              id="noTransportAssist" checked disabled>
+                                          <label class="form-check-label" for="transportAssistRadio">
+                                              No
+                                          </label>
+                                      </div>
+                                      <div class="form-check mx-1">
+                                          <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                              id="yesTransportAssist" disabled>
+                                          <label class="form-check-label" for="transportAssistRadio">
+                                              Yes
+                                          </label>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <!--Meal Assistance Radio Buttons-->
+                              <div class="p-2">
+                                  <label>Do you need Meal Assistance?</label>
+                                  <div class="input-group mb-1">
+                                      <div class="form-check mx-1">
+                                          <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                              id="noMealAssist" checked disabled>
+                                          <label class="form-check-label" for="mealAssistRadio">
+                                              No
+                                          </label>
+                                      </div>
+                                      <div class="form-check mx-1">
+                                          <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                              id="yesMealAssist" disabled>
+                                          <label class="form-check-label" for="mealAssistRadio">
+                                              Yes
+                                          </label>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <!-- Essay -->
+                              <div class="p-2">
+                                  <label for="applicantShortEssay" class="form-label">Why do you Want to Enroll in the Program?</label>
+                                  <textarea class="form-control" id="applicantShortEssay" rows="7" readonly></textarea>
+                                </div>
+
+                                <!-- Application Status -->
+                                <div>
+                                  <label>Application Status:</label>
+                                  <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary"
+                                      ><i class="bi bi-person-badge text-white"></i
+                                    ></span>
+                                    <select
+                                      class="form-select"
+                                      name="applicationStatus"
+                                      id="applicationStatus"
+                                      required
+                                    >
+                                      <option selected value="waitListed">WaitListed</option>
+                                      <option value="accepted">Accepted</option>
+                                      <option value="rejected">Rejected</option>
+                                      <option value="active">Active</option>
+                                    </select>
+                                  </div>
+                                </div>                        
+                      </div>
+
+                      <div class="text-center">
+                          <p id="message" class="text-danger" style="height:25px">
+                              <%- locals.message %>
+                          </p>
+                      </div>
+
+                      <div class="text-center">
+                          <button class="btn btn-primary mt-2" type="submit">
+                              Submit Application
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
   </body>
 </html>

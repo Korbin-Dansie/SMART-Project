@@ -6,7 +6,7 @@ var dbCon = require("../lib/database");
 /* GET home page. */
 router.get("/", function (req, res, next) {
   console.log("Get ApplicationList.js");
-  res.render("ManageAccount", {});
+  res.render("ApplicationList", {});
 });
 
 module.exports = router;

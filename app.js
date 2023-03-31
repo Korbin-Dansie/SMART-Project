@@ -77,7 +77,7 @@ app.use('/gradebook', gradebookRouter);
 app.use('/adminDashboard', adminDashboardRouter);
 app.use('/ownerDashboard', ownerDashboardRouter);
 app.use('/manageAccount', manageAccountRouter);
-app.use('/ApplicationList', applicationListRouter);
+app.use('/applicationList', applicationListRouter);
 app.use('/manageApplication', manageApplicationRouter);
 
 module.exports = app;
