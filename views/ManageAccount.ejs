@@ -7,9 +7,234 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
     <%- include('partials/favico') %>
-    <title>Admin Dashboard</title>
+    <title>Manage Account</title>
+
+        <!-- Must include Crypto -->
+        <script type="text/javascript" src="crypto-js.js"></script>
+        <script>
+          function checkPassword(event) {
+            const password1 = document.getElementById("password1").value;
+            const password2 = document.getElementById("password2").value;
+    
+            let passwordValid = false;
+            let message = "";
+            if (password1 == "") {
+              message = "Please enter password";
+            } else if (password2 == "") {
+              message = "Please re-enter password";
+            } else if (password1 != password2) {
+              message = "Passwords do not match";
+            } else {
+              passwordValid = true;
+            }
+    
+            // Display error message
+            if (!passwordValid) {
+              document.getElementById("message").className = "text-danger";
+              document.getElementById("message").innerText = message;
+              event.preventDefault();
+            }
+            // password are good
+            else {
+              let salt = CryptoJS.lib.WordArray.random(8);
+              document.getElementById("salt").value = salt;
+              let hashed = CryptoJS.SHA256(password1 + ":" + salt).toString(
+                CryptoJS.enc.Hex
+              );
+              document.getElementById("hash").value = hashed;
+            }
+          }
+        </script>
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <div class="container-fluid vh-100" style="margin-top: 10px">
+      <div class="" style="margin-top: 100px">
+        <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+            <div class="text-center">
+              <h3 class="text-primary">Manage Appliation</h3>
+            </div>
+
+            <form method="post" action="" onSubmit="">
+              <div class="row pt-4">
+                <div class="col-md-6">
+                  <!--First Name-->
+                  <div>
+                    <label>First Name:</label>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text bg-primary"
+                        ><i class="bi bi-person-circle text-white"></i
+                      ></span>
+                      <input
+                        id="applicantFirstName"
+                        name="applicantFirstName"
+                        type="text"
+                        class="form-control"
+                        placeholder="Jane"
+                      />
+                    </div>
+                  </div>
+
+                  <!--Last Name-->
+                  <div>
+                    <label>Last Name:</label>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text bg-primary"
+                        ><i class="bi bi-person-circle text-white"></i
+                      ></span>
+                      <input
+                        id="applicantLastName"
+                        name="applicantLastName"
+                        type="text"
+                        class="form-control"
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+
+                  <!--Email-->
+                  <div>
+                    <label>Email:</label>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text bg-primary"
+                        ><i class="bi bi-envelope text-white"></i
+                      ></span>
+                      <input
+                        id="applicantDoB"
+                        name="applicantDoB"
+                        type="text"
+                        class="form-control"
+                        placeholder="someone@example.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <!--Account Type-->
+                  <div>
+                    <label>Role:</label>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text bg-primary"
+                        ><i class="bi bi-person-badge text-white"></i
+                      ></span>
+                      <select
+                        class="form-select"
+                        name="accountType"
+                        id="accountType"
+                        required
+                      >
+                        <option selected value>-- Account Type --</option>
+                        <option value="superAdmin">Super Admin</option>
+                        <option value="admin">Admin</option>
+                        <option value="owner">Owner</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="socialWorker">Social Worker</option>
+                        <option value="sponsor">Sponsor</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!--Is Account Active-->
+                  <div class="p-2">
+                    <label>Is Account Active:</label>
+                    <div class="input-group mb-1">
+                      <div class="form-check mx-1">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="isAccountActive"
+                          id="noTransportAssist"
+                          value="false"
+                        />
+                        <label class="form-check-label" for="isAccountActive">
+                          No
+                        </label>
+                      </div>
+                      <div class="form-check mx-1">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="isAccountActive"
+                          id="yesTransportAssist"
+                          checked
+                          value="true"
+                        />
+                        <label class="form-check-label" for="isAccountActive">
+                          Yes
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <p id="message" class="text-danger" style="height: 25px">
+                  <%- locals.message %>
+                </p>
+              </div>
+
+              <div class="row text-center">
+                <div class="col-md-6">
+                  <button class="btn btn-secondary mt-2" type="button">
+                    Cancel
+                  </button>
+                </div>
+                <div class="col-md-6">                
+                  <button class="btn btn-primary mt-2" type="submit">
+                  Update
+                </button>
+              </div>
+              </div>
+            </form>
+
+            <!-- Change Password -->
+            <div class="text-center mt-4">
+              <h4 class="text-primary">Change Password</h4>
+            </div>
+            <form onSubmit="return checkPassword(event);" onSubmit="return checkPassword(event);" method="post">
+              <div class="p-4">
+                <div class="input-group mb-3">
+                  <!-- Password does not get sent because there is no name tag -->
+                  <span class="input-group-text bg-primary"
+                    ><i class="bi bi-key-fill text-white"></i
+                  ></span>
+                  <input
+                    id="password1"
+                    type="password"
+                    class="form-control"
+                    placeholder="Password"
+                  />
+                </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text bg-primary"
+                    ><i class="bi bi-key-fill text-white"></i
+                  ></span>
+                  <input
+                    id="password2"
+                    type="password"
+                    class="form-control"
+                    placeholder="Re-enter Password"
+                  />
+                </div>
+                <!-- This is the password that gets sent even though they are hidden -->
+                <input type="hidden" id="hash" name="hash" />
+                <input type="hidden" id="salt" name="salt" />
+                <input type="hidden" id="accountNumber" name="accountNumber" value=<%- locals.accountNumber%>>
+                <div class="text-center">
+                  <button
+                    class="btn btn-primary text-center mt-2"
+                    type="submit"
+                  >
+                    Change Password
+                  </button>
+                </div>
+              </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
