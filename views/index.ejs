@@ -5,9 +5,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%- locals.title %></title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+
+    <%- include('partials/favico') %>
 </head>
 <body>
     <h1>Hello World!</h1>
     <h3>The database says: <%- locals.databaseString %></h3>
+    <div class="list-group">
+        <a class="list-group-item list-group-item-action" href="/instructorDashboard">instructorDashboard</a></li>
+        <a class="list-group-item list-group-item-action" href="/socialWorkerDashboard">socialWorkerDashboard</a></li>
+        <a class="list-group-item list-group-item-action" href="/sponsorDashboard">sponsorDashboard</a></li>
+        <a class="list-group-item list-group-item-action" href="/personResults">personResults</a></li>
+      </div>
+      <div style="height: 5vh;"></div>
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action" href="/login">login</a></li>
+        <a class="list-group-item list-group-item-action" href="/apply">apply</a></li>
+        <a class="list-group-item list-group-item-action" href="/student">student</a></li>
+        <a class="list-group-item list-group-item-action" href="/course">course</a></li>  
+        <a class="list-group-item list-group-item-action" href="/newAssignment">newAssignment</a></li>
+        <a class="list-group-item list-group-item-action" href="/newCourse">newCourse</a></li>  
+        <a class="list-group-item list-group-item-action" href="/certificate">certificate</a></li>  
+        <a class="list-group-item list-group-item-action" href="/studentSchedule">studentSchedule</a></li>  
+        <a class="list-group-item list-group-item-action" href="/newSocialNote">newSocialNote</a></li>  
+        <a class="list-group-item list-group-item-action" href="/assignment">assignment</a></li>  
+        <a class="list-group-item list-group-item-action" href="/gradebook">gradebook</a></li>  
+      </div>
+      <div style="height: 5vh;"></div>
+      <div class="list-group">        
+        <a class="list-group-item list-group-item-action" href="/adminDashboard">adminDashboard</a></li>  
+        <a class="list-group-item list-group-item-action" href="/ownerDashboard">ownerDashboard</a></li>  
+        <a class="list-group-item list-group-item-action" href="/manageAccount">manageAccount</a></li>  
+        <a class="list-group-item list-group-item-action" href="/applicationList">applicationList</a></li>  
+        <a class="list-group-item list-group-item-action" href="/manageApplication">manageApplication</a></li>  
+    </div>
+    <div style="height: 10vh;"></div>
+
 </body>
 </html>

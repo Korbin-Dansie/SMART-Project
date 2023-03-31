@@ -15,8 +15,13 @@ router.get('/', function(req, res, next) {
   }
 
   databaseString = rows[0].some_text;
-
-  res.render('LandingPage', { title: 'Express', databaseString: databaseString });
+  
+  if(process.env.DEBUG == "1"){
+    res.render('index', { title: 'Express', databaseString: databaseString });
+  }
+  else{
+    res.render('LandingPage', { title: 'Express', databaseString: databaseString });
+  }
 
   });
 });

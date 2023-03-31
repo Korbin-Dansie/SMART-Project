@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S. M. A. R. T. New Assignment</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+    <%- include('partials/favico') %>
+</head>
+
+<script>
+</script>
+
+<body>
+    <div class="container-fluid vh-100" style="margin-top:10px">
+        <div class="" style="margin-top:100px">
+            <div class="rounded d-flex justify-content-center">
+                <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+                    <div class="text-center">
+                        <h3 class="text-primary">Create New Assignment</h3>
+                    </div>
+                    <form method="post" action="" onSubmit="">
+
+                        <div class="row pt-4">
+                            <div class="col-md-10 mx-auto">
+                                <!--Assignment Title-->
+                                <div>
+                                    <label>Assignment Title:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-pencil text-white"></i></span>
+                                        <input id="assignmentTitle" name="assignmentTitle" type="text"
+                                            class="form-control" placeholder="Week 1 Vocab">
+                                    </div>
+                                </div>
+
+                                <!--Due Date-->
+                                <div>
+                                    <label>Due Date:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-calendar-date text-white"></i></span>
+                                        <input id="assignmentDueDate" name="assignmentDueDate" type="text" class="form-control"
+                                            placeholder="MM/DD/YYYY">
+                                    </div>
+                                </div>
+
+                                <!--Points-->
+                                <div>
+                                    <label>Points Possible:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-check2-square text-white"></i></span>
+                                        <input id="assignmentPoints" name="assignmentPoints" type="text"
+                                            class="form-control" placeholder="10">
+                                    </div>
+                                </div>
+
+                                <div class="p-2">
+                                    <label for="assignmentDescription" class="form-label">Assignment Description:</label>
+                                    <textarea class="form-control" id="applicantShortEssay" rows="7"></textarea>
+                                  </div>
+
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <p id="message" class="text-danger" style="height:25px">
+                                <%- locals.message %>
+                            </p>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-primary mt-2" type="submit">
+                                Create Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

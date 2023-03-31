@@ -8,6 +8,7 @@
     <title>S. M. A. R. T. Course Overview</title>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+    <%- include('partials/favico') %>
 </head>
 
 <script>
@@ -19,18 +20,26 @@
             <div class="rounded d-flex justify-content-center">
                 <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
 
+                    <div class="row">
+                        <div class="col px-5">
+                            <button class="btn btn-primary mt-2 float-end">
+                                Edit Course
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="text-center pb-4">
                         <h3 class="text-primary">Course Overview</h3>
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-md-5 pb-4">
                         <h3 class="text-primary">English 3</h3>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-10">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <p>
                                         <b>Teacher: </b>John Doe
                                     </p>
@@ -41,12 +50,15 @@
                                         <b>Level: </b>3
                                     </p>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-8">
                                     <p>
                                         <b>Semester: </b>Spring 2023
                                     </p>
                                     <p>
                                         <b>Class Schedule: </b>Tuesday and Thursday 2:00 PM - 4:00 PM
+                                    </p>
+                                    <p>
+                                        <b>Meeting Place: </b>Room 7
                                     </p>
                                 </div>
                             </div>
@@ -91,7 +103,7 @@
                                         <h5 class="text-primary">10/21/2022</h5>
                                     </div>
                                     <div class="col-8">
-                                        <h5 class="text-primary">Sample Assignment</h5>
+                                        <h5 class="text-primary">Week 1 Vocab</h5>
                                     </div>
                                 </div>
 
