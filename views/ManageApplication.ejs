@@ -27,7 +27,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantFirstName" name="applicantFirstName" type="text"
+                                      <input id="applicantFirstName" type="text"
                                           class="form-control" placeholder="Jane" readonly>
                                   </div>
                               </div>
@@ -38,7 +38,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantLastName" name="applicantLastName" type="text"
+                                      <input id="applicantLastName" type="text"
                                           class="form-control" placeholder="Doe" readonly>
                                   </div>
                               </div>
@@ -49,7 +49,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-calendar-date text-white"></i></span>
-                                      <input id="applicantDoB" name="applicantDoB" type="text" class="form-control"
+                                      <input id="applicantDoB" type="text" class="form-control"
                                           placeholder="MM/DD/YYYY" readonly>
                                   </div>
                               </div>
@@ -60,7 +60,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-house-door text-white"></i></span>
-                                      <input id="applicantAddress" name="applicantAddress" type="text"
+                                      <input id="applicantAddress" type="text"
                                           class="form-control" placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"  readonly>
                                   </div>
                               </div>
@@ -71,7 +71,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-mortarboard text-white"></i></span>
-                                      <input id="applicantSchoolLevel" name="applicantSchoolLevel" type="text"
+                                      <input id="applicantSchoolLevel" type="text"
                                           class="form-control" placeholder="10" readonly>
                                   </div>
                               </div>
@@ -82,7 +82,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-mortarboard text-white"></i></span>
-                                      <input id="applicantGPA" name="applicantGPA" type="text" class="form-control"
+                                      <input id="applicantGPA" type="text" class="form-control"
                                           placeholder="15" readonly>
                                   </div>
                               </div>
@@ -93,7 +93,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-telephone text-white"></i></span>
-                                      <input id="applicantContact" name="applicantContact" type="text" class="form-control"
+                                      <input id="applicantContact" type="text" class="form-control"
                                           placeholder="123-456-7890"  readonly>
                                   </div>
                               </div>
@@ -106,7 +106,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantGuardian" name="applicantGuardian" type="text" class="form-control"
+                                      <input id="applicantGuardian" type="text" class="form-control"
                                           placeholder="Janet Doe" readonly>
                                   </div>
                               </div>
@@ -117,7 +117,7 @@
                                   <div class="input-group mb-3">
                                       <span class="input-group-text bg-primary"><i
                                               class="bi bi-cash text-white"></i></span>
-                                      <input id="applicantGuardianIncome" name="applicantGuardianIncome" type="text" class="form-control"
+                                      <input id="applicantGuardianIncome" type="text" class="form-control"
                                           placeholder="MT 20,000" readonly>
                                   </div>
                               </div>
@@ -127,16 +127,16 @@
                                   <label>Do you need Transportation Assistance?</label>
                                   <div class="input-group mb-1">
                                       <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                          <input class="form-check-input" type="radio"
                                               id="noTransportAssist" checked disabled>
-                                          <label class="form-check-label" for="transportAssistRadio">
+                                          <label class="form-check-label">
                                               No
                                           </label>
                                       </div>
                                       <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                          <input class="form-check-input" type="radio"
                                               id="yesTransportAssist" disabled>
-                                          <label class="form-check-label" for="transportAssistRadio">
+                                          <label class="form-check-label">
                                               Yes
                                           </label>
                                       </div>
@@ -148,16 +148,16 @@
                                   <label>Do you need Meal Assistance?</label>
                                   <div class="input-group mb-1">
                                       <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                          <input class="form-check-input" type="radio" 
                                               id="noMealAssist" checked disabled>
-                                          <label class="form-check-label" for="mealAssistRadio">
+                                          <label class="form-check-label">
                                               No
                                           </label>
                                       </div>
                                       <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                          <input class="form-check-input" type="radio"
                                               id="yesMealAssist" disabled>
-                                          <label class="form-check-label" for="mealAssistRadio">
+                                          <label class="form-check-label">
                                               Yes
                                           </label>
                                       </div>
@@ -179,7 +179,6 @@
                                     ></span>
                                     <select
                                       class="form-select"
-                                      name="applicationStatus"
                                       id="applicationStatus"
                                       required
                                     >
@@ -200,7 +199,7 @@
 
                       <div class="text-center">
                           <button class="btn btn-primary mt-2" type="submit">
-                              Submit Application
+                              Submit Application Status
                           </button>
                       </div>
                   </form>
