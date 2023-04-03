@@ -124,6 +124,8 @@ CREATE TABLE `smart_project`.`user` (
   `email` VARCHAR(255) NOT NULL,
   `is_active` BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (`user_id`),
+  INDEX `person_id_fk_idx` (`person_id` ASC) VISIBLE, 
+  INDEX `account_type_id_fk_idx` (`account_type_id` ASC) VISIBLE, 
   CONSTRAINT `fk_user_person_id`
     FOREIGN KEY (`person_id`)
     REFERENCES `smart_project`.`person` (`person_id`)
@@ -154,6 +156,7 @@ CREATE TABLE `smart_project`.`contact_information` (
   `contact_type_id` TINYINT UNSIGNED NOT NULL,
   `value` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`contact_information_id`),
+  INDEX `person_id_fk_idx` (`person_id` ASC) VISIBLE,
   INDEX `contact_type_id_fk_idx` (`contact_type_id` ASC) VISIBLE,
   CONSTRAINT `fk_contact_information_person_id`
     FOREIGN KEY (`person_id`)
@@ -222,6 +225,10 @@ CREATE TABLE `smart_project`.`application` (
   `meal_assistance` BOOLEAN NOT NULL DEFAULT 0,
   `essay` VARCHAR(15000) NULL,
   PRIMARY KEY (`application_id`),
+  INDEX `person_id_fk_idx` (`person_id` ASC) VISIBLE,
+  INDEX `application_status_id_fk_idx` (`application_status_id` ASC) VISIBLE,
+  INDEX `public_school_level_id_fk_idx` (`public_school_level_id` ASC) VISIBLE,
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
   CONSTRAINT `fk_application_person_id`
     FOREIGN KEY (`person_id`)
     REFERENCES `smart_project`.`person` (`person_id`)
@@ -253,6 +260,8 @@ CREATE TABLE `smart_project`.`guardian` (
   `application_id` MEDIUMINT UNSIGNED NOT NULL,
   `annual_income` DECIMAL(8,2) NULL,
   PRIMARY KEY (`guardian_id`),
+  INDEX `person_id_fk_idx` (`person_id` ASC) VISIBLE,
+  INDEX `application_id_fk_idx` (`application_id` ASC) VISIBLE,
   CONSTRAINT `fk_guardian_person_id`
     FOREIGN KEY (`person_id`)
     REFERENCES `smart_project`.`person` (`person_id`)
@@ -273,6 +282,8 @@ COMMENT = 'To hold informa tion about an applicants parent/guardian information'
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   PRIMARY KEY (`socail_worker_student_id`),
+  INDEX `user_id_fk_idx` (`user_id` ASC) VISIBLE,
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
   CONSTRAINT `fk_social_worker_student_user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `smart_project`.`user` (`user_id`)
@@ -294,7 +305,8 @@ COMMENT = 'For a link between socail workers and their students';
   `date_taken` DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
   `note` VARCHAR(15000) NOT NULL DEFAULT '',
   PRIMARY KEY (`social_worker_student_note_id`),
-   CONSTRAINT `fk_social_worker_student_note_social_worker_student_id`
+  INDEX `social_worker_student_id_fk_idx` (`social_worker_student_id` ASC) VISIBLE,
+  CONSTRAINT `fk_social_worker_student_note_social_worker_student_id`
     FOREIGN KEY (`social_worker_student_id`)
     REFERENCES `smart_project`.`social_worker_student` (`socail_worker_student_id`)
     ON DELETE CASCADE
@@ -309,6 +321,8 @@ COMMENT = 'Holds notes about a student from a social worker';
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   PRIMARY KEY (`student_sponsor_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `user_id_fk_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_sponsor_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -337,6 +351,7 @@ CREATE TABLE `smart_project`.`subject` (
   `subject_id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `level_id` TINYINT UNSIGNED NULL,
   `name` VARCHAR(255) NOT NULL,
+  INDEX `level_id_fk_idx` (`level_id` ASC) VISIBLE,
   PRIMARY KEY (`subject_id`),
     CONSTRAINT `fk_subject_level_id`
     FOREIGN KEY (`level_id`)
@@ -375,6 +390,8 @@ CREATE TABLE `smart_project`.`class` (
   `start_date` DATE NOT NULL COMMENT 'Gets default from semester its part of',
   `end_date` DATE NOT NULL COMMENT 'Gets default from semester its part of',
   PRIMARY KEY (`class_id`),
+  INDEX `semester_id_fk_idx` (`semester_id` ASC) VISIBLE,
+  INDEX `subject_id_fk_idx` (`subject_id` ASC) VISIBLE,
   CONSTRAINT `fk_class_semester_id`
     FOREIGN KEY (`semester_id`)
     REFERENCES `smart_project`.`semester` (`semester_id`)
@@ -414,6 +431,7 @@ CREATE TABLE `smart_project`.`certificate` (
   `name` VARCHAR(255) NOT NULL,
   `subject_id` SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY (`certificate_id`),
+  INDEX `subject_id_fk_idx` (`subject_id` ASC) VISIBLE,
   CONSTRAINT `fk_certificate_subject_id`
     FOREIGN KEY (`subject_id`)
     REFERENCES `smart_project`.`subject` (`subject_id`)
@@ -429,6 +447,8 @@ CREATE TABLE `smart_project`.`student_certificate` (
   `certificate_id` MEDIUMINT UNSIGNED NOT NULL,
   `date_awarded` DATE NOT NULL,
   PRIMARY KEY (`student_certificate_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `certificate_id_fk_idx` (`certificate_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_certificate_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -451,6 +471,8 @@ CREATE TABLE `smart_project`.`student_feeding` (
   `date_feed` DATE NOT NULL,
   `is_done` BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (`student_feeding_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `meal_time_id_fk_idx` (`meal_time_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_feeding_student_id`
    FOREIGN KEY (`student_id`)
    REFERENCES `smart_project`.`student` (`student_id`)
@@ -473,6 +495,8 @@ CREATE TABLE `smart_project`.`student_attendance` (
   `date_attended` DATE NOT NULL,
   `is_present` BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (`student_attendance_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_attendance_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -494,6 +518,8 @@ COMMENT = 'Holds if a student was present';
   `day_of_week_id` TINYINT UNSIGNED NOT NULL,
   `time` TIME NOT NULL,
   PRIMARY KEY (`student_public_school_schedule_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `day_of_week_id_fk_idx` (`day_of_week_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_public_school_schedule_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -513,6 +539,7 @@ COMMENT = 'Holds a students public school schedule';
   `assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `class_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`assignment_id`),
+  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
   CONSTRAINT `fk_assignment_class_id`
     FOREIGN KEY (`class_id`)
     REFERENCES `smart_project`.`class` (`class_id`)
@@ -532,6 +559,9 @@ CREATE TABLE `smart_project`.`student_assignment` (
   `grade` DECIMAL(5,2) NOT NULL DEFAULT 0 COMMENT 'If the status is null then the assignment has not been graded yet',
   `can_sponsor_view` BOOLEAN NOT NULL DEFAULT 1,
   PRIMARY KEY (`student_assignment_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `assignment_id_fk_idx` (`assignment_id` ASC) VISIBLE,
+  INDEX `assignment_status_id_fk_idx` (`assignment_status_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_assignment_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -556,6 +586,7 @@ CREATE TABLE `smart_project`.`student_assignment_document` (
   `student_assignment_id` INT UNSIGNED NOT NULL,
   `document_link` VARCHAR(15000) NOT NULL,
   PRIMARY KEY (`student_assignment_document_id`),
+  INDEX `student_assignment_id_fk_idx` (`student_assignment_id` ASC) VISIBLE,
    CONSTRAINT `fk_student_assignment_document_student_assignment_id`
     FOREIGN KEY (`student_assignment_id`)
     REFERENCES `smart_project`.`student_assignment` (`student_assignment_id`)
@@ -571,7 +602,8 @@ CREATE TABLE `smart_project`.`assignment_note` (
   `student_assignment_id` INT UNSIGNED NOT NULL,
   `note` VARCHAR(15000) NOT NULL DEFAULT '',
   PRIMARY KEY (`assignment_note_id`),
-   CONSTRAINT `fk_assignment_note_student_assignment_id`
+  INDEX `student_assignment_id_fk_idx` (`student_assignment_id` ASC) VISIBLE,
+  CONSTRAINT `fk_assignment_note_student_assignment_id`
     FOREIGN KEY (`student_assignment_id`)
     REFERENCES `smart_project`.`student_assignment` (`student_assignment_id`)
     ON DELETE CASCADE
@@ -588,8 +620,8 @@ CREATE TABLE `smart_project`.`class_time` (
   `start_time` TIME NULL,
   `end_time` TIME NULL,
   PRIMARY KEY (`class_time_id`),
-  INDEX `fk_class_time_class_id_idx` (`class_id` ASC) VISIBLE,
-  INDEX `fk_class_time_day_of_week_id_idx` (`day_of_week_id` ASC) VISIBLE,
+  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
+  INDEX `day_of_week_id_fk_id` (`day_of_week_id` ASC) VISIBLE,
   CONSTRAINT `fk_class_time_class_id`
     FOREIGN KEY (`class_id`)
     REFERENCES `smart_project`.`class` (`class_id`)
@@ -610,7 +642,8 @@ CREATE TABLE `smart_project`.`student_schedule` (
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `class_time_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`student_schedule_id`),
-  INDEX `fk_student_schedule_class_time_id_idx` (`class_time_id` ASC) VISIBLE,
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `class_time_id_fk_idx` (`class_time_id` ASC) VISIBLE,
   CONSTRAINT `fk_student_schedule_student_id`
     FOREIGN KEY (`student_id`)
     REFERENCES `smart_project`.`student` (`student_id`)
@@ -631,9 +664,9 @@ CREATE TABLE `smart_project`.`instructor_schedule` (
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   `class_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`instructor_schedule_id`),
-  INDEX `fk_instructor_schedule_user_id_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_instructor_schedule_class_id_idx` (`class_id` ASC) VISIBLE,
-  CONSTRAINT `fk_instructor_schedule_user_id`
+  INDEX `user_id_fk_idx` (`user_id` ASC) VISIBLE,
+  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
+  CONSTRAINT `fk_instructor_scheduxle_user_id`
     FOREIGN KEY (`user_id`)
     REFERENCES `smart_project`.`user` (`user_id`)
     ON DELETE CASCADE
