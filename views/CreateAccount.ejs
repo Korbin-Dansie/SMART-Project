@@ -10,18 +10,49 @@
   <script type="text/javascript" src="crypto-js.js"></script>
 </head>
 
+<script>
+  function checkPassword(event) {
+    // Get the two passwords entered
+    const password1 = document.getElementById("password").value;
+    const password2 = document.getElementById("confirmPassword").value;
+    let passwordValid = false;
+    let message = "";
+    if (password1 == "") {
+      message = "Please enter password";
+    } else if (password2 == "") {
+      message = "Please re-enter password";
+    } else if (password1 != password2) {
+      message = "Passwords must match";
+    } else {
+      passwordValid = true;
+    }
+
+    if (!passwordValid) {
+      document.getElementById("message").innerHTML = message;
+      event.preventDefault();
+    } else {
+      let salt = CryptoJS.lib.WordArray.random(8);
+      document.getElementById("salt").value = salt;
+      let hashed = CryptoJS.SHA256(password1 + ":" + salt).toString(CryptoJS.enc.Hex);
+      document.getElementById("hash").value = hashed;
+    }
+  }
+</script>
+
 <body>
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>Create An Account</h1></div>
-          <form>
+          <form onSubmit="return checkPassword(event);" method="post">
             <div class="p-4">
             <Label for="accountType">Account Type</Label><br><br>
             <select name="accountType" id="accountType" class="form-control" style="appearance:menulist">
               <option value="socialWorker">Social Worker</option>
               <option value="instructor">Instructor</option>
+              <option value="owner">Owner / Board of Directors</option>
+              <option value="sponsor">USA Sponsor</option>
               <option value="admin">Admin</option>
             </select> <br>
             <p>Email address</p>
@@ -45,6 +76,8 @@
               </span>
               <input id="confirmPassword" type="password" class="form-control" placeholder="Confirm Password">
             </div>
+            <input type="hidden" id="hash" name="hash">
+            <input type="hidden" id="salt" name="salt">
             <button class="btn btn-primary mt-2" type="submit">
               Submit
             </button>
