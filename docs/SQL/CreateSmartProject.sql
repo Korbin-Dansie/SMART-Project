@@ -90,14 +90,14 @@ SET foreign_key_checks = 1;
 
 /*******************************************************************************************************************************
  * 
- * CREATE TABLES
+ * CREATE TABLE
  *
  *******************************************************************************************************************************/
 /***************************************************************
  * Create account_type
  ***************************************************************/ 
-CREATE TABLE IF NOT EXISTS`smart_project`.`account_type` (
-  `account_type_id` TINYINT UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `smart_project`.`account_type` (
+  `account_type_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_type` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`account_type_id`))
 COMMENT = 'admin, instructors, socail, workers, owners, and sponsors';
@@ -115,7 +115,7 @@ COMMENT = 'Holds first and last name';
 /***************************************************************
  * Create user
  ***************************************************************/ 
-CREATE TABLE `smart_project`.`user` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`user` (
   `user_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_type_id` TINYINT UNSIGNED NOT NULL,
   `person_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -141,7 +141,7 @@ COMMENT = 'Holds login information';
 /***************************************************************
  * Create contact_type
  ***************************************************************/ 
-CREATE TABLE `smart_project`.`contact_type` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`contact_type` (
   `contact_type_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`contact_type_id`))
@@ -150,7 +150,7 @@ COMMENT = 'Email, Phone';
 /***************************************************************
  * Create contact_information
  ***************************************************************/ 
-CREATE TABLE `smart_project`.`contact_information` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`contact_information` (
   `contact_information_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `person_id` MEDIUMINT UNSIGNED NULL,
   `contact_type_id` TINYINT UNSIGNED NOT NULL,
@@ -173,7 +173,7 @@ COMMENT = 'Holds a persons contact information';
 /***************************************************************
  * Create application_status
  ***************************************************************/ 
-CREATE TABLE `smart_project`.`application_status` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`application_status` (
   `application_status_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `application_status` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`application_status_id`))
@@ -182,7 +182,7 @@ COMMENT = 'Active, Waitlisted, Accepted, Rejected';
 /***************************************************************
  * Create public_school_level
  ***************************************************************/
-CREATE TABLE `smart_project`.`public_school_level` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`public_school_level` (
   `public_school_level_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `level` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`public_school_level_id`))
@@ -191,7 +191,7 @@ COMMENT = 'Holds their public school level. (8-12), and Adult';
 /***************************************************************
  * Create student_status
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_status` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_status` (
   `student_status_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_status` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`student_status_id`))
@@ -200,7 +200,7 @@ COMMENT = 'Active, Graduated, Removed ...';
 /***************************************************************
  * Create student
  ***************************************************************/
-CREATE TABLE `smart_project`.`student` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student` (
   `student_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_status_id` TINYINT UNSIGNED NOT NULL,
   `date_of_admission` DATE NOT NULL DEFAULT (CURRENT_DATE),
@@ -211,7 +211,7 @@ COMMENT = 'The main student table.';
 /***************************************************************
  * Create application
  ***************************************************************/
-CREATE TABLE `smart_project`.`application` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`application` (
   `application_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `person_id` MEDIUMINT UNSIGNED NOT NULL,
   `application_status_id` TINYINT UNSIGNED NOT NULL COMMENT 'After it is set to accepted create a new student record',
@@ -254,7 +254,7 @@ COMMENT = 'The students application';
 /***************************************************************
  * Create guardian
  ***************************************************************/
-CREATE TABLE `smart_project`.`guardian` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`guardian` (
   `guardian_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `person_id` MEDIUMINT UNSIGNED NOT NULL,
   `application_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -277,7 +277,7 @@ COMMENT = 'To hold informa tion about an applicants parent/guardian information'
 /***************************************************************
  * Create social_worker_student
  ***************************************************************/
- CREATE TABLE `smart_project`.`social_worker_student` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student` (
   `socail_worker_student_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -299,7 +299,7 @@ COMMENT = 'For a link between socail workers and their students';
 /***************************************************************
  * Create socail_worker_student_note
  ***************************************************************/
- CREATE TABLE `smart_project`.`social_worker_student_note` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student_note` (
   `social_worker_student_note_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `social_worker_student_id` MEDIUMINT UNSIGNED NOT NULL,
   `date_taken` DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
@@ -316,7 +316,7 @@ COMMENT = 'Holds notes about a student from a social worker';
  /***************************************************************
  * Create student_sponsor
  ***************************************************************/
- CREATE TABLE `smart_project`.`student_sponsor` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_sponsor` (
   `student_sponsor_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -338,7 +338,7 @@ COMMENT = 'Holds the students sponsor(s)';
 /***************************************************************
  * Create level
  ***************************************************************/
-CREATE TABLE `smart_project`.`level` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`level` (
   `level_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `level_name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`level_id`))
@@ -347,7 +347,7 @@ COMMENT = 'Holds the level of the class 8-12, adult';
  /***************************************************************
  * Create subject
  ***************************************************************/
-CREATE TABLE `smart_project`.`subject` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`subject` (
   `subject_id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `level_id` TINYINT UNSIGNED NULL,
   `name` VARCHAR(255) NOT NULL,
@@ -363,7 +363,7 @@ COMMENT = 'Holds the subjects';
 /***************************************************************
  * Create assignment_status
  ***************************************************************/
- CREATE TABLE `smart_project`.`assignment_status` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`assignment_status` (
   `assignment_status_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `status` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`assignment_status_id`))
@@ -372,7 +372,7 @@ COMMENT = 'pass, fail';
 /***************************************************************
  * Create semester
  ***************************************************************/
-  CREATE TABLE `smart_project`.`semester` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`semester` (
   `semester_id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `description` VARCHAR(255) NOT NULL,
   `start_date` DATE NOT NULL,
@@ -383,7 +383,7 @@ COMMENT = 'Holds the semester fall 2022, winter 2023';
 /***************************************************************
  * Create class
  ***************************************************************/
-CREATE TABLE `smart_project`.`class` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`class` (
   `class_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `semester_id` SMALLINT UNSIGNED NOT NULL,
   `subject_id` SMALLINT UNSIGNED NOT NULL,
@@ -406,7 +406,7 @@ CREATE TABLE `smart_project`.`class` (
  /***************************************************************
  * Create meal_time
  ***************************************************************/
-CREATE TABLE `smart_project`.`meal_time` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`meal_time` (
   `meal_time_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `time` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`meal_time_id`),
@@ -416,7 +416,7 @@ COMMENT = 'Breakfast, (and/or) Lunch';
  /***************************************************************
  * Create day_of_week
  ***************************************************************/
-CREATE TABLE `smart_project`.`day_of_week` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`day_of_week` (
   `day_of_week_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`day_of_week_id`),
@@ -426,7 +426,7 @@ COMMENT = 'Sunday, Monday, Tuesday, ...';
 /***************************************************************
  * Create certificate
  ***************************************************************/
-CREATE TABLE `smart_project`.`certificate` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`certificate` (
   `certificate_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `subject_id` SMALLINT UNSIGNED NOT NULL,
@@ -441,7 +441,7 @@ CREATE TABLE `smart_project`.`certificate` (
 /***************************************************************
  * Create student_certificate
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_certificate` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_certificate` (
   `student_certificate_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `certificate_id` MEDIUMINT UNSIGNED NOT NULL,
@@ -464,7 +464,7 @@ COMMENT = 'Holds certificates that a student has earned';
 /***************************************************************
  * Create student_feeding
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_feeding` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_feeding` (
   `student_feeding_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `meal_time_id` TINYINT UNSIGNED NOT NULL,
@@ -488,7 +488,7 @@ COMMENT = 'When a student has been feed';
 /***************************************************************
  * Create student_attendance
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_attendance` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_attendance` (
   `student_attendance_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `class_id` INT UNSIGNED NOT NULL,
@@ -512,7 +512,7 @@ COMMENT = 'Holds if a student was present';
  /***************************************************************
  * Create student_public_school_schedule
  ***************************************************************/
- CREATE TABLE `smart_project`.`student_public_school_schedule` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_public_school_schedule` (
   `student_public_school_schedule_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `day_of_week_id` TINYINT UNSIGNED NOT NULL,
@@ -535,7 +535,7 @@ COMMENT = 'Holds a students public school schedule';
 /***************************************************************
  * Create assignment
  ***************************************************************/
-  CREATE TABLE `smart_project`.`assignment` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`assignment` (
   `assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `class_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`assignment_id`),
@@ -550,7 +550,7 @@ COMMENT = 'Holds a classes assignments';
 /***************************************************************
  * Create student_assignment
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_assignment` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_assignment` (
   `student_assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `assignment_id` INT UNSIGNED NOT NULL,
@@ -581,7 +581,7 @@ CREATE TABLE `smart_project`.`student_assignment` (
 /***************************************************************
  * Create student_assignment_document
 ***************************************************************/
-CREATE TABLE `smart_project`.`student_assignment_document` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_assignment_document` (
   `student_assignment_document_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_assignment_id` INT UNSIGNED NOT NULL,
   `document_link` VARCHAR(15000) NOT NULL,
@@ -597,7 +597,7 @@ COMMENT = 'Holds documents that a student did on an assignment';
 /***************************************************************
  * Create assignment_note
  ***************************************************************/
-CREATE TABLE `smart_project`.`assignment_note` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`assignment_note` (
   `assignment_note_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_assignment_id` INT UNSIGNED NOT NULL,
   `note` VARCHAR(15000) NOT NULL DEFAULT '',
@@ -612,7 +612,7 @@ CREATE TABLE `smart_project`.`assignment_note` (
 /***************************************************************
  * Create class_time
  ***************************************************************/
-CREATE TABLE `smart_project`.`class_time` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`class_time` (
   `class_time_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `class_id` INT UNSIGNED NOT NULL,
   `day_of_week_id` TINYINT UNSIGNED NOT NULL,
@@ -637,7 +637,7 @@ COMMENT = 'Holds a double array for possible class times.So table needs to hold 
 /***************************************************************
  * Create student_schedule
  ***************************************************************/
-CREATE TABLE `smart_project`.`student_schedule` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_schedule` (
   `student_schedule_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
   `class_time_id` INT UNSIGNED NOT NULL,
@@ -659,7 +659,7 @@ COMMENT = 'Classes a student is taking';
 /***************************************************************
  * Create instructor_schedule
  ***************************************************************/
-CREATE TABLE `smart_project`.`instructor_schedule` (
+CREATE TABLE IF NOT EXISTS `smart_project`.`instructor_schedule` (
   `instructor_schedule_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   `class_id` INT UNSIGNED NOT NULL,
