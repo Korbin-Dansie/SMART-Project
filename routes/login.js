@@ -1,21 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var CryptoJS = require('../node_modules/crypto-js');
 
 var dbCon = require('../lib/database');
-
-/* GET login user page. */
-/*
-router.get('/', function (req, res, next) {
-    res.render('LoginUser', {});
-});
-*/
-
-/* GET login password page. localhost:3000/login/password */
-/*
-router.get('/password', function (req, res, next) {
-    res.render('LoginPassword', {});
-});
-*/
 
 /* GET page. */
 router.get('/', function(req, res, next) {
@@ -56,13 +43,13 @@ router.get('/', function(req, res, next) {
                 console.log("loginuser.js: Credentials matched");
                 req.session.loggedIn = true;
                 req.session.accountType = results[1][0]['@account_type'];
-                req.session.viewingAccount = false;
                 res.redirect("/");
             }
         });
     } 
     else if (req.body.emailAddress != "") { // They just put in their email address
       const emailAddress = req.body.emailAddress;
+      req.session.emailAddress = emailAddress;
       console.log("loginuser.js: email is: " + emailAddress);
       const sql = "CALL get_salt('" + emailAddress + "', @salt); SELECT @salt;";
       dbCon.query(sql, function(err, results) {
@@ -71,23 +58,20 @@ router.get('/', function(req, res, next) {
           }
           console.log(results[1][0]);
           console.log(results[1][0]['@salt']);
+          // make a random salt to use if their email turns out to not be valid
+          let salt = CryptoJS.lib.WordArray.random(8);
           if (results[1][0]['@salt'] === undefined || results[1][0]['@salt'] === null || results[1][0]['@salt'] == '') {
               console.log("loginuser: No results found");
               // send them to the login page anyways if they have an email that doesn't exist for security
-              // Send a random salt since it won't work anyways
-                let salt = CryptoJS.lib.WordArray.random(8);
-              res.render('loginpassword', {
-                email: emailAddress,
-                salt: salt});
           } else {
-              const salt = results[1][0]['@salt'];
-              req.session.emailAddress = emailAddress;
-              req.session.salt = salt;
-              console.log("email: " + emailAddress + " salt: " + salt);
-              res.render('loginpassword', {
-                  emailAddress: emailAddress,
-                  salt: salt});
+              salt = results[1][0]['@salt'];
           }
+          // Log them in regardless of whether the email is good
+          req.session.salt = salt;
+          console.log("email: " + emailAddress + " salt: " + salt);
+          res.render('loginpassword', {
+              emailAddress: emailAddress,
+              salt: salt});
       });
   
     }
