@@ -9,7 +9,30 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express'});
   }
   else{
-    res.render('LandingPage', { title: 'Express'});
+    if (req.session.loggedIn) {
+      switch (req.session.accountType) {
+        case "Super Admin":
+        case "Admin":
+          res.render('AdminDashboard', {});
+          break;
+        case "Instructor":
+          res.render('InstructorDashboard', {});
+          break;
+        case "Social Worker":
+          res.render('SocialWorkerDashboard', {});
+          break;
+        case "Owner":
+          res.render('OwnerDashboard', {});
+          break;
+        case "USA Sponsor":
+          res.render('SponsorDashboard', {});
+          break;
+        default:
+          res.render('LandingPage', {message: "Unhandled account type"});
+      }
+    } else {
+      res.render('LandingPage', { title: 'Express'});
+    }
   }
 });
 
