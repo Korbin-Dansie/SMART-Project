@@ -1,4 +1,5 @@
- CREATE DATABASE IF NOT EXISTS `smart_project`;
+DROP DATABASE IF EXISTS `smart_project`;
+CREATE DATABASE IF NOT EXISTS `smart_project`;
 USE `smart_project`;
 
 SET foreign_key_checks = 0;
