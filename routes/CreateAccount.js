@@ -10,14 +10,16 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     // Get the POST data
     const accountType = req.body.accountType;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
     const email = req.body.emailAddress;
     const hash = req.body.hash;
     const salt = req.body.salt;
 
-    let sql = "CALL create_user(?, ?, ?, ?, @result); select @result;";
+    let sql = "CALL create_user(?, ?, ?, ?, ?, ?, @result); select @result;";
     console.log("CreateAccount.js: sql statement is: " + sql);
     // For now there isn't a lookup table for the user types, so until that gets created we'll just use 1 for the account type id
-    dbCon.query(sql, [accountType, email, hash, salt], function (err, rows) {
+    dbCon.query(sql, [accountType, firstName, lastName, email, hash, salt], function (err, rows) {
       if (err) {
         throw err;
       }

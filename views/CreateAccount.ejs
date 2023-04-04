@@ -45,6 +45,11 @@
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>Create An Account</h1></div>
+          <div class="text-center">
+            <p id="message" class="text-danger" style="height:25px">
+                <%- locals.message %>
+            </p>
+        </div>
           <form onSubmit="return checkPassword(event);" method="post">
             <div class="p-4">
             <Label for="accountType">Account Type</Label><br><br>
