@@ -17,7 +17,7 @@ router.post('/', function(req, res, next) {
     let sql = "CALL create_user(?, ?, ?, ?, @result); select @result;";
     console.log("CreateAccount.js: sql statement is: " + sql);
     // For now there isn't a lookup table for the user types, so until that gets created we'll just use 1 for the account type id
-    dbCon.query(sql, [1, email, hash, salt], function (err, rows) {
+    dbCon.query(sql, [accountType, email, hash, salt], function (err, rows) {
       if (err) {
         throw err;
       }
