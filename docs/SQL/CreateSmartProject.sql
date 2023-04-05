@@ -679,12 +679,98 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`instructor_schedule` (
     ON UPDATE CASCADE)
 COMMENT = 'Holds which instructors goes to which classes';
 
-
+DELIMITER $$
+$$ -- Clear it so the next SP output doest not contain all the comments ab
 /*******************************************************************************************************************************
  * 
  * CREATE PROCEDURES
  *
  *******************************************************************************************************************************/
+/***************************************************************
+* Proc get_salt
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_salt` ( 
+ IN email VARCHAR(255), 
+ OUT salt CHAR(16) 
+) 
+BEGIN 
+ SELECT user.salt INTO salt FROM user 
+ WHERE user.email = email AND user.is_active = TRUE; 
+END;
+$$
+
+/***************************************************************
+* Proc login_user
+* <comment>Procedure login_user created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `login_user` ( 
+ IN email VARCHAR(255), 
+ IN hashed_password CHAR(64), 
+ OUT account_type TINYINT 
+) 
+BEGIN 
+ SELECT 0 INTO account_type; 
+ SELECT user.account_type_id INTO account_type FROM user WHERE user.email = email 
+ AND user.hashed_password = hashed_password;  -- user type 0 is invalid, bad login
+END;
+$$
+
+/***************************************************************
+* Proc create_account_type
+* <comment>Procedure create_account_type created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `create_account_type`(
+IN  accountType VARCHAR(45)
+)
+BEGIN
+INSERT INTO account_type(account_type)
+VALUES (accountType);
+END;
+$$
+
+/***************************************************************
+* Proc create_person
+* <comment>Procedure create_person created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `create_person`(
+IN  firstName VARCHAR(45),
+IN  lastName VARCHAR(45),
+OUT id INT
+)
+BEGIN
+INSERT INTO person(first_name, last_name)
+VALUES (firstName, lastName);
+SET id = LAST_INSERT_ID();
+END;
+$$
+
+/***************************************************************
+* Proc create_user
+* <comment>Procedure create_user created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `create_user`(
+ IN  accountType VARCHAR(45),
+ IN  firstName VARCHAR(45),
+ IN  lastName VARCHAR(45),
+ IN  email VARCHAR(45),
+ IN  hashed_password VARCHAR(255),
+ IN  salt VARCHAR(255),
+ OUT result INT
+)
+BEGIN
+ DECLARE nCount INT DEFAULT 0;
+ SET result = 0;
+ CALL create_person(firstName, lastName, @personID);
+ SELECT Count(*) INTO nCount FROM user WHERE user.email = email;
+ IF nCount = 0 THEN
+   INSERT INTO user(account_type_id, person_id, salt, hashed_password, email, is_active)
+   VALUES ((SELECT account_type_id FROM account_type WHERE account_type = accountType), @personID, salt, hashed_password, email, true);
+ ELSE
+   SET result = 1;
+ END IF;
+END;
+$$
+
 
 
 /*******************************************************************************************************************************
