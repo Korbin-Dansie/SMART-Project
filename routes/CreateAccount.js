@@ -4,7 +4,12 @@ var router = express.Router();
 var dbCon = require('../lib/database');
 
 router.get('/', function(req, res, next) {
-  res.render('CreateAccount');
+  if (req.session.loggedIn && (req.session.accountType == 0 || req.session.accountType == 1)) {
+    res.render('CreateAccount');
+  } else {
+    res.redirect('/');
+  }
+  
 });
 
 router.post('/', function(req, res, next) {
@@ -17,8 +22,6 @@ router.post('/', function(req, res, next) {
     const salt = req.body.salt;
 
     let sql = "CALL create_user(?, ?, ?, ?, ?, ?, @result); select @result;";
-    console.log("CreateAccount.js: sql statement is: " + sql);
-    // For now there isn't a lookup table for the user types, so until that gets created we'll just use 1 for the account type id
     dbCon.query(sql, [accountType, firstName, lastName, email, hash, salt], function (err, rows) {
       if (err) {
         throw err;
