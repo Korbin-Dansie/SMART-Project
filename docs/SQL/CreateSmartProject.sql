@@ -687,7 +687,8 @@ $$ -- Clear it so the next SP output doest not contain all the comments ab
  *
  *******************************************************************************************************************************/
 /***************************************************************
-* Proc get_salt
+* Procedure get_salt
+* <comment>Procedure get_salt created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `get_salt` ( 
  IN email VARCHAR(255), 
@@ -699,8 +700,9 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
-* Proc login_user
+* Procedure login_user
 * <comment>Procedure login_user created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `login_user` ( 
@@ -711,12 +713,13 @@ CREATE PROCEDURE IF NOT EXISTS `login_user` (
 BEGIN 
  SELECT 0 INTO account_type; 
  SELECT user.account_type_id INTO account_type FROM user WHERE user.email = email 
- AND user.hashed_password = hashed_password;  -- user type 0 is invalid, bad login
+ AND user.hashed_password = hashed_password; -- user type 0 is invalid, bad login
 END;
 $$
 
+
 /***************************************************************
-* Proc create_account_type
+* Procedure create_account_type
 * <comment>Procedure create_account_type created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `create_account_type`(
@@ -728,8 +731,9 @@ VALUES (accountType);
 END;
 $$
 
+
 /***************************************************************
-* Proc create_person
+* Procedure create_person
 * <comment>Procedure create_person created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `create_person`(
@@ -744,8 +748,9 @@ SET id = LAST_INSERT_ID();
 END;
 $$
 
+
 /***************************************************************
-* Proc create_user
+* Procedure create_user
 * <comment>Procedure create_user created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `create_user`(
@@ -772,9 +777,50 @@ END;
 $$
 
 
+/***************************************************************
+* Procedure select_applications
+* <comment>Procedure select_applications created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_applications`(
+ IN  applicationStatus VARCHAR(45)
+)
+BEGIN
+ IF applicationStatus IS NOT NULL THEN
+   SELECT person.first_name, person.last_name, public_school_level_id, date_of_birth, date_of_application, application_status.application_status
+   FROM application
+   JOIN person ON person.person_id = application.person_id
+   JOIN application_status on application_status.application_status_id = application.application_status_id
+   WHERE application_status.application_status = applicationStatus;
+ ELSE
+   SELECT person.first_name, person.last_name, public_school_level_id, date_of_birth, date_of_application, application_status.application_status
+   FROM application
+   JOIN person ON person.person_id = application.person_id
+   JOIN application_status on application_status.application_status_id = application.application_status_id;
+ END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure create_application_status
+* <comment>Procedure create_application_status created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `create_application_status`(
+ IN  applicationStatus VARCHAR(45)
+)
+BEGIN
+ INSERT INTO application_status(application_status)
+ VALUES(applicationStatus);
+END;
+$$
 
 /*******************************************************************************************************************************
  * 
  * CREATE TRIGGERS
  *
  *******************************************************************************************************************************/
+/***************************************************************
+* Trigger trigger_new_application_status
+* <comment>Procedure create_user created if it didn't already exist.</comment>
+***************************************************************/
+
