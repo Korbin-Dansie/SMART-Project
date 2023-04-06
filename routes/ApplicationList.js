@@ -78,7 +78,8 @@ router.post("/", function(req, res, next) {
       });
     }
   } else {  // Viewing details of an application
-    res.redirect('/ManageApplication');
+    let dataToPass = encodeURIComponent(req.body.applicationID);
+    res.redirect('/ManageApplication?applicationID=' + dataToPass);
   }
   
 });

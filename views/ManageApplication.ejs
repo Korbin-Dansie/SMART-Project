@@ -30,7 +30,8 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-person-circle text-white"></i></span>
                                         <input id="applicantFirstName" type="text" class="form-control"
-                                            placeholder="Jane" readonly>
+                                            placeholder="Jane" value=<%=locals.applicationData['first_name'] %>
+                                        readonly>
                                     </div>
                                 </div>
 
@@ -41,7 +42,7 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-person-circle text-white"></i></span>
                                         <input id="applicantLastName" type="text" class="form-control" placeholder="Doe"
-                                            readonly>
+                                            value=<%=locals.applicationData['last_name'] %> readonly>
                                     </div>
                                 </div>
 
@@ -52,7 +53,8 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-calendar-date text-white"></i></span>
                                         <input id="applicantDoB" type="text" class="form-control"
-                                            placeholder="MM/DD/YYYY" readonly>
+                                            placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_birth'] %>
+                                        readonly>
                                     </div>
                                 </div>
 
@@ -63,7 +65,8 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-house-door text-white"></i></span>
                                         <input id="applicantAddress" type="text" class="form-control"
-                                            placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E" readonly>
+                                            placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"
+                                            value=<%=locals.applicationData['latitude'] %> readonly>
                                     </div>
                                 </div>
 
@@ -74,7 +77,7 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-mortarboard text-white"></i></span>
                                         <input id="applicantSchoolLevel" type="text" class="form-control"
-                                            placeholder="10" readonly>
+                                            placeholder="10" value=<%=locals.applicationData['level'] %> readonly>
                                     </div>
                                 </div>
 
@@ -85,7 +88,7 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-mortarboard text-white"></i></span>
                                         <input id="applicantGPA" type="text" class="form-control" placeholder="15"
-                                            readonly>
+                                            value=<%=locals.applicationData['level'] %> readonly>
                                     </div>
                                 </div>
 
@@ -128,20 +131,37 @@
                                 <div class="p-2">
                                     <label>Do you need Transportation Assistance?</label>
                                     <div class="input-group mb-1">
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" id="noTransportAssist" checked
-                                                disabled>
-                                            <label class="form-check-label">
-                                                No
-                                            </label>
-                                        </div>
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" id="yesTransportAssist"
-                                                disabled>
-                                            <label class="form-check-label">
-                                                Yes
-                                            </label>
-                                        </div>
+                                        <% if (locals.applicationData['transportation_assistance'] == false) { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noTransportAssist"
+                                                    checked disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesTransportAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noTransportAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesTransportAssist"
+                                                    checked disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } %>
                                     </div>
                                 </div>
 
@@ -149,19 +169,36 @@
                                 <div class="p-2">
                                     <label>Do you need Meal Assistance?</label>
                                     <div class="input-group mb-1">
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" id="noMealAssist" checked
-                                                disabled>
-                                            <label class="form-check-label">
-                                                No
-                                            </label>
-                                        </div>
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" id="yesMealAssist" disabled>
-                                            <label class="form-check-label">
-                                                Yes
-                                            </label>
-                                        </div>
+                                        <% if (locals.applicationData['meal_assistance'] == false) { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noMealAssist" checked
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesMealAssist" disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noMealAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesMealAssist" checked
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } %>
                                     </div>
                                 </div>
 
@@ -169,8 +206,7 @@
                                 <div class="p-2">
                                     <label for="applicantShortEssay" class="form-label">Why do you Want to Enroll in the
                                         Program?</label>
-                                    <textarea class="form-control" id="applicantShortEssay" rows="7"
-                                        readonly></textarea>
+                                    <textarea class="form-control" id="applicantShortEssay" rows="7" readonly><%= locals.applicationData['essay'] %></textarea>
                                 </div>
                             </div>
 
@@ -181,7 +217,7 @@
                                     <span class="input-group-text bg-primary"><i
                                             class="bi bi-calendar-date text-white"></i></span>
                                     <input id="applicantSubmitDate" type="text" class="form-control"
-                                        placeholder="MM/DD/YYYY" readonly>
+                                        placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'] %> readonly>
                                 </div>
                             </div>
 
@@ -192,10 +228,31 @@
                                     <span class="input-group-text bg-primary"><i
                                             class="bi bi-person-badge text-white"></i></span>
                                     <select class="form-select" id="applicationStatus" required>
-                                        <option selected value="waitListed">WaitListed</option>
-                                        <option value="accepted">Accepted</option>
-                                        <option value="rejected">Rejected</option>
-                                        <option value="active">Active</option>
+                                        <% if (locals.applicationData['application_status'] == "Wait Listed") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed" selected>Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else if (locals.applicationData['application_status'] == "Accepted") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted" selected>Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else if (locals.applicationData['application_status'] == "Rejected") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected" selected>Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active" selected>Active</option>
+                                          <% } %>
                                     </select>
                                 </div>
                             </div>
