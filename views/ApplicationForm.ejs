@@ -12,6 +12,57 @@
 </head>
 
 <script>
+    function checkInput() {
+        // Check that all required input is submitted.
+        var validInput = false;
+
+        const message = document.getElementById("message");
+
+        if (document.getElementById("applicantFirstName").value == "") {message.textContent = "Enter your first name.";}
+        else if (document.getElementById("applicantLastName").value == "") {message.textContent = "Enter your last name.";}
+        else if (document.getElementById("applicantDoB").value == "") {message.textContent = "Enter your date of birth.";}
+        else if (document.getElementById("applicantAddress").value == "") {message.textContent = "Enter your address (GPS coordinates).";}
+        else if (document.getElementById("applicantSchoolLevel").value == "") {message.textContent = "Enter your school level.";}
+        else if (document.getElementById("applicantGPA").value == "") {message.textContent = "Enter your school GPA.";}
+        else if (!document.getElementById("guardian1")) {message.textContent = "Add at least one guardian.";}
+        else if (document.getElementById("applicantGuardianIncome").value == "") {message.textContent = "Enter an annual household income.";}
+        else if (document.getElementById("applicantShortEssay").value == "") {message.textContent = "Submit an answer in the final box.";}
+        else validInput = true;
+
+        if (!validInput) {
+            event.preventDefault();
+            return;
+        }
+
+        // Iterate through rows of the table to add their data to the form before submitting
+        var guardianTable = document.getElementById("guardianTable");
+        for (var i = 0, row; row = guardianTable.rows[i]; i ++) {
+            // Update whatever form input will be sent to the post request
+            var form = document.getElementById("form");
+
+            var newGuardian = document.createElement("input");
+            newGuardian.setAttribute("type", "hidden");
+            newGuardian.setAttribute("name", "guardianName"+i);
+            newGuardian.setAttribute("value", row.cells[0].value);
+            newGuardian.setAttribute("id", "guardianName"+i);
+            form.appendChild(newGuardian);
+
+            var newGuardianPhone = document.createElement("input");
+            newGuardianPhone.setAttribute("type", "hidden");
+            newGuardianPhone.setAttribute("name", "guardianPhone"+i);
+            newGuardianPhone.setAttribute("value", row.cells[1].value);
+            newGuardianPhone.setAttribute("id", "guardianPhone"+i);
+            form.appendChild(newGuardianPhone);
+
+            var newGuardianEmail = document.createElement("input");
+            newGuardianEmail.setAttribute("type", "hidden");
+            newGuardianEmail.setAttribute("name", "guardianEmail"+i);
+            newGuardianEmail.setAttribute("value", row.cells[2].value);
+            newGuardianEmail.setAttribute("id", "guardianEmail"+i);
+            form.appendChild(newGuardianEmail);
+        }
+    }
+
     function addGuardian() {
         // Check if input is valid
         var nameInput = document.getElementById("guardianName");
@@ -36,30 +87,6 @@
             cellEmail.innerHTML = emailInput.value;
             
             row.setAttribute("id", "guardian"+tableRows);
-
-            // Update whatever form input will be sent to the post request
-            var form = document.getElementById("form");
-
-            var newGuardian = document.createElement("input");
-            newGuardian.setAttribute("type", "hidden");
-            newGuardian.setAttribute("name", "guardianName"+tableRows);
-            newGuardian.setAttribute("value", nameInput.value);
-            newGuardian.setAttribute("id", "guardianName"+tableRows);
-            form.appendChild(newGuardian);
-            
-            var newGuardianPhone = document.createElement("input");
-            newGuardianPhone.setAttribute("type", "hidden");
-            newGuardianPhone.setAttribute("name", "guardianPhone"+tableRows);
-            newGuardianPhone.setAttribute("value", phoneInput.value);
-            newGuardianPhone.setAttribute("id", "guardianPhone"+tableRows);
-            form.appendChild(newGuardianPhone);
-            
-            var newGuardianEmail = document.createElement("input");
-            newGuardianEmail.setAttribute("type", "hidden");
-            newGuardianEmail.setAttribute("name", "guardianEmail"+tableRows);
-            newGuardianEmail.setAttribute("value", emailInput.value);
-            newGuardianEmail.setAttribute("id", "guardianEmail"+tableRows);
-            form.appendChild(newGuardianEmail);
         }
     }
 
@@ -290,7 +317,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button class="btn btn-primary mt-2" type="submit">
+                            <button class="btn btn-primary mt-2" type="submit" onclick="checkInput()">
                                 Submit Application
                             </button>
                         </div>
