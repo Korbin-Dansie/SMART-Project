@@ -1,211 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
     <%- include('partials/favico') %>
-    <title>Manage Applications</title>
-  </head>
-  <body>
+        <title>Manage Applications</title>
+</head>
+
+<body>
     <div class="container-fluid vh-100" style="margin-top:10px">
-      <div class="" style="margin-top:100px">
-          <div class="rounded d-flex justify-content-center">
-              <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
-                  <div class="text-center">
-                      <h3 class="text-primary">Manage Application</h3>
-                  </div>
-                  <form method="post" action="" onSubmit="">
+        <div class="" style="margin-top:100px">
+            <div class="rounded d-flex justify-content-center">
+                <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+                    <div class="text-center">
+                        <h3 class="text-primary">Manage Application</h3>
+                    </div>
+                    <form method="post" action="" onSubmit="">
 
-                      <div class="row pt-4">
-                          <div class="col-md-6">
-                              <!--First Name-->
-                              <div>
-                                  <label>First Name:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantFirstName" type="text"
-                                          class="form-control" placeholder="Jane" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Last Name-->
-                              <div>
-                                  <label>Last Name:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantLastName" type="text"
-                                          class="form-control" placeholder="Doe" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Date of Birth-->
-                              <div>
-                                  <label>Date of Birth:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-calendar-date text-white"></i></span>
-                                      <input id="applicantDoB" type="text" class="form-control"
-                                          placeholder="MM/DD/YYYY" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Address-->
-                              <div>
-                                  <label>Address:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-house-door text-white"></i></span>
-                                      <input id="applicantAddress" type="text"
-                                          class="form-control" placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"  readonly>
-                                  </div>
-                              </div>
-
-                              <!--Public School Level-->
-                              <div>
-                                  <label>Public School Level:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-mortarboard text-white"></i></span>
-                                      <input id="applicantSchoolLevel" type="text"
-                                          class="form-control" placeholder="10" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Public School GPA-->
-                              <div>
-                                  <label>Public School GPA:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-mortarboard text-white"></i></span>
-                                      <input id="applicantGPA" type="text" class="form-control"
-                                          placeholder="15" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Contact Information-->
-                              <div>
-                                  <label>Contact Information (optional):</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-telephone text-white"></i></span>
-                                      <input id="applicantContact" type="text" class="form-control"
-                                          placeholder="123-456-7890"  readonly>
-                                  </div>
-                              </div>
-                          </div>
-
-                          <div class="col-md-6">
-                              <!--Guardian-->
-                              <div>
-                                  <label>Parent / Guardian:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-person-circle text-white"></i></span>
-                                      <input id="applicantGuardian" type="text" class="form-control"
-                                          placeholder="Janet Doe" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Guardian Income-->
-                              <div>
-                                  <label>Parent / Guardian Annual Income:</label>
-                                  <div class="input-group mb-3">
-                                      <span class="input-group-text bg-primary"><i
-                                              class="bi bi-cash text-white"></i></span>
-                                      <input id="applicantGuardianIncome" type="text" class="form-control"
-                                          placeholder="MT 20,000" readonly>
-                                  </div>
-                              </div>
-
-                              <!--Transportation Assistance Radio Buttons-->
-                              <div class="p-2">
-                                  <label>Do you need Transportation Assistance?</label>
-                                  <div class="input-group mb-1">
-                                      <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio"
-                                              id="noTransportAssist" checked disabled>
-                                          <label class="form-check-label">
-                                              No
-                                          </label>
-                                      </div>
-                                      <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio"
-                                              id="yesTransportAssist" disabled>
-                                          <label class="form-check-label">
-                                              Yes
-                                          </label>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <!--Meal Assistance Radio Buttons-->
-                              <div class="p-2">
-                                  <label>Do you need Meal Assistance?</label>
-                                  <div class="input-group mb-1">
-                                      <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio" 
-                                              id="noMealAssist" checked disabled>
-                                          <label class="form-check-label">
-                                              No
-                                          </label>
-                                      </div>
-                                      <div class="form-check mx-1">
-                                          <input class="form-check-input" type="radio"
-                                              id="yesMealAssist" disabled>
-                                          <label class="form-check-label">
-                                              Yes
-                                          </label>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <!-- Essay -->
-                              <div class="p-2">
-                                  <label for="applicantShortEssay" class="form-label">Why do you Want to Enroll in the Program?</label>
-                                  <textarea class="form-control" id="applicantShortEssay" rows="7" readonly></textarea>
+                        <div class="row pt-4">
+                            <div class="col-md-6">
+                                <!--First Name-->
+                                <div>
+                                    <label>First Name:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-person-circle text-white"></i></span>
+                                        <input id="applicantFirstName" type="text" class="form-control"
+                                            placeholder="Jane" value=<%=locals.applicationData['first_name'] %>
+                                        readonly>
+                                    </div>
                                 </div>
 
-                                <!-- Application Status -->
+                                <!--Last Name-->
                                 <div>
-                                  <label>Application Status:</label>
-                                  <div class="input-group mb-3">
-                                    <span class="input-group-text bg-primary"
-                                      ><i class="bi bi-person-badge text-white"></i
-                                    ></span>
-                                    <select
-                                      class="form-select"
-                                      id="applicationStatus"
-                                      required
-                                    >
-                                      <option selected value="waitListed">WaitListed</option>
-                                      <option value="accepted">Accepted</option>
-                                      <option value="rejected">Rejected</option>
-                                      <option value="active">Active</option>
+                                    <label>Last Name:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-person-circle text-white"></i></span>
+                                        <input id="applicantLastName" type="text" class="form-control" placeholder="Doe"
+                                            value=<%=locals.applicationData['last_name'] %> readonly>
+                                    </div>
+                                </div>
+
+                                <!--Date of Birth-->
+                                <div>
+                                    <label>Date of Birth:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-calendar-date text-white"></i></span>
+                                        <input id="applicantDoB" type="text" class="form-control"
+                                            placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_birth'] %>
+                                        readonly>
+                                    </div>
+                                </div>
+
+                                <!--Address-->
+                                <div>
+                                    <label>Address:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-house-door text-white"></i></span>
+                                        <input id="applicantAddress" type="text" class="form-control"
+                                            placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"
+                                            value=<%=locals.applicationData['latitude'] %> readonly>
+                                    </div>
+                                </div>
+
+                                <!--Public School Level-->
+                                <div>
+                                    <label>Public School Level:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-mortarboard text-white"></i></span>
+                                        <input id="applicantSchoolLevel" type="text" class="form-control"
+                                            placeholder="10" value=<%=locals.applicationData['level'] %> readonly>
+                                    </div>
+                                </div>
+
+                                <!--Public School GPA-->
+                                <div>
+                                    <label>Public School GPA:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-mortarboard text-white"></i></span>
+                                        <input id="applicantGPA" type="text" class="form-control" placeholder="15"
+                                            value=<%=locals.applicationData['level'] %> readonly>
+                                    </div>
+                                </div>
+
+                                <!--Contact Information-->
+                                <div>
+                                    <label>Contact Information (optional):</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-telephone text-white"></i></span>
+                                        <input id="applicantContact" type="text" class="form-control"
+                                            placeholder="123-456-7890" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!--Guardian-->
+                                <div>
+                                    <label>Parent / Guardian:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-person-circle text-white"></i></span>
+                                        <input id="applicantGuardian" type="text" class="form-control"
+                                            placeholder="Janet Doe" readonly>
+                                    </div>
+                                </div>
+
+                                <!--Guardian Income-->
+                                <div>
+                                    <label>Parent / Guardian Annual Income:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-cash text-white"></i></span>
+                                        <input id="applicantGuardianIncome" type="text" class="form-control"
+                                            placeholder="MT 20,000" readonly>
+                                    </div>
+                                </div>
+
+                                <!--Transportation Assistance Radio Buttons-->
+                                <div class="p-2">
+                                    <label>Do you need Transportation Assistance?</label>
+                                    <div class="input-group mb-1">
+                                        <% if (locals.applicationData['transportation_assistance'] == false) { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noTransportAssist"
+                                                    checked disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesTransportAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noTransportAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesTransportAssist"
+                                                    checked disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <!--Meal Assistance Radio Buttons-->
+                                <div class="p-2">
+                                    <label>Do you need Meal Assistance?</label>
+                                    <div class="input-group mb-1">
+                                        <% if (locals.applicationData['meal_assistance'] == false) { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noMealAssist" checked
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesMealAssist" disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } else { %>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="noMealAssist"
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" id="yesMealAssist" checked
+                                                    disabled>
+                                                <label class="form-check-label">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <!-- Essay -->
+                                <div class="p-2">
+                                    <label for="applicantShortEssay" class="form-label">Why do you Want to Enroll in the
+                                        Program?</label>
+                                    <textarea class="form-control" id="applicantShortEssay" rows="7" readonly><%= locals.applicationData['essay'] %></textarea>
+                                </div>
+                            </div>
+
+                            <!--Application Submission Date-->
+                            <div class="col-md-6 mt-2">
+                                <label>Date of Submission:</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary"><i
+                                            class="bi bi-calendar-date text-white"></i></span>
+                                    <input id="applicantSubmitDate" type="text" class="form-control"
+                                        placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'] %> readonly>
+                                </div>
+                            </div>
+
+                            <!-- Application Status -->
+                            <div class="col-md-6 mt-2">
+                                <label>Application Status:</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-primary"><i
+                                            class="bi bi-person-badge text-white"></i></span>
+                                    <select class="form-select" id="applicationStatus" required>
+                                        <% if (locals.applicationData['application_status'] == "Wait Listed") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed" selected>Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else if (locals.applicationData['application_status'] == "Accepted") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted" selected>Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else if (locals.applicationData['application_status'] == "Rejected") { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected" selected>Rejected</option>
+                                            <option id="optionActive" value="Active">Active</option>
+                                          <% } else { %>
+                                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                                            <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                                            <option id="optionAccepted" value="Accepted">Accepted</option>
+                                            <option id="optionRejected" value="Rejected">Rejected</option>
+                                            <option id="optionActive" value="Active" selected>Active</option>
+                                          <% } %>
                                     </select>
-                                  </div>
-                                </div>                        
-                      </div>
+                                </div>
+                            </div>
 
-                      <div class="text-center">
-                          <p id="message" class="text-danger" style="height:25px">
-                              <%- locals.message %>
-                          </p>
-                      </div>
+                            <div class="text-center">
+                                <p id="message" class="text-danger" style="height:25px">
+                                    <%- locals.message %>
+                                </p>
+                            </div>
 
-                      <div class="text-center">
-                          <button class="btn btn-primary mt-2" type="submit">
-                              Submit Application Status
-                          </button>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-  </div>
-  </body>
+                            <div class="text-center">
+                                <button class="btn btn-primary mt-2" type="submit">
+                                    Submit Application Status
+                                </button>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

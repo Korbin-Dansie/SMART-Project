@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
   router.post('/', function(req, res, next) {
     // if they are already logged in, send them to the dashboard
     if (req.session.loggedIn) {
-        res.redirect('AdminDashboard'); // TODO: this will need to be changed to the generic dashboard
+        res.redirect('/'); // TODO: this will need to be changed to the generic dashboard
     }
       console.log("login.js: POST");
       console.log("The email in variable is '" + req.body.emailAddress + "'");

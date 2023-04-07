@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>People list</title>
+  <title>Create Account</title>
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <script type="text/javascript" src="crypto-js.js"></script>
@@ -45,16 +45,35 @@
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>Create An Account</h1></div>
+          <div class="text-center">
+            <p id="message" class="text-danger" style="height:25px">
+                <%- locals.message %>
+            </p>
+        </div>
           <form onSubmit="return checkPassword(event);" method="post">
             <div class="p-4">
             <Label for="accountType">Account Type</Label><br><br>
             <select name="accountType" id="accountType" class="form-control" style="appearance:menulist">
-              <option value="socialWorker">Social Worker</option>
-              <option value="instructor">Instructor</option>
-              <option value="owner">Owner / Board of Directors</option>
-              <option value="sponsor">USA Sponsor</option>
-              <option value="admin">Admin</option>
+              <option value="Social Worker">Social Worker</option>
+              <option value="Instructor">Instructor</option>
+              <option value="Owner">Owner / Board of Directors</option>
+              <option value="USA Sponsor">USA Sponsor</option>
+              <option value="Admin">Admin</option>
             </select> <br>
+            <p>First Name</p>
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-primary">
+                <i class="bi bi-person-circle text-white"></i>
+              </span>
+              <input id="firstName" name="firstName" type="text" class="form-control" placeholder="First Name">
+            </div>
+            <p>Last Name</p>
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-primary">
+                <i class="bi bi-person-circle text-white"></i>
+              </span>
+              <input id="lastName" name="lastName" type="text" class="form-control" placeholder="Last Name">
+            </div>
             <p>Email address</p>
             <div class="input-group mb-3">
               <span class="input-group-text bg-primary">
