@@ -11,21 +11,21 @@ router.get('/', function(req, res, next) {
   else{
     if (req.session.loggedIn) {
       switch (req.session.accountType) {
-        case "Super Admin":
-        case "Admin":
-          res.render('AdminDashboard', {});
+        case 1:
+        case 2:
+          res.redirect('/AdminDashboard');
           break;
-        case "Instructor":
-          res.render('InstructorDashboard', {});
+        case 3:
+          res.redirect('/InstructorDashboard');
           break;
-        case "Social Worker":
-          res.render('SocialWorkerDashboard', {});
+        case 4:
+          res.redirect('/SocialWorkerDashboard');
           break;
-        case "Owner":
-          res.render('OwnerDashboard', {});
+        case 5:
+          res.redirect('/OwnerDashboard');
           break;
-        case "USA Sponsor":
-          res.render('SponsorDashboard', {});
+        case 6:
+          res.redirect('/SponsorDashboard');
           break;
         default:
           res.render('LandingPage', {message: "Unhandled account type"});
@@ -34,6 +34,15 @@ router.get('/', function(req, res, next) {
       res.render('LandingPage', { title: 'Express'});
     }
   }
+});
+
+router.get('/logout', function(req, res) {
+  req.session.destroy(function(err) {
+      if (err) {
+        throw err;
+      }   
+      res.redirect('/'); 
+  });
 });
 
 module.exports = router;
