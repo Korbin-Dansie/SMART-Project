@@ -1,3 +1,5 @@
+USE `smart_project`;
+
 DELIMITER $$
 $$ -- Clear it so the next SP output doest not contain all the comments ab
 /*******************************************************************************************************************************
@@ -108,16 +110,18 @@ CREATE PROCEDURE IF NOT EXISTS `select_applications`(
 )
 BEGIN
  IF applicationStatus IS NOT NULL THEN
-  SELECT person.first_name, person.last_name, public_school_level_id, date_of_birth, date_of_application, application_status.application_status
+  SELECT application_id, person.first_name, person.last_name, public_school_level.level, date_of_birth, date_of_application, application_status.application_status
   FROM application
   JOIN person ON person.person_id = application.person_id
-  JOIN application_status on application_status.application_status_id = application.application_status_id
+  JOIN application_status ON application_status.application_status_id = application.application_status_id
+  JOIN public_school_level ON public_school_level.public_school_level_id = application.public_school_level_id
   WHERE application_status.application_status = applicationStatus;
  ELSE
-  SELECT person.first_name, person.last_name, public_school_level_id, date_of_birth, date_of_application, application_status.application_status
+  SELECT application_id, person.first_name, person.last_name, public_school_level.level, date_of_birth, date_of_application, application_status.application_status
   FROM application
   JOIN person ON person.person_id = application.person_id
-  JOIN application_status on application_status.application_status_id = application.application_status_id;
+  JOIN application_status ON application_status.application_status_id = application.application_status_id
+  JOIN public_school_level ON public_school_level.public_school_level_id = application.public_school_level_id;
  END IF;
 END;
 $$
@@ -131,11 +135,61 @@ CREATE PROCEDURE IF NOT EXISTS `select_application_details`(
  IN  applicationID MEDIUMINT
 )
 BEGIN
- SELECT person.first_name, person.last_name, date_of_birth, latitude, longitude, public_school_level_id, public_school_gpa, +
+ SELECT person.first_name, person.last_name, date_of_birth, latitude, longitude, public_school_level.level, public_school_gpa, +
  date_of_application, transportation_assistance, meal_assistance, essay, application_status.application_status
  FROM application
  JOIN person ON person.person_id = application.person_id
  JOIN application_status on application_status.application_status_id = application.application_status_id
+ JOIN public_school_level ON public_school_level.public_school_level_id = application.public_school_level_id
+ WHERE application_id = applicationID;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_contact_info
+* <comment>Procedure select_contact_info created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_contact_info`(
+ IN  personID MEDIUMINT
+)
+BEGIN
+ SELECT contact_type.type, value
+ FROM contact_information
+ JOIN contact_type ON contact_type.contact_type_id = contact_information.contact_type_id
+ WHERE person_id = personID;
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_personid_from_applicationid
+* <comment>Procedure select_contact_info created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_personid_from_applicationid`(
+ IN  applicationID MEDIUMINT,
+ OUT personID MEDIUMINT
+)
+BEGIN
+ SET personID =
+ (SELECT person_id
+ FROM application
+ WHERE application_id = applicationID);
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_guardians
+* <comment>Procedure select_guardians created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_guardians`(
+ IN  applicationID MEDIUMINT
+)
+BEGIN
+ SELECT person.first_name, person.last_name, annual_income
+ FROM guardian
+ JOIN person ON person.person_id = guardian.person_id
  WHERE application_id = applicationID;
 END;
 $$
@@ -152,38 +206,6 @@ BEGIN
  INSERT INTO application_status(application_status)
  VALUES(applicationStatus);
 END;
-$$
-
-/***************************************************************
-* Procedure create_public_school_level
-* <comment>Procedure create_public_school_level created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `create_public_school_level`(
- IN public_school_level_name VARCHAR(255)
-)
-BEGIN
-	INSERT INTO `public_school_level`
-	(`level`)
-	VALUES
-	(public_school_level_name);
-END;
-$$
-
-/***************************************************************
-* Procedure get_public_school_level_id
-* <comment>Procedure get_public_school_level_id created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE `get_public_school_level_id`(
- IN public_school_level_name VARCHAR(255),
- OUT public_school_level_id TINYINT
-)
-BEGIN
-	SELECT `level` INTO public_school_level_id
-    FROM `public_school_level`
-	WHERE 
-	`level` = public_school_level_name
-    LIMIT 1;
- END;
 $$
 
 /***************************************************************
