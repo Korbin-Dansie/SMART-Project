@@ -51,7 +51,7 @@ router.post("/", function(req, res, next) {
   
         let recordsReturned = results[0];
         for (i = 0; i < recordsReturned.length; i++) {
-          let applicationRecord = {name: recordsReturned[i]['first_name'] + ' ' + recordsReturned[i]['last_name'], age: recordsReturned[i]['date_of_birth'], grade: recordsReturned[i]['level'], date_of_application: recordsReturned[i]['date_of_application'], application_status: recordsReturned[i]['application_status'], application_id: recordsReturned[i]['application_id']};
+          let applicationRecord = {name: recordsReturned[i]['first_name'] + ' ' + recordsReturned[i]['last_name'], age: recordsReturned[i]['date_of_birth'].toLocaleDateString('en-US'), grade: recordsReturned[i]['level'], date_of_application: recordsReturned[i]['date_of_application'].toLocaleDateString('en-US'), application_status: recordsReturned[i]['application_status'], application_id: recordsReturned[i]['application_id']};
           applications.push(applicationRecord);
         }
   

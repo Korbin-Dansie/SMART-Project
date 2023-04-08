@@ -53,20 +53,32 @@
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-calendar-date text-white"></i></span>
                                         <input id="applicantDoB" type="text" class="form-control"
-                                            placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_birth'] %>
+                                            placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_birth'].toLocaleDateString('en-US') %>
                                         readonly>
                                     </div>
                                 </div>
 
-                                <!--Address-->
+                                <!--Latitude-->
                                 <div>
                                     <label>Address:</label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text bg-primary"><i
                                                 class="bi bi-house-door text-white"></i></span>
                                         <input id="applicantAddress" type="text" class="form-control"
-                                            placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E"
+                                            placeholder="41.24122 N"
                                             value=<%=locals.applicationData['latitude'] %> readonly>
+                                    </div>
+                                </div>
+
+                                <!--Longitude-->
+                                <div>
+                                    <label>Address:</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-primary"><i
+                                                class="bi bi-house-door text-white"></i></span>
+                                        <input id="applicantAddress" type="text" class="form-control"
+                                            placeholder="2.10265 E"
+                                            value=<%=locals.applicationData['longitude'] %> readonly>
                                     </div>
                                 </div>
 
@@ -217,7 +229,7 @@
                                     <span class="input-group-text bg-primary"><i
                                             class="bi bi-calendar-date text-white"></i></span>
                                     <input id="applicantSubmitDate" type="text" class="form-control"
-                                        placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'] %> readonly>
+                                        placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'].toLocaleDateString('en-US') %> readonly>
                                 </div>
                             </div>
 
