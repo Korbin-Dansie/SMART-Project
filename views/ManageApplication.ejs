@@ -11,6 +11,11 @@
         <title>Manage Applications</title>
 </head>
 
+<script>
+    function addGuardian() {}
+    function removeGuardian() {}
+</script>
+
 <body>
     <div class="container-fluid vh-100" style="margin-top:10px">
         <div class="" style="margin-top:100px">
@@ -123,23 +128,49 @@
                             <div class="col-md-6">
                                 <!--Guardian-->
                                 <div>
-                                    <label>Parent / Guardian:</label>
+                                    <label>Parent / Guardians:</label>
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-person-circle text-white"></i></span>
-                                        <input id="applicantGuardian" type="text" class="form-control"
-                                            placeholder="Janet Doe" readonly>
-                                    </div>
-                                </div>
+                                        <table class="table table-striped table-hover table-sm" id="guardianTable">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Income</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% if (locals.guardians.length > 0) { %>
+                                                    <% for (let i = 0; i < locals.guardians.length; i++) { %>
+                                                        <tr>
+                                                            <th scope="col"><%= locals.guardians[i].first_name %> <%= locals.guardians[i].last_name %></th>
+                                                            <th scope="col"><%= locals.guardians[i].annual_income %></th>
+                                                        </tr>
+                                                    <% } %>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
 
-                                <!--Guardian Income-->
-                                <div>
-                                    <label>Parent / Guardian Annual Income:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-cash text-white"></i></span>
-                                        <input id="applicantGuardianIncome" type="text" class="form-control"
-                                            placeholder="MT 20,000" readonly>
+                                        <label>Guardian Name</label>
+                                        <div class="input-group">
+                                            <input id="guardianName" name="guardianName" type="text" class="form-control"
+                                                placeholder="Joseph Doeseph">
+                                        </div>
+                                        
+                                        <label>Income</label>
+                                        <div class="input-group">
+                                            <input id="guardianIncome" name="guardianIncome" type="text" class="form-control"
+                                                placeholder="20000">
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button class="btn btn-primary mt-1" type="button" onclick="addGuardian()">
+                                                Save
+                                            </button>
+                                            <button class="btn btn-primary mt-1" type="button" onclick="removeGuardian()">
+                                                Remove Last
+                                            </button>
+                                        </div>
+
+                                        <p id="guardianError" class="text-danger" style="height:25px"></p>
                                     </div>
                                 </div>
 

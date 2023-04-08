@@ -20,7 +20,7 @@ router.get("/", function (req, res, next) {
       console.log(results[3]);
       console.log(results[5]);
   
-      res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5][0]});
+      res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5]});
     });
   } else {
     res.redirect('/');
