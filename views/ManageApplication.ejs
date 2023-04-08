@@ -105,15 +105,19 @@
                                 </div>
 
                                 <!--Contact Information-->
-                                <div>
-                                    <label>Contact Information (optional):</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-telephone text-white"></i></span>
-                                        <input id="applicantContact" type="text" class="form-control"
-                                            placeholder="123-456-7890" readonly>
-                                    </div>
-                                </div>
+                                <% if (locals.contactInfo.length > 0) { %>
+                                    <% for (let i = 0; i < locals.contactInfo.length; i++) { %>
+                                        <div>
+                                            <label>Contact Information:</label>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text bg-primary"><i
+                                                        class="bi bi-telephone text-white"></i></span>
+                                                <input id="applicantContact" type="text" class="form-control"
+                                                    readonly value=<%= locals.contactInfo[i].value %>>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
                             </div>
 
                             <div class="col-md-6">
