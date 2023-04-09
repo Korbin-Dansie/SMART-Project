@@ -35,38 +35,49 @@
 
         // Iterate through rows of the table to add their data to the form before submitting
         var guardianTable = document.getElementById("guardianTable");
-        for (var i = 0, row; row = guardianTable.rows[i]; i++) {
+        var totalGuardians=0;
+        for (var i = 1, row; row = guardianTable.rows[i]; i++) {
             // Update whatever form input will be sent to the post request
             var form = document.getElementById("form");
 
             var newGuardian = document.createElement("input");
             newGuardian.setAttribute("type", "hidden");
             newGuardian.setAttribute("name", "guardianName" + i);
-            newGuardian.setAttribute("value", row.cells[0].value);
+            newGuardian.setAttribute("value", row.cells[0].textContent);
             newGuardian.setAttribute("id", "guardianName" + i);
             form.appendChild(newGuardian);
 
             var newGuardianPhone = document.createElement("input");
             newGuardianPhone.setAttribute("type", "hidden");
             newGuardianPhone.setAttribute("name", "guardianPhone" + i);
-            newGuardianPhone.setAttribute("value", row.cells[1].value);
+            newGuardianPhone.setAttribute("value", row.cells[1].textContent);
             newGuardianPhone.setAttribute("id", "guardianPhone" + i);
             form.appendChild(newGuardianPhone);
 
             var newGuardianEmail = document.createElement("input");
             newGuardianEmail.setAttribute("type", "hidden");
             newGuardianEmail.setAttribute("name", "guardianEmail" + i);
-            newGuardianEmail.setAttribute("value", row.cells[2].value);
+            newGuardianEmail.setAttribute("value", row.cells[2].textContent);
             newGuardianEmail.setAttribute("id", "guardianEmail" + i);
             form.appendChild(newGuardianEmail);
 
             var newGuardianIncome = document.createElement("input");
             newGuardianIncome.setAttribute("type", "hidden");
             newGuardianIncome.setAttribute("name", "guardianIncome" + i);
-            newGuardianIncome.setAttribute("value", row.cells[3].value);
+            newGuardianIncome.setAttribute("value", row.cells[3].textContent);
             newGuardianIncome.setAttribute("id", "guardianIncome" + i);
             form.appendChild(newGuardianIncome);
+
+            totalGuardians ++;
         }
+
+        var totalGuardiansElement = document.createElement("input");
+        totalGuardiansElement.setAttribute("type", "hidden");
+        totalGuardiansElement.setAttribute("name", "totalGuardians");
+        totalGuardiansElement.setAttribute("value", totalGuardians);
+        totalGuardiansElement.setAttribute("id", "totalGuardians");
+        form.appendChild(totalGuardiansElement);
+
     }
 
     function addGuardian() {
@@ -305,7 +316,8 @@
                                             <span class="input-group-text bg-primary"><i
                                                     class="bi bi-person-plus-fill text-white"></i></span>
                                             <input id="guardianName" name="guardianName" type="text"
-                                                class="form-control" placeholder="Name" required>
+                                                class="form-control" placeholder="Name" required pattern="[\w]{1,100}[ ][\w]{1,100}" 
+                                                title="Enter at least 2 names.">
                                         </div>
 
                                         <label>Annual Income</label>
