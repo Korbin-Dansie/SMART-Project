@@ -29,18 +29,18 @@ router.get('/', function(req, res, next) {
             if (err) {
                 throw err;
             }
-            console.log("loginuser.js: Obtained result from accounts table below");
+            console.log("login.js: Obtained result from accounts table below");
             console.log(results);
             
             console.log(results[1]);
             console.log(results[1][0]);
             console.log(results[1][0]['@account_type']);
             if (results[1][0]['@account_type'] === undefined || results[1][0]['@account_type'] == 0) {
-                console.log("loginuser.js: No login credentials found");
+                console.log("login.js: No login credentials found");
                 res.render('loginuser', {message: "Password not valid for user '" + emailAddress + "'.  Please log in again."});
             }
             else {
-                console.log("loginuser.js: Credentials matched");
+                console.log("login.js: Credentials matched");
                 req.session.loggedIn = true;
                 req.session.accountType = results[1][0]['@account_type'];
                 res.redirect("/");
@@ -50,7 +50,7 @@ router.get('/', function(req, res, next) {
     else if (req.body.emailAddress != "") { // They just put in their email address
       const emailAddress = req.body.emailAddress;
       req.session.emailAddress = emailAddress;
-      console.log("loginuser.js: email is: " + emailAddress);
+      console.log("login.js: email is: " + emailAddress);
       const sql = "CALL get_salt('" + emailAddress + "', @salt); SELECT @salt;";
       dbCon.query(sql, function(err, results) {
           if (err) {
@@ -61,7 +61,7 @@ router.get('/', function(req, res, next) {
           // make a random salt to use if their email turns out to not be valid
           let salt = CryptoJS.lib.WordArray.random(8);
           if (results[1][0]['@salt'] === undefined || results[1][0]['@salt'] === null || results[1][0]['@salt'] == '') {
-              console.log("loginuser: No results found");
+              console.log("login: No results found");
               // send them to the login page anyways if they have an email that doesn't exist for security
           } else {
               salt = results[1][0]['@salt'];

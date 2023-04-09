@@ -18,15 +18,14 @@
 
         const message = document.getElementById("message");
 
-        if (document.getElementById("applicantFirstName").value == "") {message.textContent = "Enter your first name.";}
-        else if (document.getElementById("applicantLastName").value == "") {message.textContent = "Enter your last name.";}
-        else if (document.getElementById("applicantDoB").value == "") {message.textContent = "Enter your date of birth.";}
-        else if (document.getElementById("applicantAddress").value == "") {message.textContent = "Enter your address (GPS coordinates).";}
-        else if (document.getElementById("applicantSchoolLevel").value == "") {message.textContent = "Enter your school level.";}
-        else if (document.getElementById("applicantGPA").value == "") {message.textContent = "Enter your school GPA.";}
-        else if (!document.getElementById("guardian1")) {message.textContent = "Add at least one guardian.";}
-        else if (document.getElementById("applicantGuardianIncome").value == "") {message.textContent = "Enter an annual household income.";}
-        else if (document.getElementById("applicantShortEssay").value == "") {message.textContent = "Submit an answer in the final box.";}
+        if (document.getElementById("applicantFirstName").value == "") { message.textContent = "Enter your first name."; }
+        else if (document.getElementById("applicantLastName").value == "") { message.textContent = "Enter your last name."; }
+        else if (document.getElementById("applicantDoB").value == "") { message.textContent = "Enter your date of birth."; }
+        else if (document.getElementById("applicantSchoolLevel").value == "") { message.textContent = "Enter your school level."; }
+        else if (document.getElementById("applicantLatitude").value == "" || document.getElementById("applicantLongitude").value == "") { message.textContent = "Enter your address (GPS coordinates)."; }
+        else if (document.getElementById("applicantShortEssay").value == "") { message.textContent = "Submit an answer in the final box."; }
+        else if (!document.getElementById("guardian1")) { message.textContent = "Add at least one guardian."; }
+
         else validInput = true;
 
         if (!validInput) {
@@ -36,44 +35,51 @@
 
         // Iterate through rows of the table to add their data to the form before submitting
         var guardianTable = document.getElementById("guardianTable");
-        for (var i = 0, row; row = guardianTable.rows[i]; i ++) {
+        for (var i = 0, row; row = guardianTable.rows[i]; i++) {
             // Update whatever form input will be sent to the post request
             var form = document.getElementById("form");
 
             var newGuardian = document.createElement("input");
             newGuardian.setAttribute("type", "hidden");
-            newGuardian.setAttribute("name", "guardianName"+i);
+            newGuardian.setAttribute("name", "guardianName" + i);
             newGuardian.setAttribute("value", row.cells[0].value);
-            newGuardian.setAttribute("id", "guardianName"+i);
+            newGuardian.setAttribute("id", "guardianName" + i);
             form.appendChild(newGuardian);
 
             var newGuardianPhone = document.createElement("input");
             newGuardianPhone.setAttribute("type", "hidden");
-            newGuardianPhone.setAttribute("name", "guardianPhone"+i);
+            newGuardianPhone.setAttribute("name", "guardianPhone" + i);
             newGuardianPhone.setAttribute("value", row.cells[1].value);
-            newGuardianPhone.setAttribute("id", "guardianPhone"+i);
+            newGuardianPhone.setAttribute("id", "guardianPhone" + i);
             form.appendChild(newGuardianPhone);
 
             var newGuardianEmail = document.createElement("input");
             newGuardianEmail.setAttribute("type", "hidden");
-            newGuardianEmail.setAttribute("name", "guardianEmail"+i);
+            newGuardianEmail.setAttribute("name", "guardianEmail" + i);
             newGuardianEmail.setAttribute("value", row.cells[2].value);
-            newGuardianEmail.setAttribute("id", "guardianEmail"+i);
+            newGuardianEmail.setAttribute("id", "guardianEmail" + i);
             form.appendChild(newGuardianEmail);
+
+            var newGuardianIncome = document.createElement("input");
+            newGuardianIncome.setAttribute("type", "hidden");
+            newGuardianIncome.setAttribute("name", "guardianIncome" + i);
+            newGuardianIncome.setAttribute("value", row.cells[3].value);
+            newGuardianIncome.setAttribute("id", "guardianIncome" + i);
+            form.appendChild(newGuardianIncome);
         }
     }
 
     function addGuardian() {
-        // Check if input is valid
-        var nameInput = document.getElementById("guardianName");
-        var phoneInput = document.getElementById("guardianPhone");
-        var emailInput = document.getElementById("guardianEmail");
-        var errorText = document.getElementById("guardianError");
-        if (nameInput.value == "") {
-            errorText.textContent = "Enter a Guardian Name";
-        } else {
-            errorText.textContent = "";
+        //event.preventDefault();
+
+        var guardianForm = document.getElementById("guardianForm");
+
+        if (guardianForm.checkValidity()) {
             var guardianTable = document.getElementById("guardianTable");
+            var nameInput = document.getElementById("guardianName");
+            var incomeInput = document.getElementById("guardianIncome");
+            var phoneInput = document.getElementById("guardianPhone");
+            var emailInput = document.getElementById("guardianEmail");
 
             // Update the table
             var tableRows = guardianTable.rows.length;
@@ -81,30 +87,23 @@
             var cellName = row.insertCell(0);
             var cellPhone = row.insertCell(1);
             var cellEmail = row.insertCell(2);
+            var cellIncome = row.insertCell(3);
 
             cellName.innerHTML = nameInput.value;
             cellPhone.innerHTML = phoneInput.value;
             cellEmail.innerHTML = emailInput.value;
-            
-            row.setAttribute("id", "guardian"+tableRows);
+            cellIncome.innerHTML = incomeInput.value;
+
+            row.setAttribute("id", "guardian" + tableRows);
         }
     }
 
     function removeGuardian() {
         // Check to make sure the table isn't empty
         var tableRows = guardianTable.rows.length - 1;
-        if (tableRows > 0){
+        if (tableRows > 0) {
             // Delete most recent guardian from the table
-            document.getElementById("guardian"+tableRows).remove();
-
-            // Update input in the form
-            var guardianToDelete = document.getElementById("guardianName"+tableRows);
-            var guardianPhoneToDelete = document.getElementById("guardianPhone"+tableRows);
-            var guardianEmailToDelete = document.getElementById("guardianEmail"+tableRows);
-
-            guardianToDelete.remove();
-            guardianPhoneToDelete.remove();
-            guardianEmailToDelete.remove();
+            document.getElementById("guardian" + tableRows).remove();
         }
     }
 </script>
@@ -117,214 +116,254 @@
                     <div class="text-center">
                         <h3 class="text-primary">Apply to Program</h3>
                     </div>
-                    <form id="form" method="post" action="" onSubmit="">
 
-                        <div class="row pt-4">
-                            <div class="col-md-6">
-                                <!--First Name-->
-                                <div>
-                                    <label>First Name:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-person-circle text-white"></i></span>
-                                        <input id="applicantFirstName" name="applicantFirstName" type="text"
-                                            class="form-control" placeholder="Jane">
-                                    </div>
-                                </div>
-
-                                <!--Last Name-->
-                                <div>
-                                    <label>Last Name:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-person-circle text-white"></i></span>
-                                        <input id="applicantLastName" name="applicantLastName" type="text"
-                                            class="form-control" placeholder="Doe">
-                                    </div>
-                                </div>
-
-                                <!--Date of Birth-->
-                                <div>
-                                    <label>Date of Birth:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-calendar-date text-white"></i></span>
-                                        <input id="applicantDoB" name="applicantDoB" type="text" class="form-control"
-                                            placeholder="MM/DD/YYYY">
-                                    </div>
-                                </div>
-
-                                <!--Address-->
-                                <div>
-                                    <label>Address:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-house-door text-white"></i></span>
-                                        <input id="applicantAddress" name="applicantAddress" type="text"
-                                            class="form-control" placeholder="41°24'12.2&quot;N 2°10'26.5&quot;E">
-                                    </div>
-                                </div>
-
-                                <!--Public School Level-->
-                                <div>
-                                    <label>Public School Level:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-mortarboard text-white"></i></span>
-                                        <input id="applicantSchoolLevel" name="applicantSchoolLevel" type="text"
-                                            class="form-control" placeholder="10">
-                                    </div>
-                                </div>
-
-                                <!--Public School GPA-->
-                                <div>
-                                    <label>Public School GPA:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-mortarboard text-white"></i></span>
-                                        <input id="applicantGPA" name="applicantGPA" type="text" class="form-control"
-                                            placeholder="15">
-                                    </div>
-                                </div>
-
-                                <!--Contact Information-->
-                                <div>
-                                    <label>Contact Information (optional):</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-telephone text-white"></i></span>
-                                        <input id="applicantContact" name="applicantContact" type="text" class="form-control"
-                                            placeholder="123-456-7890">
-                                    </div>
-                                </div>
-
-                                <!--Transportation Assistance Radio Buttons-->
-                                <div class="p-2">
-                                    <label>Do you need Transportation Assistance?</label>
-                                    <div class="input-group mb-1">
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" name="transportAssistRadio"
-                                                id="noTransportAssist" checked value="false">
-                                            <label class="form-check-label" for="transportAssistRadio">
-                                                No
-                                            </label>
-                                        </div>
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" name="transportAssistRadio"
-                                                id="yesTransportAssist" value="true">
-                                            <label class="form-check-label" for="transportAssistRadio">
-                                                Yes
-                                            </label>
+                    <div class="row pt-4">
+                        <form id="form" method="post" action="" onSubmit="">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <!--First Name-->
+                                    <div>
+                                        <label>First Name:</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-person-circle text-white"></i></span>
+                                            <input id="applicantFirstName" name="applicantFirstName" type="text"
+                                                class="form-control" placeholder="Jane">
                                         </div>
                                     </div>
-                                </div>
 
-                                <!--Meal Assistance Radio Buttons-->
-                                <div class="p-2">
-                                    <label>Do you need Meal Assistance?</label>
-                                    <div class="input-group mb-1">
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" name="mealAssistRadio"
-                                                id="noMealAssist" checked value="false">
-                                            <label class="form-check-label" for="mealAssistRadio">
-                                                No
-                                            </label>
-                                        </div>
-                                        <div class="form-check mx-1">
-                                            <input class="form-check-input" type="radio" name="mealAssistRadio"
-                                                id="yesMealAssist" value="true">
-                                            <label class="form-check-label" for="mealAssistRadio">
-                                                Yes
-                                            </label>
+                                    <!--Last Name-->
+                                    <div>
+                                        <label>Last Name:</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-person-circle text-white"></i></span>
+                                            <input id="applicantLastName" name="applicantLastName" type="text"
+                                                class="form-control" placeholder="Doe">
                                         </div>
                                     </div>
+
+                                    <!--Date of Birth-->
+                                    <div>
+                                        <label>Date of Birth:</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-calendar-date text-white"></i></span>
+                                            <input id="applicantDoB" name="applicantDoB" type="date"
+                                                class="form-control" placeholder="MM/DD/YYYY">
+                                        </div>
+                                    </div>
+
+                                    <!--Public School Level-->
+                                    <div>
+                                        <label for="applicantSchoolLevel">Public School Level:</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-mortarboard text-white"></i></span>
+                                            <select id="applicantSchoolLevel" name="applicantSchoolLevel"
+                                                class="form-control" placeholder="Select">
+                                                <option value="1">Grade 1</option>
+                                                <option value="2">Grade 2</option>
+                                                <option value="3">Grade 3</option>
+                                                <option value="4">Grade 4</option>
+                                                <option value="5">Grade 5</option>
+                                                <option value="6">Grade 6</option>
+                                                <option value="7">Grade 7</option>
+                                                <option value="8">Grade 8</option>
+                                                <option value="9">Grade 9</option>
+                                                <option value="0">Graduated</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    <!--Transportation Assistance Radio Buttons-->
+                                    <div class="p-2">
+                                        <label>Do you need Transportation Assistance?</label>
+                                        <div class="input-group mb-1">
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                                    id="noTransportAssist" checked value="false">
+                                                <label class="form-check-label" for="transportAssistRadio">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" name="transportAssistRadio"
+                                                    id="yesTransportAssist" value="true">
+                                                <label class="form-check-label" for="transportAssistRadio">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!--Meal Assistance Radio Buttons-->
+                                    <div class="p-2">
+                                        <label>Do you need Meal Assistance?</label>
+                                        <div class="input-group mb-1">
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                                    id="noMealAssist" checked value="false">
+                                                <label class="form-check-label" for="mealAssistRadio">
+                                                    No
+                                                </label>
+                                            </div>
+                                            <div class="form-check mx-1">
+                                                <input class="form-check-input" type="radio" name="mealAssistRadio"
+                                                    id="yesMealAssist" value="true">
+                                                <label class="form-check-label" for="mealAssistRadio">
+                                                    Yes
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                 </div>
 
+                                <div class="col-md-6">
 
+                                    <!--Latitude-->
+                                    <div>
+                                        <label>Address Latitude (North/South):</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-house-door text-white"></i></span>
+                                            <input id="applicantLatitude" name="applicantLatitude" type="text"
+                                                class="form-control" placeholder="-18.6657" pattern="[-]?[0-9]{1,3}.[0-9]{1,100}" 
+                                                title="An optional + at the beginning, then only numbers, spaces, and dashes">
+                                        </div>
+                                    </div>
+
+                                    <!--Longitude-->
+                                    <div>
+                                        <label>Address Longitude (East/West):</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-house-door text-white"></i></span>
+                                            <input id="applicantLongitude" name="applicantLongitude" type="text"
+                                                class="form-control" placeholder="35.5296" pattern="[-]?[0-9]{1,3}.[0-9]{1,100}" 
+                                                title="An optional - at the beginning, then only numbers and decimals">
+                                        </div>
+                                    </div>
+
+                                    <!--Phone Number-->
+                                    <div>
+                                        <label>Phone Number (optional):</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-telephone text-white"></i></span>
+                                            <input id="applicantPhone" name="applicantPhone" type="tel"
+                                                class="form-control" placeholder="123-456-7890" pattern="[-]?[0-9]{1,3}.[0-9]{1,100}" 
+                                                title="An optional - at the beginning, then only numbers and decimals">
+                                        </div>
+                                    </div>
+
+                                    <!--Email Address-->
+                                    <div>
+                                        <label>Email Address (optional):</label>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-envelope-at text-white"></i></span>
+                                            <input id="applicantEmail" name="applicantEmail" type="email"
+                                                class="form-control" placeholder="example@email.com">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="p-2">
+                                        <label for="applicantShortEssay" class="form-label">Why do you want to enroll in the program?</label>
+                                        <textarea class="form-control" id="applicantShortEssay" name="applicantShortEssay" rows="7"></textarea>
+                                    </div>
+
+                                </div>
                             </div>
+                        </form>
+                        <!--Guardian-->
+                        <form id="guardianForm" name="guardianForm" method="" action="" onSubmit="return false">
+                            <div>
+                                <label>Parent / Guardians:</label>
+                                <div class="input-group mb-3">
+                                    <table class="table table-striped table-hover table-sm" id="guardianTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Phone</th>
+                                                <th scope="col">Email</th>
+                                                <th scope="col">Income</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
 
-                            <div class="col-md-6">
-                                <!--Guardian-->
-                                <div>
-                                    <label>Parent / Guardians:</label>
-                                    <div class="input-group mb-3">
-                                        <table class="table table-striped table-hover table-sm" id="guardianTable">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Phone</th>
-                                                    <th scope="col">Email</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                            </tbody>
-                                        </table>
 
+                                    <div class="col-md-6 p-3">
                                         <label>Guardian Name</label>
                                         <div class="input-group">
-                                            <input id="guardianName" name="guardianName" type="text" class="form-control"
-                                                placeholder="Name">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-person-plus-fill text-white"></i></span>
+                                            <input id="guardianName" name="guardianName" type="text"
+                                                class="form-control" placeholder="Name" required>
                                         </div>
-                                        
-                                        <label>Phone number</label>
+
+                                        <label>Annual Income</label>
                                         <div class="input-group">
-                                            <input id="guardianPhone" name="guardianPhone" type="tel" class="form-control"
-                                                placeholder="Name">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-cash text-white"></i></span>
+                                            <input id="guardianIncome" name="applicantGuardianIncome" type="number"
+                                                class="form-control" placeholder="MT 20,000" required>
                                         </div>
+                                    </div>
 
-                                        <label>Email Address</label>
+                                    <div class="col-md-6 p-3">
+                                        <label>Phone number (Optional)</label>
                                         <div class="input-group">
-                                            <input id="guardianEmail" name="guardianEmail" type="email" class="form-control"
-                                                placeholder="Name">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-telephone text-white"></i></span>
+                                            <input id="guardianPhone" name="guardianPhone" type="tel"
+                                                class="form-control" placeholder="Phone number" pattern="[+]?[- {0-9}]{1,100}" 
+                                                title="An optional + at the beginning, then only numbers, spaces, and dashes.">
                                         </div>
 
-                                        <div class="text-center">
-                                            <button class="btn btn-primary mt-1" type="button" onclick="addGuardian()">
-                                                Save
-                                            </button>
-                                            <button class="btn btn-primary mt-1" type="button" onclick="removeGuardian()">
-                                                Remove Last
-                                            </button>
+                                        <label>Email Address (Optional)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-primary"><i
+                                                    class="bi bi-envelope-at text-white"></i></span>
+                                            <input id="guardianEmail" name="guardianEmail" type="email"
+                                                class="form-control" placeholder="Email">
                                         </div>
-
-                                        <p id="guardianError" class="text-danger" style="height:25px"></p>
                                     </div>
-                                </div>
 
-                                <!--Guardian Income-->
-                                <div>
-                                    <label>Parent / Guardian Annual Income:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-cash text-white"></i></span>
-                                        <input id="applicantGuardianIncome" name="applicantGuardianIncome" type="text" class="form-control"
-                                            placeholder="MT 20,000">
+                                    <div class="text-center">
+                                        <button class="btn btn-primary mt-1" onclick="addGuardian()">
+                                            Save
+                                        </button>
+                                        <button class="btn btn-primary mt-1" type="button" onclick="removeGuardian()">
+                                            Remove Last
+                                        </button>
                                     </div>
-                                </div>
+                        </form>
 
-                                <div class="p-2">
-                                    <label for="applicantShortEssay" class="form-label">Why do you Want to Enroll in the Program?</label>
-                                    <textarea class="form-control" id="applicantShortEssay" rows="7"></textarea>
-                                  </div>
-
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <p id="message" class="text-danger" style="height:25px">
-                                <%- locals.message %>
-                            </p>
-                        </div>
-
-                        <div class="text-center">
-                            <button class="btn btn-primary mt-2" type="submit" onclick="checkInput()">
-                                Submit Application
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+
+            <div class="text-center">
+                <p id="message" class="text-danger" style="height:25px">
+                    <%- locals.message %>
+                </p>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary mt-2" type="submit" form="form" onclick="checkInput()">
+                    Submit Application
+                </button>
+            </div>
         </div>
+    </div>
+    </div>
     </div>
 </body>
 
