@@ -84,6 +84,7 @@
                 </div>
 
                 <!--Public School GPA-->
+                <!--
                 <div>
                   <label>Public School GPA:</label>
                   <div class="input-group mb-3">
@@ -91,68 +92,24 @@
                     <input id="applicantGPA" type="text" class="form-control" placeholder="15" value=<%=locals.applicationData['public_school_gpa'] %> readonly>
                   </div>
                 </div>
-
-                <!--Contact Information-->
-                <% if (locals.contactInfo.length > 0) { %>
-                <% for (let i = 0; i < locals.contactInfo.length; i++) { %>
-                <div>
-                  <label>Contact Information:</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-primary"><i class="bi bi-telephone text-white"></i></span>
-                    <input id="applicantContact" type="text" class="form-control" readonly value=<%= locals.contactInfo[i].value %>>
-                  </div>
-                </div>
-                <% } %>
-                <% } %>
+                -->
               </div>
 
               <div class="col-md-6">
-                <!--Guardian-->
-                <div>
-                  <label>Parent / Guardians:</label>
-                  <div class="input-group mb-3">
-                    <table class="table table-striped table-hover table-sm" id="guardianTable">
-                      <thead>
-                        <tr>
-                          <th scope="col">Name</th>
-                          <th scope="col">Income</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% if (locals.guardians.length > 0) { %>
-                        <% for (let i = 0; i < locals.guardians.length; i++) { %>
-                        <tr>
-                          <th scope="col"><%= locals.guardians[i].first_name %> <%= locals.guardians[i].last_name %></th>
-                          <th scope="col"><%= locals.guardians[i].annual_income %></th>
-                        </tr>
-                        <% } %>
-                        <% } %>
-                      </tbody>
-                    </table>
-
-                    <label>Guardian Name</label>
-                    <div class="input-group">
-                      <input id="guardianName" type="text" class="form-control" placeholder="Joseph Doeseph">
+                <!--Contact Information-->
+                <% if (locals.contactInfo.length > 0) { %>
+                  <% for (let i = 0; i < locals.contactInfo.length; i++) { %>
+                    <div>
+                      <!--Type of Contact Information can also be accessed from here and clarified on screen if desired-->
+                      <label>Contact Information:</label>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-primary"><i class="bi bi-telephone text-white"></i></span>
+                        <input id="applicantContact" type="text" class="form-control" readonly value=<%= locals.contactInfo[i].value %>>
+                      </div>
                     </div>
-
-                    <label>Income</label>
-                    <div class="input-group">
-                      <input id="guardianIncome" type="text" class="form-control" placeholder="20000">
-                    </div>
-
-                    <div class="text-center">
-                      <button class="btn btn-primary mt-1" type="button" onclick="addGuardian()">
-                        Save
-                      </button>
-                      <button class="btn btn-primary mt-1" type="button" onclick="removeGuardian()">
-                        Remove Last
-                      </button>
-                    </div>
-
-                    <p id="guardianError" class="text-danger" style="height:25px"></p>
-                  </div>
-                </div>
-
+                  <% } %>
+                <% } %>
+                
                 <!--Transportation Assistance Radio Buttons-->
                 <div class="p-2">
                   <label>Do you need Transportation Assistance?</label>
@@ -229,6 +186,96 @@
                 </div>
               </div>
 
+              <!--Guardian-->
+              <form id="guardianForm" name="guardianForm" method="" action="" onSubmit="return false">
+                <div>
+                  <label>Parent / Guardians:</label>
+                  <div class="input-group mb-3">
+                    <table class="table table-striped table-hover table-sm" id="guardianTable">
+                      <thead>
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Phone</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Income</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% if (locals.guardians.length > 0) { %>
+                        <% for (let i = 0; i < locals.guardians.length; i++) { %>
+                        <tr>
+                          <th scope="col"><%= locals.guardians[i].first_name %> <%= locals.guardians[i].last_name %></th>
+                          <!--Phone-->
+                          <% if (locals.guardian_phone === undefined) { %>
+                            <th scope="col">N/A</th>
+                          <% } else { %>
+                            <th scope="col"><%= locals.guardian_phone.value %></th>
+                          <% } %>
+                          <!--Email-->
+                          <% if (locals.guardian_email === undefined) { %>
+                            <th scope="col">N/A</th>
+                          <% } else { %>
+                            <th scope="col"><%= locals.guardian_phone.value %></th>
+                          <% } %>
+                          <th scope="col">MT <%= locals.guardians[i].annual_income %></th>
+                        </tr>
+                        <% } %>
+                        <% } %>
+                      </tbody>
+                    </table>
+
+                    <div class="col-md-6 p-3">
+                      <label>Guardian Name</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-primary"><i
+                                  class="bi bi-person-plus-fill text-white"></i></span>
+                          <input id="guardianName" name="guardianName" type="text"
+                              class="form-control" placeholder="Name" required pattern="[\w]{1,100}[ ][\w]{1,100}" 
+                              title="Enter at least 2 names.">
+                      </div>
+
+                      <label>Annual Income</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-primary"><i
+                                  class="bi bi-cash text-white"></i></span>
+                          <input id="guardianIncome" name="applicantGuardianIncome" type="number"
+                              class="form-control" placeholder="MT 20,000" required>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 p-3">
+                      <label>Phone number (Optional)</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-primary"><i
+                                  class="bi bi-telephone text-white"></i></span>
+                          <input id="guardianPhone" name="guardianPhone" type="tel"
+                              class="form-control" placeholder="Phone number" pattern="[+]?[- {0-9}]{1,100}" 
+                              title="An optional + at the beginning, then only numbers, spaces, and dashes.">
+                      </div>
+
+                      <label>Email Address (Optional)</label>
+                      <div class="input-group">
+                          <span class="input-group-text bg-primary"><i
+                                  class="bi bi-envelope-at text-white"></i></span>
+                          <input id="guardianEmail" name="guardianEmail" type="email"
+                              class="form-control" placeholder="Email">
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button class="btn btn-primary mt-1" type="button" onclick="addGuardian()">
+                        Save
+                      </button>
+                      <button class="btn btn-primary mt-1" type="button" onclick="removeGuardian()">
+                        Remove Last
+                      </button>
+                    </div>
+
+                    <p id="guardianError" class="text-danger" style="height:25px"></p>
+                  </div>
+                </div>
+              </form>
+
               <!--Application Submission Date-->
               <div class="col-md-6 mt-2">
                 <label>Date of Submission:</label>
@@ -238,8 +285,8 @@
                 </div>
               </div>
 
-              <div class="row align-items-center text-center">
-                <div class="col-6">
+              <div class="col-md-6 mt-2">
+                <div>
                   <!-- Application Status -->
                   <label for="optionNoFilter">Application Status:</label>
                   <div class="input-group mb-3">
@@ -273,7 +320,7 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-6">
+                <div class="text-center">
                   <button class="btn btn-primary mt-2" type="submit">
                     Submit Application Status
                   </button>
