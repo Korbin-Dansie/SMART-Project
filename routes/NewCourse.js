@@ -18,7 +18,6 @@ function getNewCoursePart1(req, res, obj){
         if (err) {
           throw err;
         }
-        console.log(results[0]);
 
         let semesters = new Array();
         results[0].forEach(element => {
@@ -39,7 +38,6 @@ function getNewCoursePart2(req, res, obj){
         if (err) {
           throw err;
         }
-        console.log(results[0]);
 
         let classes = new Array();
         results[0].forEach(element => {
@@ -48,7 +46,7 @@ function getNewCoursePart2(req, res, obj){
             );
         });
         obj.classes = classes;
-
+        console.log(classes);
         // The spread operator ... puts all the values in like "semesters: obj.semesters" so I dont have to do it manualy
         res.render('NewCourse', {...obj});
     });

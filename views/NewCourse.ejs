@@ -12,6 +12,49 @@
 </head>
 
 <script>
+    const classes = <%- JSON.stringify(locals.classes) %>;
+
+    function updateSelectClassLevel(selectedObject){
+        const value = selectedObject.value;
+
+        // Fill in the levels with all avaible class levels
+        let levelsObj = document.getElementById("classLevel");
+
+        // Remove all elements
+        for (let i = levelsObj.options.length; i >= 0; i--) {
+            levelsObj.remove(i);
+        }
+
+        // Add elements
+        let classLevels = new Array()
+        classes.forEach(element => {
+            if(element.subject_name_id == value){
+                classLevels.push(element);
+            }
+        });
+
+        // Sort the objs so they are in asc order
+        classLevels.sort((a,b) => {
+            if(a.level_id > b.level_id){
+                return 1;
+            }
+            else{
+                return -1;
+            }
+        });
+
+        console.log(classLevels);
+        // Now add the elements
+        classLevels.forEach(element => {
+            let option = document.createElement("option");
+            option.value = element.subject_id;
+            option.text = element.level_name;
+            levelsObj.add(option);
+        });
+
+        // Enable levels
+        levelsObj.removeAttribute('disabled');
+    }
 </script>
 
 <body>
@@ -37,7 +80,8 @@
                         if(locals.semesters != null){
                             locals.semesters.forEach(semester => {
                      %>
-                     <option value="">
+                     <option value=<%=semester.semester_id%>
+                     >
                         <%=semester.description%>
                     </option>
                     <%
@@ -49,16 +93,37 @@
 
                 <!--Class Subject-->
                 <div class="input-group mt-4">
-                  <select class="form-select" name="classSubject" id="classSubject">
+                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateSelectClassLevel(this)">
                     <option value="" selected disabled hidden>Class Subject</option>
-                    <option value="english">English</option>
-                    <option value="it">IT</option>
+                    <% 
+                        if(locals.classes != null){
+
+                            // Load the classes into a set to get distinct values
+                            const nameSet = new Set();
+                            locals.classes.forEach(element => {
+
+                                // Ifs its already in the set do nothing
+                                if(nameSet.has(element.subject_name)){
+                                    return; // The same as continue for foreach loop
+                                }
+                                else{
+                                    nameSet.add(element.subject_name);
+                                }
+                     %>
+                     <option value=<%= element.subject_name_id%>
+                    >
+                        <%=element.subject_name%>
+                    </option>
+                    <%
+                    });
+                        };
+                     %>
                   </select>
                 </div>
 
                 <!--Class Level-->
                 <div class="input-group mt-4 mb-3">
-                  <select class="form-select" name="classLevel" id="classLevel">
+                  <select class="form-select" name="classLevel" id="classLevel" disabled>
                     <option value="" selected disabled hidden>Class Level</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
