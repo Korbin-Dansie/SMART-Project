@@ -12,49 +12,70 @@
 </head>
 
 <script>
-    const classes = <%- JSON.stringify(locals.classes) %>;
+  const semesters = <%- JSON.stringify(locals.semesters) %>;
+  const classes = <%- JSON.stringify(locals.classes) %>;
 
-    function updateSelectClassLevel(selectedObject){
-        const value = selectedObject.value;
+  function updateSelectClassLevel(selectedObject) {
+    const value = selectedObject.value;
 
-        // Fill in the levels with all avaible class levels
-        let levelsObj = document.getElementById("classLevel");
+    // Fill in the levels with all avaible class levels
+    let levelsObj = document.getElementById("classLevel");
 
-        // Remove all elements
-        for (let i = levelsObj.options.length; i >= 0; i--) {
-            levelsObj.remove(i);
-        }
-
-        // Add elements
-        let classLevels = new Array()
-        classes.forEach(element => {
-            if(element.subject_name_id == value){
-                classLevels.push(element);
-            }
-        });
-
-        // Sort the objs so they are in asc order
-        classLevels.sort((a,b) => {
-            if(a.level_id > b.level_id){
-                return 1;
-            }
-            else{
-                return -1;
-            }
-        });
-
-        console.log(classLevels);
-        // Now add the elements
-        classLevels.forEach(element => {
-            let option = document.createElement("option");
-            option.value = element.subject_id;
-            option.text = element.level_name;
-            levelsObj.add(option);
-        });
-
-        // Enable levels
-        levelsObj.removeAttribute('disabled');
+    // Remove all elements
+    for (let i = levelsObj.options.length; i >= 0; i--) {
+      levelsObj.remove(i);
     }
+
+    // Add elements
+    let classLevels = new Array()
+    classes.forEach(element => {
+      if (element.subject_name_id == value) {
+        classLevels.push(element);
+      }
+    });
+
+    // Sort the objs so they are in asc order
+    classLevels.sort((a, b) => {
+      if (a.level_id > b.level_id) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    console.log(classLevels);
+    // Now add the elements
+    classLevels.forEach(element => {
+      let option = document.createElement("option");
+      option.value = element.subject_id;
+      option.text = element.level_name;
+      levelsObj.add(option);
+    });
+
+    // Enable levels
+    levelsObj.removeAttribute('disabled');
+  }
+
+  function updateStartAndEndDates(selectedObject){
+    const value = selectedObject.value;
+    let startObj = document.getElementById("start-date");
+    let endObj = document.getElementById("end-date");
+
+    // Find the selected semester
+    const found = semesters.find(element => element.semester_id == value);
+
+    startObj.value = getFormattedDate(new Date(found.start_date));
+    endObj.value = getFormattedDate(new Date(found.end_date));
+  }
+
+  // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
+  function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+  
+    return year + '-' + month + '-' + day;
+}
 </script>
 
 <body>
@@ -74,21 +95,42 @@
 
                 <!--Class semesters-->
                 <div class="input-group mt-4">
-                  <select class="form-select" name="classSubject" id="classSubject">
+                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateStartAndEndDates(this)">
                     <option value="" selected disabled hidden>Semesters</option>
                     <% 
                         if(locals.semesters != null){
                             locals.semesters.forEach(semester => {
                      %>
-                     <option value=<%=semester.semester_id%>
-                     >
-                        <%=semester.description%>
+                    <option value=<%=semester.semester_id%>>
+                      <%=semester.description%>
                     </option>
                     <%
                     });
                         };
                      %>
                   </select>
+                </div>
+
+                <!-- Start and end dates-->
+                <div class="row mt-4">
+                  <div class="col-6">
+                    <!--Start Time-->
+                    <div>
+                      <label>Start Date:</label>
+                      <div class="input-group mb-3">
+                        <input class="form-control" id="start-date" type="date" id="start" value="" disabled>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <!--End Date-->
+                    <div>
+                      <label>End Date:</label>
+                      <div class="input-group mb-3">
+                        <input class="form-control" id="end-date" type="date" id="end" value="" disabled>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <!--Class Subject-->
@@ -110,9 +152,8 @@
                                     nameSet.add(element.subject_name);
                                 }
                      %>
-                     <option value=<%= element.subject_name_id%>
-                    >
-                        <%=element.subject_name%>
+                    <option value=<%= element.subject_name_id%>>
+                      <%=element.subject_name%>
                     </option>
                     <%
                     });
@@ -129,15 +170,6 @@
                     <option value="2">2</option>
                     <option value="3">3</option>
                   </select>
-                </div>
-
-                <!--Meeting Times-->
-                <div>
-                  <label>Meeting Times:</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text bg-primary"><i class="bi bi-calendar-date text-white"></i></span>
-                    <input id="classMeetingTimes" name="classMeetingTimes" type="text" class="form-control" placeholder="Tuesdays and Thursdays 2:00 PM - 4:00 PM">
-                  </div>
                 </div>
               </div>
             </div>
