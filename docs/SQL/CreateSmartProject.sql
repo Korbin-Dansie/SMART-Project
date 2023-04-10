@@ -203,7 +203,7 @@ COMMENT = 'Active, Graduated, Removed ...';
  ***************************************************************/
 CREATE TABLE IF NOT EXISTS `smart_project`.`student` (
   `student_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `student_status_id` TINYINT UNSIGNED NOT NULL,
+  `student_status_id` TINYINT UNSIGNED NOT NULL DEFAULT 1,
   `date_of_admission` DATE NOT NULL DEFAULT (CURRENT_DATE),
   `photograph` VARCHAR(15000) NULL,
   PRIMARY KEY (`student_id`))
