@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
   router.post('/', function(req, res, next) {
     // if they are already logged in, send them to the dashboard
     if (req.session.loggedIn) {
-        res.redirect('/'); // TODO: this will need to be changed to the generic dashboard
+        res.redirect('/');  // index page will redirect to appropriate dashboard
     }
       console.log("login.js: POST");
       console.log("The email in variable is '" + req.body.emailAddress + "'");
@@ -43,7 +43,16 @@ router.get('/', function(req, res, next) {
                 console.log("login.js: Credentials matched");
                 req.session.loggedIn = true;
                 req.session.accountType = results[1][0]['@account_type'];
-                res.redirect("/");
+                dbCon.query("CALL get_userid_from_email('" + emailAddress + "', @userID); SELECT @userID;", function(err, results) {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(results);
+                    console.log(results[1][0]['@userID']);
+                    req.session.userID = results[1][0]['@userID']
+                    res.redirect("/");
+                });
+                
             }
         });
     } 
