@@ -11,9 +11,16 @@
   <%- include('partials/favico') %>
 </head>
 
+<style>
+  td>button:hover>i{
+     color: rgba(var(--bs-light-rgb),var(--bs-text-opacity))!important;;
+  }
+</style>
+
 <script>
   const semesters = <%- JSON.stringify(locals.semesters) %>;
   const classes = <%- JSON.stringify(locals.classes) %>;
+  const days = <%- JSON.stringify(locals.days) %>;
 
   function updateSelectClassLevel(selectedObject) {
     const value = selectedObject.value;
@@ -64,8 +71,8 @@
     // Find the selected semester
     const found = semesters.find(element => element.semester_id == value);
 
-    startObj.value = getFormattedDate(new Date(found.start_date));
-    endObj.value = getFormattedDate(new Date(found.end_date));
+    startObj.innerHTML = getFormattedDate(new Date(found.start_date));
+    endObj.innerHTML = getFormattedDate(new Date(found.end_date));
   }
 
   // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
@@ -74,7 +81,7 @@
     let month = (1 + date.getMonth()).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
 
-    return year + '-' + month + '-' + day;
+    return day + '/' + month + '/' + year;
   }
 </script>
 
@@ -118,7 +125,7 @@
                     <div>
                       <label>Start Date:</label>
                       <div class="input-group mb-3">
-                        <input class="form-control" id="start-date" type="date" id="start" value="" disabled>
+                        <p class="form-control user-select-none bg-light" id="start-date">dd/mm/yyyy</p>
                       </div>
                     </div>
                   </div>
@@ -127,7 +134,7 @@
                     <div>
                       <label>End Date:</label>
                       <div class="input-group mb-3">
-                        <input class="form-control" id="end-date" type="date" id="end" value="" disabled>
+                        <p class="form-control user-select-none bg-light" id="end-date">dd/mm/yyyy</p>
                       </div>
                     </div>
                   </div>
@@ -185,11 +192,28 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr>
+                    <td><select name="day" id="meeting-1-group-1">
+                      <% if(days != null) {
+                        for (let index = 0; index < days.length; index++) {
+                          const day = days[index];
+                        %>
+                        <option>
+                          <%= day.name %>
+                        </option>
+
+                      <% }}%>
+                      </select></td>
+                    <td><input type="time"></td>
+                    <td><input type="time"></td>
+                    <td><button class="btn btn-outline-danger" type="button"><i class="bi bi-x-circle text-danger"></i></button></td>
+                    </tr>
                 </tbody>
               </table>
+              <button class="btn btn-primary float-end">Add Time</button>
             </div>
 
-            <div class="col-md-10 mx-auto">
+            <div class="col-md-10 mx-auto mt-5">
                 <button class="btn btn-info float-end" type="button">Add Meeting</button>
             </div>
             </div>

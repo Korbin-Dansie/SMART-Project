@@ -46,7 +46,26 @@ function getNewCoursePart2(req, res, obj){
             );
         });
         obj.classes = classes;
-        console.log(classes);
+
+        getNewCoursePart3(req, res, obj);
+    });
+}
+
+// Get the days of week
+function getNewCoursePart3(req, res, obj){
+    const sql = "CALL `get_day_of_weeks`();";
+    dbCon.query(sql, function (err, results) {
+        if (err) {
+          throw err;
+        }
+
+        let days = new Array();
+        results[0].forEach(element => {
+            days.push(
+                {...element}
+            );
+        });
+        obj.days = days;
         // The spread operator ... puts all the values in like "semesters: obj.semesters" so I dont have to do it manualy
         res.render('NewCourse', {...obj});
     });

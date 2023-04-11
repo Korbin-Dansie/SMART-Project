@@ -1,4 +1,5 @@
 USE `smart_project`;
+
 DROP PROCEDURE IF EXISTS `check_application_id`;
 DROP PROCEDURE IF EXISTS `check_application_status`;
 DROP PROCEDURE IF EXISTS `create_account_type`;
@@ -18,16 +19,16 @@ DROP PROCEDURE IF EXISTS `create_student_status`;
 DROP PROCEDURE IF EXISTS `create_subject`;
 DROP PROCEDURE IF EXISTS `create_subject_name`;
 DROP PROCEDURE IF EXISTS `create_user`;
+DROP PROCEDURE IF EXISTS `get_classes`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
+DROP PROCEDURE IF EXISTS `get_semesters`;
 DROP PROCEDURE IF EXISTS `login_user`;
 DROP PROCEDURE IF EXISTS `select_applications`;
 DROP PROCEDURE IF EXISTS `select_application_details`;
 DROP PROCEDURE IF EXISTS `select_contact_info`;
 DROP PROCEDURE IF EXISTS `select_guardians`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
-DROP PROCEDURE IF EXISTS `get_semesters`;
-
 
 DELIMITER $$
 $$ -- Clear it so the next SP output doest not contain all the comments ab
@@ -529,6 +530,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure get_semesters
 * <comment>Procedure get_semesters created if it didn't already exist.</comment>
@@ -545,6 +547,7 @@ BEGIN
 	`smart_project`.`semester`;
 END;
 $$
+
 
 /***************************************************************
 * Procedure get_classes
@@ -568,5 +571,16 @@ BEGIN
 END;
 $$
 
- 
- 
+
+/***************************************************************
+* Procedure get_day_of_week
+* <comment>Procedure get_day_of_week created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_day_of_weeks`(
+)
+BEGIN
+	SELECT `day_of_week_id`, `name`
+	FROM `smart_project`.`day_of_week`
+    ORDER BY `day_of_week_id` ASC;
+END;
+$$
