@@ -56,7 +56,7 @@
     levelsObj.removeAttribute('disabled');
   }
 
-  function updateStartAndEndDates(selectedObject){
+  function updateStartAndEndDates(selectedObject) {
     const value = selectedObject.value;
     let startObj = document.getElementById("start-date");
     let endObj = document.getElementById("end-date");
@@ -73,9 +73,9 @@
     let year = date.getFullYear();
     let month = (1 + date.getMonth()).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
-  
+
     return year + '-' + month + '-' + day;
-}
+  }
 </script>
 
 <body>
@@ -101,7 +101,7 @@
                         if(locals.semesters != null){
                             locals.semesters.forEach(semester => {
                      %>
-                    <option value=<%=semester.semester_id%>>
+                    <option value="<%=semester.semester_id%>">
                       <%=semester.description%>
                     </option>
                     <%
@@ -152,7 +152,7 @@
                                     nameSet.add(element.subject_name);
                                 }
                      %>
-                    <option value=<%= element.subject_name_id%>>
+                    <option value="<%= element.subject_name_id%>">
                       <%=element.subject_name%>
                     </option>
                     <%
@@ -166,14 +166,35 @@
                 <div class="input-group mt-4 mb-3">
                   <select class="form-select" name="classLevel" id="classLevel" disabled>
                     <option value="" selected disabled hidden>Class Level</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
                   </select>
                 </div>
               </div>
             </div>
 
+
+            <!-- Create Grouping -->
+            <div class="row mt-4 d-flex">
+                <div class="col-md-10 mx-auto">
+                    <label>Meeting 1:</label>
+              <table class="table table-striped table-hover table-sm" id="guardianTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col" colspan="2">Time</th>
+                    <th scope="col">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="col-md-10 mx-auto">
+                <button class="btn btn-info float-end" type="button">Add Meeting</button>
+            </div>
+            </div>
+
+            <!-- end of create Grouping -->
 
             <div class="text-center">
               <button class="btn btn-primary mt-2" type="submit">
