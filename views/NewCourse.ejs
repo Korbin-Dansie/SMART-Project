@@ -144,8 +144,36 @@
     paddingDiv.appendChild(table);
     // End of table
 
+  
     // Add Ending Row
+    const endingRow = document.createElement("div");
+    endingRow.classList.add("row", "d-flex");
+
+    const errorDiv = document.createElement("div");
+    errorDiv.classList.add("col", "w-auto", "d-flex", "justify-content-center", "align-items-center", "text-center");
+
+    const errorSpan = document.createElement("span");
+    errorSpan.classList.add("text-danger");
+    errorSpan.setAttribute("id", "course-meeting-error-" + meetingNumber);
+    // errorSpan.style.visibility = "hidden";
+    errorDiv.appendChild(errorSpan);
+
+    endingRow.appendChild(errorDiv);
+
+    const addLineDiv = document.createElement("div");
+    addLineDiv.classList.add("col-auto", "w-auto", "d-flex", "justify-content-end");
+
+    const addLineBtn = document.createElement("button");
+    addLineBtn.classList.add("btn", "btn-primary");
+    addLineBtn.setAttribute("type", "button");
+    addLineBtn.innerText = "Add Time";
+    addLineDiv.appendChild(addLineBtn);
+
+    endingRow.appendChild(addLineDiv);
+
+    paddingDiv.appendChild(endingRow);
     // End of Ending Row
+
     return startDiv;
   }
 
@@ -182,7 +210,6 @@
 
   function addTableBody(meetingNumber){
     const body = document.createElement("tbody");
-
     // Group number is 0 because its the first body row
     body.appendChild(createTableRow(meetingNumber));
     return body;
@@ -203,16 +230,40 @@
 
     // Create select
     const tdSelect = document.createElement("td");
-    tdSelect.innerText = "Hello";
+    const select = document.createElement("select");
+    select.classList.add("form-control");
+    days.forEach(day => {
+      const option = document.createElement("option");
+      option.setAttribute("value", day.day_of_week_id);
+      option.innerText = day.name;
+      select.appendChild(option);
+    });
+    tdSelect.appendChild(select);
 
     const tdStart = document.createElement("td");
-    tdStart.innerText = ",";
+    const start = document.createElement("input");
+    start.classList.add("form-control");
+    start.setAttribute("type", "time");
+    tdStart.appendChild(start);
 
     const tdEnd = document.createElement("td");
-    tdEnd.innerText = "World";
+    const end = document.createElement("input");
+    end.classList.add("form-control");
+    end.setAttribute("type", "time");
+    tdEnd.appendChild(end);
 
     const tdDelete = document.createElement("td");
-    tdDelete.innerText = "!";
+    tdDelete.classList.add("text-end");
+    const button = document.createElement("button");
+    button.classList.add("btn", "btn-outline-danger");
+    button.setAttribute("type", "button");
+    button.setAttribute("onclick", "deleteGroup(this);");
+    
+    const icon = document.createElement("i");
+    icon.classList.add("bi", "bi-x-circle", "text-danger");
+    button.appendChild(icon);
+
+    tdDelete.appendChild(button);
 
     tr.appendChild(tdSelect);
     tr.appendChild(tdStart);
@@ -347,7 +398,7 @@
                         </select></td>
                       <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-start"></td>
                       <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-end"></td>
-                      <td><button class="btn btn-outline-danger" type="button" onclick="deleteGroup(this);"><i class="bi bi-x-circle text-danger"></i></button></td>
+                      <td class="text-end"><button class="btn btn-outline-danger" type="button" onclick="deleteGroup(this);"><i class="bi bi-x-circle text-danger"></i></button></td>
                     </tr>
                   </tbody>
                 </table>
