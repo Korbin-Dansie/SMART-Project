@@ -16,10 +16,10 @@ router.get('/', function(req, res, next) {
           res.redirect('/AdminDashboard');
           break;
         case 3:
-          res.redirect('/InstructorDashboard');
+          res.redirect('/SocialWorkerDashboard');
           break;
         case 4:
-          res.redirect('/SocialWorkerDashboard');
+          res.redirect('/InstructorDashboard');
           break;
         case 5:
           res.redirect('/OwnerDashboard');

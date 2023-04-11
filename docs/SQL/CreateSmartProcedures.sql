@@ -26,6 +26,8 @@ DROP PROCEDURE IF EXISTS `select_application_details`;
 DROP PROCEDURE IF EXISTS `select_contact_info`;
 DROP PROCEDURE IF EXISTS `select_guardians`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
+DROP PROCEDURE IF EXISTS `get_semesters`;
+
 
 DELIMITER $$
 $$ -- Clear it so the next SP output doest not contain all the comments ab
@@ -466,6 +468,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure check_application_id
 * <comment>Procedure check_application_id created if it didn't already exist.</comment>
@@ -483,6 +486,7 @@ BEGIN
     ));
 END;
 $$
+
 
 /***************************************************************
 * Procedure check_application_status
@@ -508,6 +512,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure update_application_status
 * <comment>Procedure update_application_status created if it didn't already exist.</comment>
@@ -524,54 +529,44 @@ BEGIN
 END;
 $$
 
-/*******************************************************************************************************************************
- * 
- * CREATE TRIGGERS
- *
- *******************************************************************************************************************************/
 /***************************************************************
-* Trigger trigger_application_status_accepted_insert
-* <comment>Trigger trigger_application_status_accepted_insert created if it didn't already exist.</comment>
+* Procedure get_semesters
+* <comment>Procedure get_semesters created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_insert`
- BEFORE INSERT
- ON `application` FOR EACH ROW
- BEGIN
- 
-	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
-	-- If is is accepted create a student record, 2 =	Accepted
-    IF(NEW.application_status_id = 2)
-    THEN
-		-- We dont need to insert anything into student we just need the new row
-        -- because everyting is handled automaticly, exept for their photo
-		INSERT INTO `student` VALUES ();
-		SET new_student_id = LAST_INSERT_ID();
-        SET NEW.student_id = new_student_id;
-    END IF;
- END;
+CREATE PROCEDURE IF NOT EXISTS `get_semesters`(
+)
+BEGIN
+	SELECT 
+    `semester`.`semester_id`,
+    `semester`.`description`,
+    `semester`.`start_date`,
+    `semester`.`end_date`
+	FROM 
+	`smart_project`.`semester`;
+END;
 $$
 
-
 /***************************************************************
-* Trigger trigger_application_status_accepted_update
-* <comment>Trigger trigger_application_status_accepted_update created if it didn't already exist.</comment>
+* Procedure get_classes
+* <comment>Procedure get_classes created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_update`
- BEFORE UPDATE
- ON `application` FOR EACH ROW
- BEGIN
- 
-	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
-	-- If is is accepted create a student record, 2 =	Accepted
-    IF(NEW.application_status_id = 2 AND OLD.student_id IS NULL)
-    THEN
-		-- We dont need to insert anything into student we just need the new row
-        -- because everyting is handled automaticly, exept for their photo
-		INSERT INTO `student` VALUES ();
-		SET new_student_id = LAST_INSERT_ID();
-        SET NEW.student_id = new_student_id;
-    END IF;
- END;
+CREATE PROCEDURE IF NOT EXISTS `get_classes`(
+)
+BEGIN
+	SELECT 
+		s.`subject_id`,
+        s.`subject_name_id`,
+        sn.`subject_name`,
+        s.`level_id`,
+        lv.`level_name`
+	FROM 
+	`subject` AS `s`
+    INNER JOIN `subject_name` AS `sn`
+     ON s.`subject_name_id` = sn.`subject_name_id`
+    LEFT JOIN `level` AS `lv`
+     ON s.`level_id` = lv.`level_id`;
+END;
 $$
+
  
  

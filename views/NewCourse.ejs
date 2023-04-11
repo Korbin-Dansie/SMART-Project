@@ -2,89 +2,217 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S. M. A. R. T. New Course</title>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
-    <%- include('partials/favico') %>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S. M. A. R. T. New Course</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+  <%- include('partials/favico') %>
 </head>
 
 <script>
+  const semesters = <%- JSON.stringify(locals.semesters) %>;
+  const classes = <%- JSON.stringify(locals.classes) %>;
+
+  function updateSelectClassLevel(selectedObject) {
+    const value = selectedObject.value;
+
+    // Fill in the levels with all avaible class levels
+    let levelsObj = document.getElementById("classLevel");
+
+    // Remove all elements
+    for (let i = levelsObj.options.length; i >= 0; i--) {
+      levelsObj.remove(i);
+    }
+
+    // Add elements
+    let classLevels = new Array()
+    classes.forEach(element => {
+      if (element.subject_name_id == value) {
+        classLevels.push(element);
+      }
+    });
+
+    // Sort the objs so they are in asc order
+    classLevels.sort((a, b) => {
+      if (a.level_id > b.level_id) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    console.log(classLevels);
+    // Now add the elements
+    classLevels.forEach(element => {
+      let option = document.createElement("option");
+      option.value = element.subject_id;
+      option.text = element.level_name;
+      levelsObj.add(option);
+    });
+
+    // Enable levels
+    levelsObj.removeAttribute('disabled');
+  }
+
+  function updateStartAndEndDates(selectedObject) {
+    const value = selectedObject.value;
+    let startObj = document.getElementById("start-date");
+    let endObj = document.getElementById("end-date");
+
+    // Find the selected semester
+    const found = semesters.find(element => element.semester_id == value);
+
+    startObj.value = getFormattedDate(new Date(found.start_date));
+    endObj.value = getFormattedDate(new Date(found.end_date));
+  }
+
+  // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
+  function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
+  }
 </script>
 
 <body>
-    <div class="container-fluid vh-100" style="margin-top:10px">
-        <div class="" style="margin-top:100px">
-            <div class="rounded d-flex justify-content-center">
-                <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-                    <div class="text-center">
-                        <h3 class="text-primary">Create New Course</h3>
-                    </div>
-                    <form method="post" action="" onSubmit="">
+  <div class="container-fluid vh-100" style="margin-top:10px">
+    <div class="" style="margin-top:100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-4 col-sm-12 shadow-lg p-2 bg-light">
+          <a href="InstructorDashboard" class="btn btn-secondary mt-2 position-relative top-0 start-0">Back</a>
 
-                        <div class="row pt-4">
-                            <div class="col-md-10 mx-auto">
-                                <!--Class Subject-->
-                                <div class="input-group mt-4">
-                                    <select class="form-select" name="classSubject" id="classSubject">
-                                      <option value="" selected disabled hidden>Class Subject</option>
-                                      <option value="english">English</option>
-                                      <option value="it">IT</option>
-                                    </select>
-                                </div>
+          <div class="text-center">
+            <h3 class="text-primary">Create New Course</h3>
+          </div>
+          <form method="post" action="" onSubmit="">
 
-                                <!--Class Level-->
-                                <div class="input-group mt-4 mb-3">
-                                    <select class="form-select" name="classLevel" id="classLevel">
-                                      <option value="" selected disabled hidden>Class Level</option>
-                                      <option value="1">1</option>
-                                      <option value="2">2</option>
-                                      <option value="3">3</option>
-                                    </select>
-                                </div>
+            <div class="row pt-4">
+              <div class="col-md-10 mx-auto">
 
-                                <!--Meeting Times-->
-                                <div>
-                                    <label>Meeting Times:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-calendar-date text-white"></i></span>
-                                        <input id="classMeetingTimes" name="classMeetingTimes" type="text"
-                                            class="form-control" placeholder="Tuesdays and Thursdays 2:00 PM - 4:00 PM">
-                                    </div>
-                                </div>
-
-                                <!--Meeting Location-->
-                                <div>
-                                    <label>Meeting Location:</label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text bg-primary"><i
-                                                class="bi bi-geo-alt text-white"></i></span>
-                                        <input id="classMeetingPlace" name="classMeetingPlace" type="text" class="form-control"
-                                            placeholder="Room 7">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <p id="message" class="text-danger" style="height:25px">
-                                <%- locals.message %>
-                            </p>
-                        </div>
-
-                        <div class="text-center">
-                            <button class="btn btn-primary mt-2" type="submit">
-                                Create Course
-                            </button>
-                        </div>
-                    </form>
+                <!--Class semesters-->
+                <div class="input-group mt-4">
+                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateStartAndEndDates(this)">
+                    <option value="" selected disabled hidden>Semesters</option>
+                    <% 
+                        if(locals.semesters != null){
+                            locals.semesters.forEach(semester => {
+                     %>
+                    <option value="<%=semester.semester_id%>">
+                      <%=semester.description%>
+                    </option>
+                    <%
+                    });
+                        };
+                     %>
+                  </select>
                 </div>
+
+                <!-- Start and end dates-->
+                <div class="row mt-4">
+                  <div class="col-6">
+                    <!--Start Time-->
+                    <div>
+                      <label>Start Date:</label>
+                      <div class="input-group mb-3">
+                        <input class="form-control" id="start-date" type="date" id="start" value="" disabled>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <!--End Date-->
+                    <div>
+                      <label>End Date:</label>
+                      <div class="input-group mb-3">
+                        <input class="form-control" id="end-date" type="date" id="end" value="" disabled>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--Class Subject-->
+                <div class="input-group mt-4">
+                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateSelectClassLevel(this)">
+                    <option value="" selected disabled hidden>Class Subject</option>
+                    <% 
+                        if(locals.classes != null){
+
+                            // Load the classes into a set to get distinct values
+                            const nameSet = new Set();
+                            locals.classes.forEach(element => {
+
+                                // Ifs its already in the set do nothing
+                                if(nameSet.has(element.subject_name)){
+                                    return; // The same as continue for foreach loop
+                                }
+                                else{
+                                    nameSet.add(element.subject_name);
+                                }
+                     %>
+                    <option value="<%= element.subject_name_id%>">
+                      <%=element.subject_name%>
+                    </option>
+                    <%
+                    });
+                        };
+                     %>
+                  </select>
+                </div>
+
+                <!--Class Level-->
+                <div class="input-group mt-4 mb-3">
+                  <select class="form-select" name="classLevel" id="classLevel" disabled>
+                    <option value="" selected disabled hidden>Class Level</option>
+                  </select>
+                </div>
+              </div>
             </div>
+
+
+            <!-- Create Grouping -->
+            <div class="row mt-4 d-flex">
+                <div class="col-md-10 mx-auto">
+                    <label>Meeting 1:</label>
+              <table class="table table-striped table-hover table-sm" id="guardianTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col" colspan="2">Time</th>
+                    <th scope="col">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="col-md-10 mx-auto">
+                <button class="btn btn-info float-end" type="button">Add Meeting</button>
+            </div>
+            </div>
+
+            <!-- end of create Grouping -->
+
+            <div class="text-center">
+              <button class="btn btn-primary mt-2" type="submit">
+                Create Course
+              </button>
+            </div>
+
+
+            <div class="text-center">
+              <p id="message" class="text-danger" style="height:25px">
+                <%- locals.message %>
+              </p>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </body>
 
 </html>
