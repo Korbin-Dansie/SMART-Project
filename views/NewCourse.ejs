@@ -22,6 +22,7 @@
   const semesters = <%- JSON.stringify(locals.semesters) %>;
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
+  const maxMeeting = 2;
 
   // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
@@ -90,13 +91,25 @@
 
   // Add an alternate time a student could come to class
   function addGroup(selectedObject){
+    // Go up four parents to get the div with the --data-meeting attribute
+    const meetingNumber = selectedObject.parentElement.parentElement.parentElement.parentElement.getAttribute("data-meeting");
 
+    // Now that we have the data-meeting number we can add a row onto the table
+    const table = document.getElementById("course-meeting-table-" + meetingNumber);
+    const tableBody = table.childNodes[1];
+
+    tableBody.appendChild(createTableRow(meetingNumber));
   }
 
   // Delete the selected alternate time
   // If its the last on in the meeting delete the meeeting also, unless its the last one
   function deleteGroup(selectedObject){
-// 
+    // Go up two parents to the tr element
+    console.log(selectedObject);
+
+    let tr = selectedObject.parentElement.parentElement;
+
+    console.log(tr);
   }
 
   // Add a new meeting
@@ -105,7 +118,6 @@
 
     location.appendChild(createMeetingTable());
     location.appendChild(createMeetingTable());
-
   }
 
   function createMeetingTable(){
@@ -166,6 +178,7 @@
     const addLineBtn = document.createElement("button");
     addLineBtn.classList.add("btn", "btn-primary");
     addLineBtn.setAttribute("type", "button");
+    addLineBtn.setAttribute("onClick", "addGroup(this)");
     addLineBtn.innerText = "Add Time";
     addLineDiv.appendChild(addLineBtn);
 
@@ -221,7 +234,7 @@
     let meetingObj = document.getElementById("course-meeting-table-" + meetingNumber);
     let numberOfGroups = 0;
     if(meetingObj != undefined || meetingObj != null){
-      meetingObj.childElementCount - 1; // Get the number of rows minus the header
+      numberOfGroups = meetingObj.childElementCount - 1; // Get the number of rows minus the header
     }
     //
     const tr = document.createElement("tr");
@@ -371,48 +384,6 @@
 
 
             <!-- Create Groupings -->
-            <div class="row mt-4 d-flex course-meeting" data-meeting="0">
-              <div class="col-md-10 mx-auto">
-                <label>Meeting 1:</label>
-                <table class="table table-striped table-sm">
-                  <thead>
-                    <tr>
-                      <th scope="col">Day</th>
-                      <th scope="col">Start Time</th>
-                      <th scope="col">End Time</th>
-                      <th scope="col">Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="align-middle course-group" data-group="0">
-                      <td><select name="day" id="meeting-table-0-group-0-day">
-                          <% if(days != null) {
-                        for (let index = 0; index < days.length; index++) {
-                          const day = days[index];
-                        %>
-                          <option>
-                            <%= day.name %>
-                          </option>
-
-                          <% }}%>
-                        </select></td>
-                      <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-start"></td>
-                      <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-end"></td>
-                      <td class="text-end"><button class="btn btn-outline-danger" type="button" onclick="deleteGroup(this);"><i class="bi bi-x-circle text-danger"></i></button></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div class="row d-flex">
-                  <div class="col w-auto d-flex justify-content-center align-items-center text-center">
-                    <span class="text-danger col">Error</span>
-                  </div>
-                  <div class="col-auto w-auto d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary">Add Time</button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
             <div class="row" id="meeting-location">
             </div>
             <!-- end of create Grouping -->
