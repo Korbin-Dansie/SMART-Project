@@ -13,21 +13,45 @@ function manageApplicationGetStep1(req, res, errorMessage){
   let applicationID = req.query.applicationID;
 
   if (applicationID) {
-    let sql = "CALL select_application_details(?); CALL get_personid_from_applicationid(?, @personid); CALL select_contact_info(@personid); CALL select_guardians(?, @guardianID); CALL select_guardian_phone(@guardianID); CALL select_guardian_email(@guardianID);";
+    let sql = "CALL select_application_details(?); CALL get_personid_from_applicationid(?, @personid); CALL select_contact_info(@personid); CALL select_guardians(?);";
     dbCon.query(sql, [applicationID, applicationID, applicationID], function (err, results) {
       if (err) {
         throw err;
       }
-      console.log(results);
+      //console.log(results);
       console.log(results[0][0]);
       console.log(results[3]);
       console.log(results[5]);
-      if(errorMessage != undefined || errorMessage != null){
-        res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5], guardian_phone: results[7][0], guardian_email: results[9][0], message:errorMessage});
+
+      let guardianContactSQL = "";
+
+      for (let i = 0; i < results[5].length; i++) {
+        let guardianID = results[5][i]['person_id'];
+        guardianContactSQL += "CALL select_person_phone(" + guardianID + "); CALL select_person_email(" + guardianID + "); ";
       }
-      else{
-        res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5], guardian_phone: results[7][0], guardian_email: results[9][0]});
-      }
+
+      dbCon.query(guardianContactSQL, function(err, guardianContactResults) {
+        if (err) {
+          throw err;
+        }
+        console.log(guardianContactResults);
+
+        let guardianContacts = [];
+        for (let i = 0; i < guardianContactResults.length / 4; i++) {
+
+          let guardianContactRecord = {phone: guardianContactResults[i * 4][0], email: guardianContactResults[i * 4 + 2][0]};
+          guardianContacts.push(guardianContactRecord);
+        }
+
+        console.log(guardianContacts);
+
+        if(errorMessage != undefined || errorMessage != null){
+          res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5], guardianContacts: guardianContacts, message:errorMessage});
+        }
+        else{
+          res.render('ManageApplication', {applicationData: results[0][0], contactInfo: results[3], guardians: results[5], guardianContacts: guardianContacts});
+        }
+      });
     });
   } else {
     res.redirect('/');

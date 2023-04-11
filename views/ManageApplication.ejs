@@ -206,16 +206,16 @@
                         <tr>
                           <th scope="col"><%= locals.guardians[i].first_name %> <%= locals.guardians[i].last_name %></th>
                           <!--Phone-->
-                          <% if (locals.guardian_phone === undefined) { %>
+                          <% if (locals.guardianContacts[i].phone === undefined) { %>
                             <th scope="col">N/A</th>
                           <% } else { %>
-                            <th scope="col"><%= locals.guardian_phone.value %></th>
+                            <th scope="col"><%= locals.guardianContacts[i].phone.value %></th>
                           <% } %>
                           <!--Email-->
-                          <% if (locals.guardian_email === undefined) { %>
+                          <% if (locals.guardianContacts[i].email === undefined) { %>
                             <th scope="col">N/A</th>
                           <% } else { %>
-                            <th scope="col"><%= locals.guardian_phone.value %></th>
+                            <th scope="col"><%= locals.guardianContacts[i].email.value %></th>
                           <% } %>
                           <th scope="col">MT <%= locals.guardians[i].annual_income %></th>
                         </tr>
