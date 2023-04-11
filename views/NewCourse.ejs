@@ -108,8 +108,17 @@
     console.log(selectedObject);
 
     let tr = selectedObject.parentElement.parentElement;
+    let table = tr.parentElement.parentElement;
+    table.deleteRow(tr.rowIndex);
 
-    console.log(tr);
+    // Now see if it was the last on add if so remove the meeting and update remaning meetings
+    let numberOfRows = table.rows.length;
+
+    // 1 == header row, so body is empty
+    if(numberOfRows == 1){
+      // Go up to the highest div and delete it
+      table.parentElement.parentElement.remove();
+    }
   }
 
   // Add a new meeting
@@ -234,7 +243,7 @@
     let meetingObj = document.getElementById("course-meeting-table-" + meetingNumber);
     let numberOfGroups = 0;
     if(meetingObj != undefined || meetingObj != null){
-      numberOfGroups = meetingObj.childElementCount - 1; // Get the number of rows minus the header
+      numberOfGroups = meetingObj.rows.length - 1; // Get the number of rows minus the header
     }
     //
     const tr = document.createElement("tr");
