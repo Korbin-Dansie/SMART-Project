@@ -101,6 +101,12 @@
     const tableBody = table.childNodes[1];
 
     tableBody.appendChild(createTableRow(meetingNumber));
+
+    // If we are now at the limit prevent any more rows
+    if(table.rows.length - 1 >= maxGroups){
+      const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+      addLineBtn.style.visibility = "hidden";
+    }
   }
 
   // Delete the selected alternate time
@@ -117,6 +123,13 @@
     }
 
     table.deleteRow(tr.rowIndex);
+
+    // If we are now below the max group limit diaplay the add btn
+    if(table.rows.length - 1 < maxGroups){
+      let meetingNumber = table.parentElement.parentElement.getAttribute("data-meeting")
+      const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+      addLineBtn.style.visibility = "visible";
+    }
 
     // Now see if it was the last on add if so remove the meeting and update remaning meetings
     let numberOfRows = table.rows.length;
@@ -146,6 +159,9 @@
 
         let errorMessage = document.getElementById("course-meeting-error-" + meetingNumber);
         errorMessage.setAttribute("id", "course-meeting-error-" + index);
+
+        let addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+        addLineBtn.setAttribute("id", "course-meeting-addtime-" + index);
       }
 
       // If the removed meetings is now below the max meeting amout set the add meeting btn to visible
@@ -234,8 +250,11 @@
     addLineBtn.classList.add("btn", "btn-primary");
     addLineBtn.setAttribute("type", "button");
     addLineBtn.setAttribute("onClick", "addGroup(this)");
+    addLineBtn.setAttribute("id", "course-meeting-addtime-" + meetingNumber);
     addLineBtn.innerText = "Add Time";
+
     addLineDiv.appendChild(addLineBtn);
+
 
     endingRow.appendChild(addLineDiv);
 
