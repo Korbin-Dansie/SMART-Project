@@ -22,7 +22,9 @@
   const semesters = <%- JSON.stringify(locals.semesters) %>;
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
-  const maxMeeting = 2;
+
+  const maxMeetings = 2;
+  const maxGroups = 2;
 
   // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
@@ -118,6 +120,28 @@
     if(numberOfRows == 1){
       // Go up to the highest div and delete it
       table.parentElement.parentElement.remove();
+
+      // Then update all remaining meetings id's
+      let meetings = document.getElementsByClassName("course-meeting");
+
+      for (let index = 0; index < meetings.length; index++) {
+        let meeting = meetings[index];
+        let meetingNumber = meeting.getAttribute("data-meeting");
+        
+        // update each component that is numbered
+        meeting.setAttribute("data-meeting", index);
+        meeting.setAttribute("id", "course-meeting-" + index);
+
+        let label = document.getElementById("course-meeting-label-" + meetingNumber);
+        label.setAttribute("id", "course-meeting-label-" + index);
+        label.innerText = "Meeting " + (Number(index) + 1) + ":";
+
+        let table = document.getElementById("course-meeting-table-" + meetingNumber);
+        table.setAttribute("id", "course-meeting-table-" + index);
+
+        let errorMessage = document.getElementById("course-meeting-error-" + meetingNumber);
+        errorMessage.setAttribute("id", "course-meeting-error-" + index);
+      }
     }
   }
 
@@ -125,7 +149,6 @@
   function addMeeting(){
     let location = document.getElementById("meeting-location");
 
-    location.appendChild(createMeetingTable());
     location.appendChild(createMeetingTable());
   }
 
@@ -148,6 +171,7 @@
     // Create Label
     const label  = document.createElement("p");
     label.innerText = "Meeting " + (Number(meetingNumber) + 1) + ":";
+    label.setAttribute("id", "course-meeting-label-" + meetingNumber);
     paddingDiv.appendChild(label);
 
     // Create Table
@@ -398,7 +422,7 @@
             <!-- end of create Grouping -->
             <!-- Add meeting button-->
             <div class="col-md-10 mx-auto mt-5 d-flex justify-content-end">
-              <button class="btn btn-info" type="button">Add Meeting</button>
+              <button class="btn btn-info" type="button" onClick="addMeeting();">Add Meeting</button>
             </div>
 
 
