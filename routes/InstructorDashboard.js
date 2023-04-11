@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
       }
       console.log(results);
 
-      res.render('InstructorDashboard', {});
+      res.render('InstructorDashboard', {classes: results[0]});
       
     });
   
