@@ -92,7 +92,7 @@
   }
 
   // Add an alternate time a student could come to class
-  function addGroup(selectedObject){
+  function addGroup(selectedObject) {
     // Go up four parents to get the div with the --data-meeting attribute
     const meetingNumber = selectedObject.parentElement.parentElement.parentElement.parentElement.getAttribute("data-meeting");
 
@@ -105,19 +105,24 @@
 
   // Delete the selected alternate time
   // If its the last on in the meeting delete the meeeting also, unless its the last one
-  function deleteGroup(selectedObject){
+  function deleteGroup(selectedObject) {
     // Go up two parents to the tr element
-    console.log(selectedObject);
-
     let tr = selectedObject.parentElement.parentElement;
     let table = tr.parentElement.parentElement;
+
+
+    // If this the the last group in the last meeting prevent it from being deleted
+    if (document.getElementsByClassName("course-meeting").length == 1 && table.rows.length == 2) {
+      return;
+    }
+
     table.deleteRow(tr.rowIndex);
 
     // Now see if it was the last on add if so remove the meeting and update remaning meetings
     let numberOfRows = table.rows.length;
 
     // 1 == header row, so body is empty
-    if(numberOfRows == 1){
+    if (numberOfRows == 1) {
       // Go up to the highest div and delete it
       table.parentElement.parentElement.remove();
 
@@ -127,7 +132,7 @@
       for (let index = 0; index < meetings.length; index++) {
         let meeting = meetings[index];
         let meetingNumber = meeting.getAttribute("data-meeting");
-        
+
         // update each component that is numbered
         meeting.setAttribute("data-meeting", index);
         meeting.setAttribute("id", "course-meeting-" + index);
@@ -142,26 +147,43 @@
         let errorMessage = document.getElementById("course-meeting-error-" + meetingNumber);
         errorMessage.setAttribute("id", "course-meeting-error-" + index);
       }
+
+      // If the removed meetings is now below the max meeting amout set the add meeting btn to visible
+      let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
+      if (numberOfMeetings < maxMeetings) {
+      let addMeetingBtn = document.getElementById("addMeetingBtn");
+      addMeetingBtn.style.visibility = "visible";
+      return;
+    }
     }
   }
 
   // Add a new meeting
-  function addMeeting(){
+  function addMeeting() {
     let location = document.getElementById("meeting-location");
 
     location.appendChild(createMeetingTable());
+
+    // Hide the add meeting btn if max length is reached
+    let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
+    if (numberOfMeetings == maxMeetings) {
+      let addMeetingBtn = document.getElementById("addMeetingBtn");
+      addMeetingBtn.style.visibility = "hidden";
+
+      return;
+    }
   }
 
-  function createMeetingTable(){
+  function createMeetingTable() {
     const startDiv = document.createElement("div");
-    startDiv.classList.add("row"); 
-    startDiv.classList.add("mt-4"); 
-    startDiv.classList.add("d-flex"); 
+    startDiv.classList.add("row");
+    startDiv.classList.add("mt-4");
+    startDiv.classList.add("d-flex");
     startDiv.classList.add("course-meeting");
-        
+
     // Get the amount of course-meetings
     const meetingNumber = document.getElementsByClassName("course-meeting").length;
-    startDiv.setAttribute("data-meeting", meetingNumber);     
+    startDiv.setAttribute("data-meeting", meetingNumber);
     startDiv.setAttribute("id", "course-meeting-" + meetingNumber);
 
     const paddingDiv = document.createElement("div");
@@ -169,7 +191,7 @@
     startDiv.appendChild(paddingDiv);
 
     // Create Label
-    const label  = document.createElement("p");
+    const label = document.createElement("p");
     label.innerText = "Meeting " + (Number(meetingNumber) + 1) + ":";
     label.setAttribute("id", "course-meeting-label-" + meetingNumber);
     paddingDiv.appendChild(label);
@@ -189,7 +211,7 @@
     paddingDiv.appendChild(table);
     // End of table
 
-  
+
     // Add Ending Row
     const endingRow = document.createElement("div");
     endingRow.classList.add("row", "d-flex");
@@ -223,7 +245,7 @@
     return startDiv;
   }
 
-  function addTableHeader(){
+  function addTableHeader() {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
 
@@ -231,21 +253,21 @@
     for (let index = 0; index < tableColums; index++) {
       const th = document.createElement("th");
       th.classList.add("col");
-      switch(index){
+      switch (index) {
         case 0:
           th.innerText = "Day";
           break;
-          case 1:
-            th.innerText = "Start Time";
-            break;
+        case 1:
+          th.innerText = "Start Time";
+          break;
 
-            case 2: 
-            th.innerText = "End Time";
-            break;
+        case 2:
+          th.innerText = "End Time";
+          break;
 
-            case 3: 
-            th.innerText = "Delete";
-            break;
+        case 3:
+          th.innerText = "Delete";
+          break;
       }
       headerRow.appendChild(th);
     }
@@ -254,7 +276,7 @@
   }
 
 
-  function addTableBody(meetingNumber){
+  function addTableBody(meetingNumber) {
     const body = document.createElement("tbody");
     // Group number is 0 because its the first body row
     body.appendChild(createTableRow(meetingNumber));
@@ -262,17 +284,17 @@
   }
 
   // Only should be used when first creating the table
-  function createTableRow(meetingNumber){
+  function createTableRow(meetingNumber) {
     // Find the parent and count how many row it has
     let meetingObj = document.getElementById("course-meeting-table-" + meetingNumber);
     let numberOfGroups = 0;
-    if(meetingObj != undefined || meetingObj != null){
+    if (meetingObj != undefined || meetingObj != null) {
       numberOfGroups = meetingObj.rows.length - 1; // Get the number of rows minus the header
     }
     //
     const tr = document.createElement("tr");
     tr.classList.add("align-middle", "course-group");
-    tr.setAttribute("data-group", numberOfGroups);     
+    tr.setAttribute("data-group", numberOfGroups);
 
     // Create select
     const tdSelect = document.createElement("td");
@@ -304,7 +326,7 @@
     button.classList.add("btn", "btn-outline-danger");
     button.setAttribute("type", "button");
     button.setAttribute("onclick", "deleteGroup(this);");
-    
+
     const icon = document.createElement("i");
     icon.classList.add("bi", "bi-x-circle", "text-danger");
     button.appendChild(icon);
@@ -318,8 +340,6 @@
 
     return tr;
   }
-
-
 </script>
 
 <body onload="addMeeting();">
@@ -422,7 +442,7 @@
             <!-- end of create Grouping -->
             <!-- Add meeting button-->
             <div class="col-md-10 mx-auto mt-5 d-flex justify-content-end">
-              <button class="btn btn-info" type="button" onClick="addMeeting();">Add Meeting</button>
+              <button class="btn btn-info" type="button" onClick="addMeeting();" id="addMeetingBtn">Add Meeting</button>
             </div>
 
 
