@@ -118,6 +118,7 @@
     // Get the amount of course-meetings
     const meetingNumber = document.getElementsByClassName("course-meeting").length;
     startDiv.setAttribute("data-meeting", meetingNumber);     
+    startDiv.setAttribute("id", "course-meeting-" + meetingNumber);
 
     const paddingDiv = document.createElement("div");
     paddingDiv.classList.add("col-md-10", "mx-auto");
@@ -125,18 +126,19 @@
 
     // Create Label
     const label  = document.createElement("p");
-    label.innerText = "Meeting " + meetingNumber + ":";
+    label.innerText = "Meeting " + (Number(meetingNumber) + 1) + ":";
     paddingDiv.appendChild(label);
 
     // Create Table
     const table = document.createElement("table");
     table.classList.add("table", "table-striped", "table-sm");
-    
+    table.setAttribute("id", "course-meeting-table-" + meetingNumber);
+
     // Add table headers
     table.appendChild(addTableHeader());
 
     // Add table Body
-    table.appendChild(addTableBody());
+    table.appendChild(addTableBody(meetingNumber));
     // Add Table Body
 
     paddingDiv.appendChild(table);
@@ -176,6 +178,51 @@
     thead.append(headerRow);
     return thead;
   }
+
+
+  function addTableBody(meetingNumber){
+    const body = document.createElement("tbody");
+
+    // Group number is 0 because its the first body row
+    body.appendChild(createTableRow(meetingNumber));
+    return body;
+  }
+
+  // Only should be used when first creating the table
+  function createTableRow(meetingNumber){
+    // Find the parent and count how many row it has
+    let meetingObj = document.getElementById("course-meeting-table-" + meetingNumber);
+    let numberOfGroups = 0;
+    if(meetingObj != undefined || meetingObj != null){
+      meetingObj.childElementCount - 1; // Get the number of rows minus the header
+    }
+    //
+    const tr = document.createElement("tr");
+    tr.classList.add("align-middle", "course-group");
+    tr.setAttribute("data-group", numberOfGroups);     
+
+    // Create select
+    const tdSelect = document.createElement("td");
+    tdSelect.innerText = "Hello";
+
+    const tdStart = document.createElement("td");
+    tdStart.innerText = ",";
+
+    const tdEnd = document.createElement("td");
+    tdEnd.innerText = "World";
+
+    const tdDelete = document.createElement("td");
+    tdDelete.innerText = "!";
+
+    tr.appendChild(tdSelect);
+    tr.appendChild(tdStart);
+    tr.appendChild(tdEnd);
+    tr.appendChild(tdDelete);
+
+    return tr;
+  }
+
+
 </script>
 
 <body onload="addMeeting();">
