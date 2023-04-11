@@ -12,8 +12,9 @@
 </head>
 
 <style>
-  td>button:hover>i{
-     color: rgba(var(--bs-light-rgb),var(--bs-text-opacity))!important;;
+  td>button:hover>i {
+    color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+    ;
   }
 </style>
 
@@ -22,6 +23,7 @@
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
 
+  // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
     const value = selectedObject.value;
 
@@ -63,6 +65,7 @@
     levelsObj.removeAttribute('disabled');
   }
 
+  // Update the displayed start and end dates of the semester
   function updateStartAndEndDates(selectedObject) {
     const value = selectedObject.value;
     let startObj = document.getElementById("start-date");
@@ -77,15 +80,105 @@
 
   // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
   function getFormattedDate(date) {
+
     let year = date.getFullYear();
     let month = (1 + date.getMonth()).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
 
     return day + '/' + month + '/' + year;
   }
+
+  // Add an alternate time a student could come to class
+  function addGroup(selectedObject){
+
+  }
+
+  // Delete the selected alternate time
+  // If its the last on in the meeting delete the meeeting also, unless its the last one
+  function deleteGroup(selectedObject){
+// 
+  }
+
+  // Add a new meeting
+  function addMeeting(){
+    let location = document.getElementById("meeting-location");
+
+    location.appendChild(createMeetingTable());
+    location.appendChild(createMeetingTable());
+
+  }
+
+  function createMeetingTable(){
+    const startDiv = document.createElement("div");
+    startDiv.classList.add("row"); 
+    startDiv.classList.add("mt-4"); 
+    startDiv.classList.add("d-flex"); 
+    startDiv.classList.add("course-meeting");
+        
+    // Get the amount of course-meetings
+    const meetingNumber = document.getElementsByClassName("course-meeting").length;
+    startDiv.setAttribute("data-meeting", meetingNumber);     
+
+    const paddingDiv = document.createElement("div");
+    paddingDiv.classList.add("col-md-10", "mx-auto");
+    startDiv.appendChild(paddingDiv);
+
+    // Create Label
+    const label  = document.createElement("p");
+    label.innerText = "Meeting " + meetingNumber + ":";
+    paddingDiv.appendChild(label);
+
+    // Create Table
+    const table = document.createElement("table");
+    table.classList.add("table", "table-striped", "table-sm");
+    
+    // Add table headers
+    table.appendChild(addTableHeader());
+
+    // Add table Body
+    table.appendChild(addTableBody());
+    // Add Table Body
+
+    paddingDiv.appendChild(table);
+    // End of table
+
+    // Add Ending Row
+    // End of Ending Row
+    return startDiv;
+  }
+
+  function addTableHeader(){
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const tableColums = 4;
+    for (let index = 0; index < tableColums; index++) {
+      const th = document.createElement("th");
+      th.classList.add("col");
+      switch(index){
+        case 0:
+          th.innerText = "Day";
+          break;
+          case 1:
+            th.innerText = "Start Time";
+            break;
+
+            case 2: 
+            th.innerText = "End Time";
+            break;
+
+            case 3: 
+            th.innerText = "Delete";
+            break;
+      }
+      headerRow.appendChild(th);
+    }
+    thead.append(headerRow);
+    return thead;
+  }
 </script>
 
-<body>
+<body onload="addMeeting();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -179,52 +272,64 @@
             </div>
 
 
-            <!-- Create Grouping -->
-            <div class="row mt-4 d-flex">
-                <div class="col-md-10 mx-auto">
-                    <label>Meeting 1:</label>
-              <table class="table table-striped table-hover table-sm" id="guardianTable">
-                <thead>
-                  <tr>
-                    <th scope="col">Day</th>
-                    <th scope="col" colspan="2">Time</th>
-                    <th scope="col">Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><select name="day" id="meeting-1-group-1">
-                      <% if(days != null) {
+            <!-- Create Groupings -->
+            <div class="row mt-4 d-flex course-meeting" data-meeting="0">
+              <div class="col-md-10 mx-auto">
+                <label>Meeting 1:</label>
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">Day</th>
+                      <th scope="col">Start Time</th>
+                      <th scope="col">End Time</th>
+                      <th scope="col">Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="align-middle course-group" data-group="0">
+                      <td><select name="day" id="meeting-table-0-group-0-day">
+                          <% if(days != null) {
                         for (let index = 0; index < days.length; index++) {
                           const day = days[index];
                         %>
-                        <option>
-                          <%= day.name %>
-                        </option>
+                          <option>
+                            <%= day.name %>
+                          </option>
 
-                      <% }}%>
-                      </select></td>
-                    <td><input type="time"></td>
-                    <td><input type="time"></td>
-                    <td><button class="btn btn-outline-danger" type="button"><i class="bi bi-x-circle text-danger"></i></button></td>
+                          <% }}%>
+                        </select></td>
+                      <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-start"></td>
+                      <td><input type="time" id="meeting-table-0-group-0-day" name="meeting-table-0-group-0-end"></td>
+                      <td><button class="btn btn-outline-danger" type="button" onclick="deleteGroup(this);"><i class="bi bi-x-circle text-danger"></i></button></td>
                     </tr>
-                </tbody>
-              </table>
-              <button class="btn btn-primary float-end">Add Time</button>
-            </div>
+                  </tbody>
+                </table>
+                <div class="row d-flex">
+                  <div class="col w-auto d-flex justify-content-center align-items-center text-center">
+                    <span class="text-danger col">Error</span>
+                  </div>
+                  <div class="col-auto w-auto d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary">Add Time</button>
+                  </div>
+                </div>
 
-            <div class="col-md-10 mx-auto mt-5">
-                <button class="btn btn-info float-end" type="button">Add Meeting</button>
+              </div>
             </div>
+            <div class="row" id="meeting-location">
             </div>
-
             <!-- end of create Grouping -->
+            <!-- Add meeting button-->
+            <div class="col-md-10 mx-auto mt-5 d-flex justify-content-end">
+              <button class="btn btn-info" type="button">Add Meeting</button>
+            </div>
+
 
             <div class="text-center">
               <button class="btn btn-primary mt-2" type="submit">
                 Create Course
               </button>
             </div>
+            <!-- Add meeting button-->
 
 
             <div class="text-center">
