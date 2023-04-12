@@ -124,6 +124,15 @@
 
     table.deleteRow(tr.rowIndex);
 
+    let numberOfRows = table.rows.length;
+    console.log(table.childNodes[1].childNodes);
+
+    // Update the remaining rows ids
+    for (let index = 0; index < table.childNodes[1].childNodes.length; index++){
+      const tableBodyRow = table.childNodes[1].childNodes[index];
+      tableBodyRow.setAttribute("data-group", index);
+    }
+
     // If we are now below the max group limit diaplay the add btn
     if(table.rows.length - 1 < maxGroups){
       let meetingNumber = table.parentElement.parentElement.getAttribute("data-meeting")
@@ -131,10 +140,8 @@
       addLineBtn.style.visibility = "visible";
     }
 
-    // Now see if it was the last on add if so remove the meeting and update remaning meetings
-    let numberOfRows = table.rows.length;
-
-    // 1 == header row, so body is empty
+    // Now see if it was the last one, and if so remove the meeting and update remaning meetings
+    // 1 == header row, so body is empty then remove table and update the ids of the remaining tables
     if (numberOfRows == 1) {
       // Go up to the highest div and delete it
       table.parentElement.parentElement.remove();
