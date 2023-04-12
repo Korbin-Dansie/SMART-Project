@@ -11,10 +11,22 @@
   <%- include('partials/favico') %>
 </head>
 
+<style>
+  td>button:hover>i {
+    color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+    ;
+  }
+</style>
+
 <script>
   const semesters = <%- JSON.stringify(locals.semesters) %>;
   const classes = <%- JSON.stringify(locals.classes) %>;
+  const days = <%- JSON.stringify(locals.days) %>;
 
+  const maxMeetings = 2;
+  const maxGroups = 2;
+
+  // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
     const value = selectedObject.value;
 
@@ -56,6 +68,7 @@
     levelsObj.removeAttribute('disabled');
   }
 
+  // Update the displayed start and end dates of the semester
   function updateStartAndEndDates(selectedObject) {
     const value = selectedObject.value;
     let startObj = document.getElementById("start-date");
@@ -64,21 +77,343 @@
     // Find the selected semester
     const found = semesters.find(element => element.semester_id == value);
 
-    startObj.value = getFormattedDate(new Date(found.start_date));
-    endObj.value = getFormattedDate(new Date(found.end_date));
+    startObj.innerHTML = getFormattedDate(new Date(found.start_date));
+    endObj.innerHTML = getFormattedDate(new Date(found.end_date));
   }
 
   // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
   function getFormattedDate(date) {
+
     let year = date.getFullYear();
     let month = (1 + date.getMonth()).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
 
-    return year + '-' + month + '-' + day;
+    return day + '/' + month + '/' + year;
+  }
+
+  // Add an alternate time a student could come to class
+  function addGroup(selectedObject) {
+    // Go up four parents to get the div with the --data-meeting attribute
+    const meetingNumber = selectedObject.parentElement.parentElement.parentElement.parentElement.getAttribute("data-meeting");
+
+    // Now that we have the data-meeting number we can add a row onto the table
+    const table = document.getElementById("course-meeting-table-" + meetingNumber);
+    const tableBody = table.childNodes[1];
+
+    tableBody.appendChild(createTableRow(meetingNumber));
+
+    // If we are now at the limit prevent any more rows
+    if(table.rows.length - 1 >= maxGroups){
+      const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+      addLineBtn.style.visibility = "hidden";
+    }
+  }
+
+  // Delete the selected alternate time
+  // If its the last on in the meeting delete the meeeting also, unless its the last one
+  function deleteGroup(selectedObject) {
+    // Go up two parents to the tr element
+    let tr = selectedObject.parentElement.parentElement;
+    let table = tr.parentElement.parentElement;
+
+
+    // If this the the last group in the last meeting prevent it from being deleted
+    if (document.getElementsByClassName("course-meeting").length == 1 && table.rows.length == 2) {
+      return;
+    }
+
+    table.deleteRow(tr.rowIndex);
+
+    let numberOfRows = table.rows.length;
+    console.log(table.childNodes[1].childNodes);
+
+    // Update the remaining rows ids
+    for (let index = 0; index < table.childNodes[1].childNodes.length; index++){
+      const tableBodyRow = table.childNodes[1].childNodes[index];
+      tableBodyRow.setAttribute("data-group", index);
+    }
+
+    // If we are now below the max group limit diaplay the add btn
+    if(table.rows.length - 1 < maxGroups){
+      let meetingNumber = table.parentElement.parentElement.getAttribute("data-meeting")
+      const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+      addLineBtn.style.visibility = "visible";
+    }
+
+    // Now see if it was the last one, and if so remove the meeting and update remaning meetings
+    // 1 == header row, so body is empty then remove table and update the ids of the remaining tables
+    if (numberOfRows == 1) {
+      // Go up to the highest div and delete it
+      table.parentElement.parentElement.remove();
+
+      // Then update all remaining meetings id's
+      let meetings = document.getElementsByClassName("course-meeting");
+
+      for (let index = 0; index < meetings.length; index++) {
+        let meeting = meetings[index];
+        let meetingNumber = meeting.getAttribute("data-meeting");
+
+        // update each component that is numbered
+        meeting.setAttribute("data-meeting", index);
+        meeting.setAttribute("id", "course-meeting-" + index);
+
+        let label = document.getElementById("course-meeting-label-" + meetingNumber);
+        label.setAttribute("id", "course-meeting-label-" + index);
+        label.innerText = "Meeting " + (Number(index) + 1) + ":";
+
+        let table = document.getElementById("course-meeting-table-" + meetingNumber);
+        table.setAttribute("id", "course-meeting-table-" + index);
+
+        let errorMessage = document.getElementById("course-meeting-error-" + meetingNumber);
+        errorMessage.setAttribute("id", "course-meeting-error-" + index);
+
+        let addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
+        addLineBtn.setAttribute("id", "course-meeting-addtime-" + index);
+      }
+
+      // If the removed meetings is now below the max meeting amout set the add meeting btn to visible
+      let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
+      if (numberOfMeetings < maxMeetings) {
+      let addMeetingBtn = document.getElementById("addMeetingBtn");
+      addMeetingBtn.style.visibility = "visible";
+      return;
+    }
+    }
+  }
+
+  // Add a new meeting
+  function addMeeting() {
+    let location = document.getElementById("meeting-location");
+
+    location.appendChild(createMeetingTable());
+
+    // Hide the add meeting btn if max length is reached
+    let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
+    if (numberOfMeetings == maxMeetings) {
+      let addMeetingBtn = document.getElementById("addMeetingBtn");
+      addMeetingBtn.style.visibility = "hidden";
+
+      return;
+    }
+  }
+
+  function createMeetingTable() {
+    const startDiv = document.createElement("div");
+    startDiv.classList.add("row");
+    startDiv.classList.add("mt-4");
+    startDiv.classList.add("d-flex");
+    startDiv.classList.add("course-meeting");
+
+    // Get the amount of course-meetings
+    const meetingNumber = document.getElementsByClassName("course-meeting").length;
+    startDiv.setAttribute("data-meeting", meetingNumber);
+    startDiv.setAttribute("id", "course-meeting-" + meetingNumber);
+
+    const paddingDiv = document.createElement("div");
+    paddingDiv.classList.add("col-md-10", "mx-auto");
+    startDiv.appendChild(paddingDiv);
+
+    // Create Label
+    const label = document.createElement("p");
+    label.innerText = "Meeting " + (Number(meetingNumber) + 1) + ":";
+    label.setAttribute("id", "course-meeting-label-" + meetingNumber);
+    paddingDiv.appendChild(label);
+
+    // Create Table
+    const table = document.createElement("table");
+    table.classList.add("table", "table-striped", "table-sm");
+    table.setAttribute("id", "course-meeting-table-" + meetingNumber);
+
+    // Add table headers
+    table.appendChild(addTableHeader());
+
+    // Add table Body
+    table.appendChild(addTableBody(meetingNumber));
+    // Add Table Body
+
+    paddingDiv.appendChild(table);
+    // End of table
+
+
+    // Add Ending Row
+    const endingRow = document.createElement("div");
+    endingRow.classList.add("row", "d-flex");
+
+    const errorDiv = document.createElement("div");
+    errorDiv.classList.add("col", "w-auto", "d-flex", "justify-content-center", "align-items-center", "text-center");
+
+    const errorSpan = document.createElement("span");
+    errorSpan.classList.add("text-danger");
+    errorSpan.setAttribute("id", "course-meeting-error-" + meetingNumber);
+    // errorSpan.style.visibility = "hidden";
+    errorDiv.appendChild(errorSpan);
+
+    endingRow.appendChild(errorDiv);
+
+    const addLineDiv = document.createElement("div");
+    addLineDiv.classList.add("col-auto", "w-auto", "d-flex", "justify-content-end");
+
+    const addLineBtn = document.createElement("button");
+    addLineBtn.classList.add("btn", "btn-primary");
+    addLineBtn.setAttribute("type", "button");
+    addLineBtn.setAttribute("onClick", "addGroup(this)");
+    addLineBtn.setAttribute("id", "course-meeting-addtime-" + meetingNumber);
+    addLineBtn.innerText = "Add Time";
+
+    addLineDiv.appendChild(addLineBtn);
+
+
+    endingRow.appendChild(addLineDiv);
+
+    paddingDiv.appendChild(endingRow);
+    // End of Ending Row
+
+    return startDiv;
+  }
+
+  function addTableHeader() {
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const tableColums = 4;
+    for (let index = 0; index < tableColums; index++) {
+      const th = document.createElement("th");
+      th.classList.add("col");
+      switch (index) {
+        case 0:
+          th.innerText = "Day";
+          break;
+        case 1:
+          th.innerText = "Start Time";
+          break;
+
+        case 2:
+          th.innerText = "End Time";
+          break;
+
+        case 3:
+          th.innerText = "Delete";
+          break;
+      }
+      headerRow.appendChild(th);
+    }
+    thead.append(headerRow);
+    return thead;
+  }
+
+
+  function addTableBody(meetingNumber) {
+    const body = document.createElement("tbody");
+    // Group number is 0 because its the first body row
+    body.appendChild(createTableRow(meetingNumber));
+    return body;
+  }
+
+  // Only should be used when first creating the table
+  function createTableRow(meetingNumber) {
+    // Find the parent and count how many row it has
+    let meetingObj = document.getElementById("course-meeting-table-" + meetingNumber);
+    let numberOfGroups = 0;
+    if (meetingObj != undefined || meetingObj != null) {
+      numberOfGroups = meetingObj.rows.length - 1; // Get the number of rows minus the header
+    }
+    //
+    const tr = document.createElement("tr");
+    tr.classList.add("align-middle", "course-group");
+    tr.setAttribute("data-group", numberOfGroups);
+
+    // Create select
+    const tdSelect = document.createElement("td");
+    const select = document.createElement("select");
+    select.classList.add("form-control");
+    days.forEach(day => {
+      const option = document.createElement("option");
+      option.setAttribute("value", day.day_of_week_id);
+      option.innerText = day.name;
+      select.appendChild(option);
+    });
+    tdSelect.appendChild(select);
+
+    const tdStart = document.createElement("td");
+    const start = document.createElement("input");
+    start.classList.add("form-control");
+    start.setAttribute("type", "time");
+    tdStart.appendChild(start);
+
+    const tdEnd = document.createElement("td");
+    const end = document.createElement("input");
+    end.classList.add("form-control");
+    end.setAttribute("type", "time");
+    tdEnd.appendChild(end);
+
+    const tdDelete = document.createElement("td");
+    tdDelete.classList.add("text-end");
+    const button = document.createElement("button");
+    button.classList.add("btn", "btn-outline-danger");
+    button.setAttribute("type", "button");
+    button.setAttribute("onclick", "deleteGroup(this);");
+
+    const icon = document.createElement("i");
+    icon.classList.add("bi", "bi-x-circle", "text-danger");
+    button.appendChild(icon);
+
+    tdDelete.appendChild(button);
+
+    tr.appendChild(tdSelect);
+    tr.appendChild(tdStart);
+    tr.appendChild(tdEnd);
+    tr.appendChild(tdDelete);
+
+    return tr;
+  }
+
+  // validate the form
+  // Also assign name attributes to the meetings
+  function validateForm(e){
+    let errorMessage = "";
+    if(document.getElementById("classSemester").value == ""){
+      errorMessage += "Please select a semester.\n";
+    }
+    if(document.getElementById("classSubject").value == ""){
+      errorMessage += "Please select a subject.\n";
+    }
+
+    // Loop through each meeting table and add names
+    let meeetings = document.getElementsByClassName("course-meeting");
+    console.log(meeetings);
+    for(let meeting of meeetings) {
+      let table = meeting.querySelector('table');
+      let meetingNumber = meeting.getAttribute("data-meeting");
+
+      // Loop through the rows of the table
+      for (let index = 1; index < table.rows.length; index++) {
+        const row = table.rows[index];
+        for (let j = 0; j < row.childNodes.length; j++) {
+          const td = row.childNodes[j];
+          switch(j){
+            case 0:
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][day]");
+              break;
+              case 1:
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][start]");
+              break;
+              case 2:
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][end]");
+              break;
+          }
+        }
+      }
+    };
+
+    if(errorMessage != ""){
+      document.getElementById("message").innerText = errorMessage;
+      e.preventDefault();
+      return;
+    }
   }
 </script>
 
-<body>
+<body onload="addMeeting();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -88,14 +423,14 @@
           <div class="text-center">
             <h3 class="text-primary">Create New Course</h3>
           </div>
-          <form method="post" action="" onSubmit="">
+          <form method="post" action="" onSubmit="validateForm(event);">
 
             <div class="row pt-4">
               <div class="col-md-10 mx-auto">
 
                 <!--Class semesters-->
                 <div class="input-group mt-4">
-                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateStartAndEndDates(this)">
+                  <select class="form-select" name="classSemester" id="classSemester" onchange="updateStartAndEndDates(this)">
                     <option value="" selected disabled hidden>Semesters</option>
                     <% 
                         if(locals.semesters != null){
@@ -118,7 +453,7 @@
                     <div>
                       <label>Start Date:</label>
                       <div class="input-group mb-3">
-                        <input class="form-control" id="start-date" type="date" id="start" value="" disabled>
+                        <p class="form-control user-select-none bg-light" id="start-date">dd/mm/yyyy</p>
                       </div>
                     </div>
                   </div>
@@ -127,7 +462,7 @@
                     <div>
                       <label>End Date:</label>
                       <div class="input-group mb-3">
-                        <input class="form-control" id="end-date" type="date" id="end" value="" disabled>
+                        <p class="form-control user-select-none bg-light" id="end-date">dd/mm/yyyy</p>
                       </div>
                     </div>
                   </div>
@@ -172,35 +507,22 @@
             </div>
 
 
-            <!-- Create Grouping -->
-            <div class="row mt-4 d-flex">
-                <div class="col-md-10 mx-auto">
-                    <label>Meeting 1:</label>
-              <table class="table table-striped table-hover table-sm" id="guardianTable">
-                <thead>
-                  <tr>
-                    <th scope="col">Day</th>
-                    <th scope="col" colspan="2">Time</th>
-                    <th scope="col">Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
+            <!-- Create Groupings -->
+            <div class="row" id="meeting-location">
             </div>
-
-            <div class="col-md-10 mx-auto">
-                <button class="btn btn-info float-end" type="button">Add Meeting</button>
-            </div>
-            </div>
-
             <!-- end of create Grouping -->
+            <!-- Add meeting button-->
+            <div class="col-md-10 mx-auto mt-5 d-flex justify-content-end">
+              <button class="btn btn-info" type="button" onClick="addMeeting();" id="addMeetingBtn">Add Meeting</button>
+            </div>
+
 
             <div class="text-center">
               <button class="btn btn-primary mt-2" type="submit">
                 Create Course
               </button>
             </div>
+            <!-- Add meeting button-->
 
 
             <div class="text-center">

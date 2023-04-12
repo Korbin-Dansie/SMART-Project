@@ -46,9 +46,87 @@ function getNewCoursePart2(req, res, obj){
             );
         });
         obj.classes = classes;
-        console.log(classes);
+
+        getNewCoursePart3(req, res, obj);
+    });
+}
+
+// Get the days of week
+function getNewCoursePart3(req, res, obj){
+    const sql = "CALL `get_day_of_weeks`();";
+    dbCon.query(sql, function (err, results) {
+        if (err) {
+          throw err;
+        }
+
+        let days = new Array();
+        results[0].forEach(element => {
+            days.push(
+                {...element}
+            );
+        });
+        obj.days = days;
         // The spread operator ... puts all the values in like "semesters: obj.semesters" so I dont have to do it manualy
         res.render('NewCourse', {...obj});
     });
 }
+
+
+/* GET new course page. */
+router.post('/', function (req, res, next) {
+    let obj = new Object();
+    postNewCoursePart1(req, res, obj);
+});
+
+// Create the new class
+function postNewCoursePart1(req, res, obj){
+    const sql = "CALL `create_class`(?,?,?,@new_class_id); SELECT @new_class_id;";
+    dbCon.query(sql, [req.body.classSemester, req.body.classSubject, req.body.classLevel], function (err, results) {
+        if (err) {
+          throw err;
+        }
+
+        obj.new_class_id = results[1][0]["@new_class_id"];
+        postNewCoursePart2(req, res, obj);
+    });
+}
+
+
+// Create the new class times
+function postNewCoursePart2(req, res, obj){
+    // Loops through the meetings / tables
+    for (let i = 0; req.body["meeting[" + i + "][day]"] != undefined; i++) {
+        console.log("Meeting:");
+        console.log(req.body["meeting[" + i + "][day]"]);
+
+        // Loops throug the groups / rows
+        for (let j = 0; req.body["meeting[" + i + "][day]"][j] != undefined; j++) {
+            console.log("Parts:");
+            const day = req.body["meeting[" + i + "][day]"][j];
+            const start = req.body["meeting[" + i + "][start]"][j];
+            const end = req.body["meeting[" + i + "][end]"][j];
+
+            let sql = "CALL create_class_time(?,?,?,?,?)";
+            dbCon.query(sql, [obj.new_class_id, day, i, start, end], function (err, results) {
+                if (err) {
+                  throw err;
+                }
+            });
+        }
+    }
+
+    postNewCoursePart3(req, res, obj);
+}
+
+// Assign the instructor to the new class
+function postNewCoursePart3(req, res, obj){
+    let sql = "CALL create_instructor_schedule(?,?)";
+    dbCon.query(sql, [req.session.emailAddress, obj.new_class_id], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        res.redirect("/");
+    });
+}
+
 module.exports = router;
