@@ -76,9 +76,27 @@ function getNewCoursePart3(req, res, obj){
 router.post('/', function (req, res, next) {
     let obj = new Object();
 
+    // https://www.freecodecamp.org/news/build-dynamic-forms-in-react/
+    // https://www.geeksforgeeks.org/how-to-get-values-from-html-input-array-using-javascript/
     console.log(req.body);
 
-    console.log(req.body);
+    let class_times = new Array();
+    console.log(req.body['meeting']);
+
+    console.log("Test Loop");
+
+    let string = ""
+    for (let i = 0; req.body["meeting[" + i + "][day]"] != undefined; i++) {
+        console.log("Meeting:");
+        console.log(req.body["meeting[" + i + "][day]"]);
+
+        for (let j = 0; req.body["meeting[" + i + "][day]"][j] != undefined; j++) {
+            console.log("Parts:");
+            const element = req.body["meeting[" + i + "][day]"][j];
+            console.log(element);
+        }
+    }
+
 
     getNewCoursePart1(req, res, obj);
 });
