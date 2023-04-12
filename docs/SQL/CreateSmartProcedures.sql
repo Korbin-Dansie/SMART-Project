@@ -6,10 +6,13 @@ DROP PROCEDURE IF EXISTS `create_account_type`;
 DROP PROCEDURE IF EXISTS `create_application`;
 DROP PROCEDURE IF EXISTS `create_application_status`;
 DROP PROCEDURE IF EXISTS `create_assignment_status`;
+DROP PROCEDURE IF EXISTS `create_class`;
+DROP PROCEDURE IF EXISTS `create_class_time`;
 DROP PROCEDURE IF EXISTS `create_contact`;
 DROP PROCEDURE IF EXISTS `create_contact_type`;
 DROP PROCEDURE IF EXISTS `create_day_of_week`;
 DROP PROCEDURE IF EXISTS `create_guardian`;
+DROP PROCEDURE IF EXISTS `create_instructor_schedule`;
 DROP PROCEDURE IF EXISTS `create_level`;
 DROP PROCEDURE IF EXISTS `create_meal_time`;
 DROP PROCEDURE IF EXISTS `create_person`;
@@ -20,6 +23,7 @@ DROP PROCEDURE IF EXISTS `create_subject`;
 DROP PROCEDURE IF EXISTS `create_subject_name`;
 DROP PROCEDURE IF EXISTS `create_user`;
 DROP PROCEDURE IF EXISTS `get_classes`;
+DROP PROCEDURE IF EXISTS `get_day_of_weeks`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
@@ -582,5 +586,91 @@ BEGIN
 	SELECT `day_of_week_id`, `name`
 	FROM `smart_project`.`day_of_week`
     ORDER BY `day_of_week_id` ASC;
+END;
+$$
+
+/***************************************************************
+* Procedure create_class
+* <comment>Procedure create_class created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE `create_class`(
+	IN semester_id SMALLINT UNSIGNED,
+    IN subject_name_id SMALLINT UNSIGNED,
+    IN level_id TINYINT UNSIGNED,
+    OUT class_id INT UNSIGNED
+)
+BEGIN
+	-- Find the subject id
+    DECLARE subject_id SMALLINT UNSIGNED;
+    
+    SELECT s.`subject_id` 
+    INTO subject_id
+    FROM `subject` AS s
+    WHERE s.subject_name_id = subject_name_id AND
+    s.level_id = level_id
+    LIMIT 1;
+    
+    -- Start and end dates will be handled by a trigger
+	INSERT INTO `class`
+	(`semester_id`,
+	`subject_id`)
+	VALUES
+	(semester_id, 
+    subject_id
+    );
+    
+     SET class_id = LAST_INSERT_ID();
+END;
+$$
+
+/***************************************************************
+* Procedure create_class_time
+* <comment>Procedure create_class_time created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE `create_class_time`(
+	IN class_id INT UNSIGNED,
+    IN day_of_week_id TINYINT UNSIGNED,
+    IN `group` TINYINT UNSIGNED,
+    IN start_time TIME,
+    IN end_time TIME
+)
+BEGIN
+	INSERT INTO `class_time`
+	(`class_id`,
+	`day_of_week_id`,
+	`group`,
+	`start_time`,
+	`end_time`)
+	VALUES
+	(class_id,
+    day_of_week_id,
+    `group`,
+    start_time,
+    end_time);
+END;
+$$
+
+/***************************************************************
+* Procedure create_instructor_schedule
+* <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE `create_instructor_schedule`(
+	IN email VARCHAR(255),
+    IN class_id INT UNSIGNED
+)
+BEGIN
+	-- Since we are storing the email in the session we need to get the user_id from their email
+    DECLARE user_id MEDIUMINT UNSIGNED;
+    
+    SELECT u.user_id INTO user_id
+    FROM `user` AS u
+    WHERE u.email LIKE email;
+    
+    INSERT INTO `instructor_schedule`
+	(`user_id`,
+	`class_id`)
+	VALUES
+	(user_id,
+    class_id);
 END;
 $$

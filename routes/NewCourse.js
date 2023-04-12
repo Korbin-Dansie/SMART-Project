@@ -75,29 +75,58 @@ function getNewCoursePart3(req, res, obj){
 /* GET new course page. */
 router.post('/', function (req, res, next) {
     let obj = new Object();
+    postNewCoursePart1(req, res, obj);
+});
 
-    // https://www.freecodecamp.org/news/build-dynamic-forms-in-react/
-    // https://www.geeksforgeeks.org/how-to-get-values-from-html-input-array-using-javascript/
-    console.log(req.body);
+// Create the new class
+function postNewCoursePart1(req, res, obj){
+    const sql = "CALL `create_class`(?,?,?,@new_class_id); SELECT @new_class_id;";
+    dbCon.query(sql, [req.body.classSemester, req.body.classSubject, req.body.classLevel], function (err, results) {
+        if (err) {
+          throw err;
+        }
 
-    let class_times = new Array();
-    console.log(req.body['meeting']);
+        obj.new_class_id = results[1][0]["@new_class_id"];
+        postNewCoursePart2(req, res, obj);
+    });
+}
 
-    console.log("Test Loop");
 
-    let string = ""
+// Create the new class times
+function postNewCoursePart2(req, res, obj){
+    // Loops through the meetings / tables
     for (let i = 0; req.body["meeting[" + i + "][day]"] != undefined; i++) {
         console.log("Meeting:");
         console.log(req.body["meeting[" + i + "][day]"]);
 
+        // Loops throug the groups / rows
         for (let j = 0; req.body["meeting[" + i + "][day]"][j] != undefined; j++) {
             console.log("Parts:");
-            const element = req.body["meeting[" + i + "][day]"][j];
-            console.log(element);
+            const day = req.body["meeting[" + i + "][day]"][j];
+            const start = req.body["meeting[" + i + "][start]"][j];
+            const end = req.body["meeting[" + i + "][end]"][j];
+
+            let sql = "CALL create_class_time(?,?,?,?,?)";
+            dbCon.query(sql, [obj.new_class_id, day, i, start, end], function (err, results) {
+                if (err) {
+                  throw err;
+                }
+            });
         }
     }
 
+    postNewCoursePart3(req, res, obj);
+}
 
-    getNewCoursePart1(req, res, obj);
-});
+// Assign the instructor to the new class
+function postNewCoursePart3(req, res, obj){
+    let sql = "CALL create_instructor_schedule(?,?)";
+    dbCon.query(sql, [req.session.emailAddress, obj.new_class_id], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        res.redirect("/");
+    });
+}
+
 module.exports = router;

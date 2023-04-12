@@ -51,3 +51,25 @@ CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_update`
     END IF;
  END;
 $$ 
+
+/***************************************************************
+* Trigger trigger_insert_class
+* <comment>Trigger trigger_insert_class created if it didn't already exist.</comment>
+***************************************************************/
+CREATE TRIGGER IF NOT EXISTS `trigger_insert_class`
+ BEFORE INSERT
+ ON `class` FOR EACH ROW
+ BEGIN
+	-- Get the start and end dates from the semester the class is part of
+    DECLARE start_date DATE;
+    DECLARE end_date DATE;
+    
+    SELECT s.start_date, s.end_date
+    INTO start_date, end_date
+    FROM `semester` as s
+    WHERE s.semester_id = new.semester_id;
+    
+    SET new.start_date = start_date;
+    SET new.end_date = end_date;
+ END;
+$$ 
