@@ -20,4 +20,9 @@ router.get('/', function(req, res, next) {
   
 });
 
+router.post('/', function(req, res, next) {
+  let dataToPass = encodeURIComponent(req.body.classID);
+  res.redirect('/Course?classID=' + dataToPass);
+});
+
 module.exports = router;

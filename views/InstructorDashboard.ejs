@@ -51,6 +51,7 @@
                   <th scope="col">Subject</th>
                   <th scope="col">Semester</th>
                   <th scope="col">Class ID</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
@@ -59,6 +60,12 @@
                     <td><%= locals.classes[i].subject_name %> <%= locals.classes[i].level_name %></td>
                     <td><%= locals.classes[i].description %></td>
                     <td><%= locals.classes[i].class_id %></td>
+                    <td>
+                      <form method="post">
+                        <input type="hidden" name="classID" value=<%= locals.classes[i].class_id %>>
+                        <button class="btn btn-secondary" type="submit">View</button>
+                      </form>
+                    </td>
                   </tr>
                 <% } %>
               </tbody>
