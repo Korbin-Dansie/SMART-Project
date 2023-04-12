@@ -370,8 +370,6 @@
   // validate the form
   // Also assign name attributes to the meetings
   function validateForm(e){
-    e.preventDefault();
-
     let errorMessage = "";
     if(document.getElementById("classSemester").value == ""){
       errorMessage += "Please select a semester.\n";
@@ -384,7 +382,6 @@
     let meeetings = document.getElementsByClassName("course-meeting");
     console.log(meeetings);
     for(let meeting of meeetings) {
-      let j = "asdf";
       let table = meeting.querySelector('table');
       let meetingNumber = meeting.getAttribute("data-meeting");
 
@@ -395,13 +392,13 @@
           const td = row.childNodes[j];
           switch(j){
             case 0:
-              td.childNodes[0].setAttribute("name", "course-meeting-day-" + meetingNumber + "-" + (Number(index) - 1));
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][day]");
               break;
               case 1:
-              td.childNodes[0].setAttribute("name", "course-meeting-start-" + meetingNumber + "-" + (Number(index) - 1));
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][start]");
               break;
               case 2:
-              td.childNodes[0].setAttribute("name", "course-meeting-end-" + meetingNumber + "-" + (Number(index) - 1));
+              td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][end]");
               break;
           }
         }

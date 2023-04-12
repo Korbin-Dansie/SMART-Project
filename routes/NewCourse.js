@@ -70,4 +70,16 @@ function getNewCoursePart3(req, res, obj){
         res.render('NewCourse', {...obj});
     });
 }
+
+
+/* GET new course page. */
+router.post('/', function (req, res, next) {
+    let obj = new Object();
+
+    console.log(req.body);
+
+    console.log(req.body);
+
+    getNewCoursePart1(req, res, obj);
+});
 module.exports = router;
