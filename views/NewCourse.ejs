@@ -366,6 +366,55 @@
 
     return tr;
   }
+
+  // validate the form
+  // Also assign name attributes to the meetings
+  function validateForm(e){
+    e.preventDefault();
+
+    let errorMessage = "";
+    if(document.getElementById("classSemester").value == ""){
+      errorMessage += "Please select a semester.\n";
+    }
+    if(document.getElementById("classSubject").value == ""){
+      errorMessage += "Please select a subject.\n";
+    }
+
+    // Loop through each meeting table and add names
+    let meeetings = document.getElementsByClassName("course-meeting");
+    console.log(meeetings);
+    for(let meeting of meeetings) {
+      let j = "asdf";
+      let table = meeting.querySelector('table');
+      let meetingNumber = meeting.getAttribute("data-meeting");
+
+      // Loop through the rows of the table
+      for (let index = 1; index < table.rows.length; index++) {
+        const row = table.rows[index];
+        for (let j = 0; j < row.childNodes.length; j++) {
+          const td = row.childNodes[j];
+          switch(j){
+            case 0:
+              td.childNodes[0].setAttribute("name", "course-meeting-day-" + meetingNumber + "-" + (Number(index) - 1));
+              break;
+              case 1:
+              td.childNodes[0].setAttribute("name", "course-meeting-start-" + meetingNumber + "-" + (Number(index) - 1));
+              break;
+              case 2:
+              td.childNodes[0].setAttribute("name", "course-meeting-end-" + meetingNumber + "-" + (Number(index) - 1));
+              break;
+          }
+        }
+      }
+    };
+
+    if(errorMessage != ""){
+      document.getElementById("message").innerText = errorMessage;
+      e.preventDefault();
+      return;
+    }
+
+  }
 </script>
 
 <body onload="addMeeting();">
@@ -378,14 +427,14 @@
           <div class="text-center">
             <h3 class="text-primary">Create New Course</h3>
           </div>
-          <form method="post" action="" onSubmit="">
+          <form method="post" action="" onSubmit="validateForm(event);">
 
             <div class="row pt-4">
               <div class="col-md-10 mx-auto">
 
                 <!--Class semesters-->
                 <div class="input-group mt-4">
-                  <select class="form-select" name="classSubject" id="classSubject" onchange="updateStartAndEndDates(this)">
+                  <select class="form-select" name="classSemester" id="classSemester" onchange="updateStartAndEndDates(this)">
                     <option value="" selected disabled hidden>Semesters</option>
                     <% 
                         if(locals.semesters != null){
