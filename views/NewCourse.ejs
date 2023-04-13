@@ -38,7 +38,7 @@
       levelsObj.remove(i);
     }
 
-    // Add elements
+    // Add elements to clas levels where the subject_name_id is equal to the selected value
     let classLevels = new Array()
     classes.forEach(element => {
       if (element.subject_name_id == value) {
@@ -56,10 +56,10 @@
     });
 
     console.log(classLevels);
-    // Now add the elements
+    // Now add the elements for the class levels
     classLevels.forEach(element => {
       let option = document.createElement("option");
-      option.value = element.subject_id;
+      option.value = element.level_id;
       option.text = element.level_name;
       levelsObj.add(option);
     });

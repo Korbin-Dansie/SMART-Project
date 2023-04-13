@@ -102,9 +102,32 @@ function postNewCoursePart2(req, res, obj){
         // Loops throug the groups / rows
         for (let j = 0; req.body["meeting[" + i + "][day]"][j] != undefined; j++) {
             console.log("Parts:");
-            const day = req.body["meeting[" + i + "][day]"][j];
-            const start = req.body["meeting[" + i + "][start]"][j];
-            const end = req.body["meeting[" + i + "][end]"][j];
+            let day;
+            let start;
+            let end;
+
+            // Check if values are arrays
+            if(Array.isArray(req.body["meeting[" + i + "][day]"])){
+                day = req.body["meeting[" + i + "][day]"][j];
+            }
+            else{
+                day = req.body["meeting[" + i + "][day]"];
+            }
+
+            if(Array.isArray(req.body["meeting[" + i + "][start]"])){
+                start = req.body["meeting[" + i + "][start]"][j];
+            }
+            else{
+                start = req.body["meeting[" + i + "][start]"];
+            }
+
+            if(Array.isArray(end = req.body["meeting[" + i + "][end]"])){
+                end = req.body["meeting[" + i + "][end]"][j];
+            }
+            else{
+                end = req.body["meeting[" + i + "][end]"];
+            }
+
 
             let sql = "CALL create_class_time(?,?,?,?,?)";
             dbCon.query(sql, [obj.new_class_id, day, i, start, end], function (err, results) {
