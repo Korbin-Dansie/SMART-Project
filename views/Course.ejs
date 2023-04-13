@@ -41,22 +41,24 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <p>
-                                        <b>Teacher: </b>John Doe
+                                        <b>Teacher: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.first_name %> <%= locals.classData.last_name %> <% } %>
                                     </p>
                                     <p>
-                                        <b>Subject: </b>English
+                                        <b>Subject: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.subject_name %> <% } %>
                                     </p>
                                     <p>
-                                        <b>Level: </b>3
+                                        <b>Level: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.level_name %> <% } %>
                                     </p>
                                 </div>
                                 <div class="col-md-8">
                                     <p>
-                                        <b>Semester: </b>Spring 2023
+                                        <b>Semester: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.description %> <% } %>
                                     </p>
-                                    <p>
-                                        <b>Class Schedule: </b>Tuesday and Thursday 2:00 PM - 4:00 PM
-                                    </p>
+                                    <% for (let i = 0; i < locals.classTimes.length; i++) { %>
+                                        <p>
+                                            <b>Class Schedule: </b><%= locals.classTimes[i].name %>: <%= locals.classTimes[i].start_time %> - <%= locals.classTimes[i].end_time %>
+                                        </p>
+                                    <% } %>
                                 </div>
                             </div>
 
