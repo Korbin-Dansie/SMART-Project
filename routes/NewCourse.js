@@ -86,6 +86,8 @@ function postNewCoursePart1(req, res, obj){
           throw err;
         }
 
+    
+        console.debug(`CALL \`create_class\`(${req.body.classSemester}, ${req.body.classSubject}, ${req.body.classLevel}, @new_class_id);`);
         obj.new_class_id = results[1][0]["@new_class_id"];
         postNewCoursePart2(req, res, obj);
     });
@@ -134,10 +136,10 @@ function postNewCoursePart2(req, res, obj){
                 if (err) {
                   throw err;
                 }
+                console.debug(`CALL \`create_class_time\`(${obj.new_class_id}, ${day}, ${i}, ${start}, ${end});`);
             });
         }
     }
-
     postNewCoursePart3(req, res, obj);
 }
 
@@ -148,6 +150,9 @@ function postNewCoursePart3(req, res, obj){
         if (err) {
           throw err;
         }
+
+        console.debug(`CALL \`create_instructor_schedule\`(${req.session.emailAddress}, ${obj.new_class_id});`);
+
         res.redirect("/");
     });
 }
