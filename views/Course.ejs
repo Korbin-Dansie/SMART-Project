@@ -49,14 +49,17 @@
                                     <p>
                                         <b>Level: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.level_name %> <% } %>
                                     </p>
-                                </div>
-                                <div class="col-md-8">
                                     <p>
                                         <b>Semester: </b><% if (!(locals.classData === undefined)) { %> <%= locals.classData.description %> <% } %>
                                     </p>
+                                </div>
+                                <div class="col-md-8">
+                                    <p>
+                                        <b>Class Schedules:</b>
+                                    </p>
                                     <% for (let i = 0; i < locals.classTimes.length; i++) { %>
                                         <p>
-                                            <b>Class Schedule: </b><%= locals.classTimes[i].name %>: <%= locals.classTimes[i].start_time %> - <%= locals.classTimes[i].end_time %>
+                                            <b>Group <%= locals.classTimes[i].group %>: </b><%= locals.classTimes[i].name %>: <%= locals.classTimes[i].start_time %> - <%= locals.classTimes[i].end_time %>
                                         </p>
                                     <% } %>
                                 </div>
@@ -69,23 +72,19 @@
                         <div class="col-md-5 mt-4">
                             <h3 class="text-primary">Students</h3>
                             <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-12">
-                                        <h5 class="text-primary">Sample Student</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-12">
-                                        <h5 class="text-primary">Sample Student</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-12">
-                                        <h5 class="text-primary">Sample Student</h5>
-                                    </div>
-                                </div>
+                                <% if (locals.classStudents.length > 0) { %>
+                                    <% for (let i = 0; i < locals.classStudents.length; i++) { %>
+                                        <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                                            <div class="col-12">
+                                                <h5 class="text-primary"><%= locals.classStudents[i].first_name %> <%= locals.classStudents[i].last_name %></h5>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } else { %>
+                                    <p>
+                                        No students found
+                                    </p>
+                                <% } %>
                             </div>
                         </div>
                         <div class="col-md-1"></div>
