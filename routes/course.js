@@ -7,7 +7,7 @@ var dbCon = require('../lib/database');
 router.get('/', function (req, res, next) {
     let classID = req.query.classID;
 
-    let sql = "CALL select_class(?); CALL select_class_students(?);";
+    let sql = "CALL select_class(?); CALL select_class_distinct_students(?);";
     dbCon.query(sql, [classID, classID], function (err, results) {
       if (err) {
         throw err;
