@@ -21,4 +21,6 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// DBID in the url of a get request to course page
+
 module.exports = router;
