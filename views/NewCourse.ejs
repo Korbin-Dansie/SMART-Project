@@ -23,14 +23,11 @@
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
 
-
-  // Not implemented. 
-  // Would need to change how deleting groups works, so that we we are below the minimum we delete the whole table.
   const minMeetings = 1;
   const minGroups = 1;
 
-  const maxMeetings = 2;
-  const maxGroups = 2;
+  const maxMeetings = 3;
+  const maxGroups = 3;
 
   // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
@@ -170,7 +167,7 @@
 
     // Now see if it was the last one, and if so remove the meeting and update remaning meetings
     // 1 == header row, so body is empty then remove table and update the ids of the remaining tables
-    if (numberOfRows == 1) {
+    if (numberOfRows - 1 < minGroups) {
       // Go up to the highest div and delete it
       table.parentElement.parentElement.remove();
 
