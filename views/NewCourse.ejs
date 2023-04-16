@@ -23,6 +23,8 @@
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
 
+
+  // Not implemented.
   const minMeetings = 1;
   const minGroups = 1;
 
@@ -204,17 +206,32 @@
         let addMeetingBtn = document.getElementById("addMeetingBtn");
         addMeetingBtn.style.visibility = "visible";
       }
+
     }
 
     // If we are now at the minimum number of groups make the remove buttons invisable
-    // If we are above the minimum make the delete buttons visable
-    if (table.rows.length - 1 <= minGroups) {
-      let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
-      console.log(deleteButtons);
-      deleteButtons.forEach(deleteButton => {
-        deleteButton.style.visibility = "hidden";
-      });
-    }
+    hideDeleteButtons();
+  }
+
+
+  // See for all tables wether we should hide their delete buttons or not;
+  function hideDeleteButtons(){
+      // If we deleted a table we need to check the delete buttons on the other tables
+      const tablesDiv = document.getElementsByClassName("course-meeting");
+      if (tablesDiv != undefined) {
+        if (tablesDiv.length <= minMeetings) {
+          for (let element of tablesDiv) {
+            let table = element.querySelector("table");
+            console.log(table);
+            console.log(table);
+
+            if (table.rows.length - 1 <= minGroups) {
+              let deleteButton = table.querySelector("button.btn-outline-danger");
+                deleteButton.style.visibility = "hidden";
+            }
+          }
+        }
+      }
   }
 
   // Add a new meeting
@@ -230,6 +247,18 @@
       addMeetingBtn.style.visibility = "hidden";
     }
 
+    // If we are above the min groups make the delete buttons visiable
+    const tablesDiv = document.getElementsByClassName("course-meeting");
+    if (tablesDiv.length > minMeetings) {
+      for (let table of tablesDiv) {
+        let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
+        console.log(deleteButtons);
+        deleteButtons.forEach(deleteButton => {
+          deleteButton.style.visibility = "visible";
+        });
+      };
+
+    }
     return newMeeting;
   }
 
