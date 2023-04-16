@@ -24,7 +24,8 @@
   const days = <%- JSON.stringify(locals.days) %>;
 
 
-  // Not implemented. Would need to change how deleting groups works, so that we we are below the minimum we delete the whole table.
+  // Not implemented. 
+  // Would need to change how deleting groups works, so that we we are below the minimum we delete the whole table.
   const minMeetings = 1;
   const minGroups = 1;
 
@@ -60,7 +61,6 @@
       }
     });
 
-    console.log(classLevels);
     // Now add the elements for the class levels
     classLevels.forEach(element => {
       let option = document.createElement("option");
@@ -131,7 +131,6 @@
     // If we are above the minimum make the delete buttons visable
     if (table.rows.length - 1 > minGroups) {
       let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
-      console.log(deleteButtons);
       deleteButtons.forEach(deleteButton => {
         deleteButton.style.visibility = "visible";
       });
@@ -154,7 +153,7 @@
     table.deleteRow(tr.rowIndex);
 
     let numberOfRows = table.rows.length;
-    console.log(table.childNodes[1].childNodes);
+
 
     // Update the remaining rows ids
     for (let index = 0; index < table.childNodes[1].childNodes.length; index++) {
@@ -210,28 +209,36 @@
     }
 
     // If we are now at the minimum number of groups make the remove buttons invisable
-    hideDeleteButtons();
+    updateDeleteButtonVisibility();
   }
 
 
   // See for all tables wether we should hide their delete buttons or not;
-  function hideDeleteButtons(){
-      // If we deleted a table we need to check the delete buttons on the other tables
-      const tablesDiv = document.getElementsByClassName("course-meeting");
-      if (tablesDiv != undefined) {
-        if (tablesDiv.length <= minMeetings) {
-          for (let element of tablesDiv) {
-            let table = element.querySelector("table");
-            console.log(table);
-            console.log(table);
+  function updateDeleteButtonVisibility() {
+    // If we deleted a table we need to check the delete buttons on the other tables
+    const tablesDiv = document.getElementsByClassName("course-meeting");
+    if (tablesDiv.length > 0) {
+      for (let element of tablesDiv) {
+        let table = element.querySelector("table");
 
-            if (table.rows.length - 1 <= minGroups) {
-              let deleteButton = table.querySelector("button.btn-outline-danger");
-                deleteButton.style.visibility = "hidden";
-            }
+        // If we are above min meetins set all button to visable
+        // If we are at the min meetings and min groups hide the buttons
+        if (table.rows.length - 1 <= minGroups && tablesDiv.length <= minMeetings) {
+          let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
+          for (let deleteButton of deleteButtons) {
+            deleteButton.style.visibility = "hidden";
           }
         }
+        // If we have more tables
+        else {
+          let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
+          for (let deleteButton of deleteButtons) {
+            deleteButton.style.visibility = "visible";
+          }
+        }
+
       }
+    }
   }
 
   // Add a new meeting
@@ -239,6 +246,12 @@
     let location = document.getElementById("meeting-location");
 
     let newMeeting = location.appendChild(createMeetingTable());
+
+    // Add rows to the min length
+    console.log(newMeeting);
+    while (newMeeting.querySelector("table").rows.length - 1 < minGroups) {
+      addGroup(newMeeting.querySelector("table"));
+    }
 
     // Hide the add meeting btn if max length is reached
     let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
@@ -252,7 +265,6 @@
     if (tablesDiv.length > minMeetings) {
       for (let table of tablesDiv) {
         let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
-        console.log(deleteButtons);
         deleteButtons.forEach(deleteButton => {
           deleteButton.style.visibility = "visible";
         });
@@ -369,7 +381,6 @@
 
   function addTableBody(meetingNumber) {
     const body = document.createElement("tbody");
-    // Group number is 0 because its the first body row
     body.appendChild(createTableRow(meetingNumber));
     return body;
   }
@@ -442,10 +453,6 @@
 
       let meeting = addMeeting();
 
-      for (let j = 1; j < minGroups; j++) {
-        addGroup(meeting);
-      }
-
       meetings.push(meeting);
     }
 
@@ -464,7 +471,7 @@
 
     // Loop through each meeting table and add names
     let meeetings = document.getElementsByClassName("course-meeting");
-    console.log(meeetings);
+
     for (let meeting of meeetings) {
       let table = meeting.querySelector('table');
       let meetingNumber = meeting.getAttribute("data-meeting");
