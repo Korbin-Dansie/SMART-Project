@@ -23,6 +23,9 @@
   const classes = <%- JSON.stringify(locals.classes) %>;
   const days = <%- JSON.stringify(locals.days) %>;
 
+  const minMeetings = 1;
+  const minGroups = 1;
+
   const maxMeetings = 2;
   const maxGroups = 2;
 
@@ -94,7 +97,22 @@
   // Add an alternate time a student could come to class
   function addGroup(selectedObject) {
     // Go up four parents to get the div with the --data-meeting attribute
-    const meetingNumber = selectedObject.parentElement.parentElement.parentElement.parentElement.getAttribute("data-meeting");
+    let parent = selectedObject;
+    let foundData = false;
+    while ((selectedObject != undefined || selectedObject != null) && !foundData) {
+      if (parent.getAttribute("data-meeting") != null) {
+        foundData = true;
+      } else {
+        parent = parent.parentElement;
+      }
+    }
+
+    if (parent == undefined || parent == null) {
+      return null;
+    }
+
+    const meetingNumber = parent.getAttribute("data-meeting");
+
 
     // Now that we have the data-meeting number we can add a row onto the table
     const table = document.getElementById("course-meeting-table-" + meetingNumber);
@@ -103,9 +121,18 @@
     tableBody.appendChild(createTableRow(meetingNumber));
 
     // If we are now at the limit prevent any more rows
-    if(table.rows.length - 1 >= maxGroups){
+    if (table.rows.length - 1 >= maxGroups) {
       const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
       addLineBtn.style.visibility = "hidden";
+    }
+
+    // If we are above the minimum make the delete buttons visable
+    if (table.rows.length - 1 > minGroups) {
+      let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
+      console.log(deleteButtons);
+      deleteButtons.forEach(deleteButton => {
+        deleteButton.style.visibility = "visible";
+      });
     }
   }
 
@@ -118,7 +145,7 @@
 
 
     // If this the the last group in the last meeting prevent it from being deleted
-    if (document.getElementsByClassName("course-meeting").length == 1 && table.rows.length == 2) {
+    if (document.getElementsByClassName("course-meeting").length == minMeetings && table.rows.length == minGroups + 1) {
       return;
     }
 
@@ -128,13 +155,13 @@
     console.log(table.childNodes[1].childNodes);
 
     // Update the remaining rows ids
-    for (let index = 0; index < table.childNodes[1].childNodes.length; index++){
+    for (let index = 0; index < table.childNodes[1].childNodes.length; index++) {
       const tableBodyRow = table.childNodes[1].childNodes[index];
       tableBodyRow.setAttribute("data-group", index);
     }
 
     // If we are now below the max group limit diaplay the add btn
-    if(table.rows.length - 1 < maxGroups){
+    if (table.rows.length - 1 < maxGroups) {
       let meetingNumber = table.parentElement.parentElement.getAttribute("data-meeting")
       const addLineBtn = document.getElementById("course-meeting-addtime-" + meetingNumber);
       addLineBtn.style.visibility = "visible";
@@ -174,10 +201,19 @@
       // If the removed meetings is now below the max meeting amout set the add meeting btn to visible
       let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
       if (numberOfMeetings < maxMeetings) {
-      let addMeetingBtn = document.getElementById("addMeetingBtn");
-      addMeetingBtn.style.visibility = "visible";
-      return;
+        let addMeetingBtn = document.getElementById("addMeetingBtn");
+        addMeetingBtn.style.visibility = "visible";
+      }
     }
+
+    // If we are now at the minimum number of groups make the remove buttons invisable
+    // If we are above the minimum make the delete buttons visable
+    if (table.rows.length - 1 <= minGroups) {
+      let deleteButtons = table.querySelectorAll("button.btn-outline-danger");
+      console.log(deleteButtons);
+      deleteButtons.forEach(deleteButton => {
+        deleteButton.style.visibility = "hidden";
+      });
     }
   }
 
@@ -185,16 +221,16 @@
   function addMeeting() {
     let location = document.getElementById("meeting-location");
 
-    location.appendChild(createMeetingTable());
+    let newMeeting = location.appendChild(createMeetingTable());
 
     // Hide the add meeting btn if max length is reached
     let numberOfMeetings = document.getElementsByClassName("course-meeting").length;
     if (numberOfMeetings == maxMeetings) {
       let addMeetingBtn = document.getElementById("addMeetingBtn");
       addMeetingBtn.style.visibility = "hidden";
-
-      return;
     }
+
+    return newMeeting;
   }
 
   function createMeetingTable() {
@@ -353,6 +389,9 @@
     button.setAttribute("type", "button");
     button.setAttribute("onclick", "deleteGroup(this);");
 
+    // Set button intial to invisable
+    button.style.visibility = "hidden";
+
     const icon = document.createElement("i");
     icon.classList.add("bi", "bi-x-circle", "text-danger");
     button.appendChild(icon);
@@ -367,21 +406,37 @@
     return tr;
   }
 
+  // Load the min amout of rows into the table
+  function loadMinAmountOfMeetings() {
+    let meetings = new Array();
+    for (let i = 0; i < minMeetings; i++) {
+
+      let meeting = addMeeting();
+
+      for (let j = 1; j < minGroups; j++) {
+        addGroup(meeting);
+      }
+
+      meetings.push(meeting);
+    }
+
+
+  }
   // validate the form
   // Also assign name attributes to the meetings
-  function validateForm(e){
+  function validateForm(e) {
     let errorMessage = "";
-    if(document.getElementById("classSemester").value == ""){
+    if (document.getElementById("classSemester").value == "") {
       errorMessage += "Please select a semester.\n";
     }
-    if(document.getElementById("classSubject").value == ""){
+    if (document.getElementById("classSubject").value == "") {
       errorMessage += "Please select a subject.\n";
     }
 
     // Loop through each meeting table and add names
     let meeetings = document.getElementsByClassName("course-meeting");
     console.log(meeetings);
-    for(let meeting of meeetings) {
+    for (let meeting of meeetings) {
       let table = meeting.querySelector('table');
       let meetingNumber = meeting.getAttribute("data-meeting");
 
@@ -390,14 +445,14 @@
         const row = table.rows[index];
         for (let j = 0; j < row.childNodes.length; j++) {
           const td = row.childNodes[j];
-          switch(j){
+          switch (j) {
             case 0:
               td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][day]");
               break;
-              case 1:
+            case 1:
               td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][start]");
               break;
-              case 2:
+            case 2:
               td.childNodes[0].setAttribute("name", "meeting[" + meetingNumber + "][end]");
               break;
           }
@@ -405,7 +460,7 @@
       }
     };
 
-    if(errorMessage != ""){
+    if (errorMessage != "") {
       document.getElementById("message").innerText = errorMessage;
       e.preventDefault();
       return;
@@ -413,7 +468,7 @@
   }
 </script>
 
-<body onload="addMeeting();">
+<body onload="loadMinAmountOfMeetings();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
