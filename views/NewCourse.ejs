@@ -26,8 +26,8 @@
   const minMeetings = 1;
   const minGroups = 1;
 
-  const maxMeetings = 3;
-  const maxGroups = 3;
+  const maxMeetings = 2;
+  const maxGroups = 2;
 
   // Update the levels based on the class levels ofered
   function updateSelectClassLevel(selectedObject) {
@@ -212,7 +212,7 @@
 
   // See for all tables wether we should hide their delete buttons or not;
   function updateDeleteButtonVisibility() {
-    // If we deleted a table we need to check the delete buttons on the other tables
+
     const tablesDiv = document.getElementsByClassName("course-meeting");
     if (tablesDiv.length > 0) {
       for (let element of tablesDiv) {
@@ -245,7 +245,6 @@
     let newMeeting = location.appendChild(createMeetingTable());
 
     // Add rows to the min length
-    console.log(newMeeting);
     while (newMeeting.querySelector("table").rows.length - 1 < minGroups) {
       addGroup(newMeeting.querySelector("table"));
     }
@@ -455,6 +454,8 @@
 
 
   }
+
+
   // validate the form
   // Also assign name attributes to the meetings
   function validateForm(e) {
@@ -466,9 +467,47 @@
       errorMessage += "Please select a subject.\n";
     }
 
-    // Loop through each meeting table and add names
     let meeetings = document.getElementsByClassName("course-meeting");
+    // Loop through the tables add see if their end time comes before start 
+    // or values are null
+    for (let meeting of meeetings) {
+      let table = meeting.querySelector('table');
+      let meetingNumber = meeting.getAttribute("data-meeting");
 
+      let localErrorMessage = "";
+      // Loop through the rows of the table
+      for (let index = 1; index < table.rows.length; index++) {
+        const row = table.rows[index];
+        // Get input
+        let startTime = row.childNodes[1].childNodes[0].value;
+        let endTime = row.childNodes[2].childNodes[0].value;
+
+
+        // If null
+        if(startTime == "" || endTime == ""){
+          errorMessage += "There was an error with one or more times.\n";
+          localErrorMessage += "In row " + index + " start/end time is empty\n";
+        }
+        else if(endTime < startTime){
+          errorMessage += "There was an error with one or more times.\n";
+          localErrorMessage += "In row " + index + " end time comes before start time\n";
+        }
+      }
+
+      // Add local error message
+      let tableErrorMessageDOM = meeting.querySelector("#course-meeting-error-" + meetingNumber);
+      tableErrorMessageDOM.innerText = localErrorMessage;
+      
+    }
+
+    if (errorMessage != "") {
+      document.getElementById("message").innerText = errorMessage;
+      e.preventDefault();
+      return;
+    }
+
+
+    // Loop through each meeting table and add names
     for (let meeting of meeetings) {
       let table = meeting.querySelector('table');
       let meetingNumber = meeting.getAttribute("data-meeting");
@@ -492,12 +531,6 @@
         }
       }
     };
-
-    if (errorMessage != "") {
-      document.getElementById("message").innerText = errorMessage;
-      e.preventDefault();
-      return;
-    }
   }
 </script>
 
