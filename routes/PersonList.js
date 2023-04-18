@@ -31,7 +31,7 @@ router.get('/addStudent', function(req, res, next) {
       }
   
       console.log(results2[0]);
-      parseStudentClassInfo(results[0], results2[0]);
+      parseStudentClassInfo(results[0], results2[0], res);
 
     });
   });
@@ -39,7 +39,7 @@ router.get('/addStudent', function(req, res, next) {
   // TODO: set it up to recieve a POST to add/remove students then show the page again
 });
 
-function parseStudentClassInfo(studentTable, class_time_table){
+function parseStudentClassInfo(studentTable, class_time_table, res){
   // Iterate through the class times, make an array of them and find the highest group number
   var groups = 0;
   var class_time_list = [];
@@ -55,18 +55,18 @@ function parseStudentClassInfo(studentTable, class_time_table){
   studentTable.forEach(function (student) {
     // Make sure the student isn't already in the list we have
     let processedStudent = false;
-    var studentObject;
+    var studentObject = {};
     for (i = 0; i < studentArray.length; i ++){
-      if (studentArray[i]['ID'] == student['student_id']){
+      if (studentArray[i]['id'] == student['student_id']){
         processedStudent = true;
-        studentObject = studentArray[i]['ID'];
+        studentObject = studentArray[i];
         break;
       }
     }
     if (!processedStudent){
       // Add the student to the set
-      studentObject = {ID: student["student_id"], name: student["first_name"] + " " + student["last_name"]}
-      for (i = 0; i < groups; i ++){
+      studentObject = {id: student["student_id"], name: student["first_name"] + " " + student["last_name"]}
+      for (i = 0; i <= groups; i ++){
         studentObject['group_'+i] = null;
       }
       studentArray.push(studentObject);
@@ -79,9 +79,12 @@ function parseStudentClassInfo(studentTable, class_time_table){
       studentObject['group_'+class_group] = class_time;
     }
   });
-
+  console.log(class_time_list);
+  console.log('=========================================================');
+  console.log('studentTable: ');
+  console.log(studentArray);
   // Display the page with add/remove buttons
-  res.render('AddStudent', );
+  res.render('AddStudent', {classTimes: class_time_list, studentTable: studentArray, totalClassGroups: groups});
 }
 
 module.exports = router;
