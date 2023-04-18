@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,77 +24,33 @@
               </button>
             </div>
           </div>
-          <div style="text-align:center"><h1>Social Worker Dashboard</h1></div>
-          <div style="overflow: hidden;">
-            <div class="justify-content-center" style="float: left; width: 45%;">
-              <h3 style="text-align: center;">Notifications</h3><br>
-              <table class="table table-striped table-hover table-sm">
-                <thead>
-                  <tr>
-                    <th scope="col">Student Name</th>
-                    <th scope="col">Notification</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Precious Omar</td>
-                    <td>Absent for 3 days</td>
-                  </tr>
-                  <tr>
-                    <td>Hadiza Ngoy</td>
-                    <td>Low grade on last assignment</td>
-                  </tr>
-                  <tr>
-                    <td>Zola Isah</td>
-                    <td>Missing meals</td>
-                  </tr>
-                  <tr>
-                    <td>Taraji Domingos</td>
-                    <td>Absent for 3 days</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="justify-content-center" style="overflow: hidden; float: right; width: 45%;">
-              <h3 style="text-align: center;">Students</h3><br>
-              <table class="table table-striped table-hover table-sm">
-                <thead>
-                  <tr>
-                    <th scope="col">Student Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Efua Keita</td>
-                  </tr>
-                  <tr>
-                    <td>Kwame Omer</td>
-                  </tr>
-                  <tr>
-                    <td>Zola Isah</td> 
-                  </tr>
-                  <tr>
-                    <td>Oluchi Yao</td>
-                  </tr>
-                  <tr>
-                    <td>Precious Omar</td>
-                  </tr>
-                  <tr>
-                    <td>Hadiza Ngoy</td>
-                  </tr>
-                  <tr>
-                    <td>Chidinma Sani</td>
-                  </tr>
-                  <tr>
-                    <td>Taraji Domingos</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div style="text-align:center">
+            <h1>Social Worker Dashboard</h1>
+          </div>
+          <div class="justify-content-center">
+            <h3 style="text-align: center;">Students</h3><br>
+            <table class="table table-striped table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Student Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if(locals.students != null || locals.students != undefined) { 
+                    students.forEach(student => {%>
+                <tr>
+                  <td><%= student.first_name + " " + student.last_name %></td>
+                </tr>
+                <% });
+                } %>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
+  </div>
 </body>
+
 </html>
