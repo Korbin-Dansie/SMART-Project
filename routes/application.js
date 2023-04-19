@@ -92,27 +92,31 @@ function createGuardianPerson(applicationID, req, res){
     var totalGuardians = req.body.totalGuardians;
 
     for (var i = 1; i <= totalGuardians; i++){
-        var guardianName = req.body['guardianName'+i];
-        var guardianIncome = req.body['guardianIncome'+i];
-        var guardianEmail = req.body['guardianPhone'+i];
-        var guardianPhone = req.body['guardianEmail'+i];
 
-        var fname = guardianName.substring(0, guardianName.indexOf(' '));
-        var lname = guardianName.substring(guardianName.indexOf(' ') + 1);
+        let guardianName = req.body['guardianName'+i];
+        let guardianIncome = req.body['guardianIncome'+i];
+        let guardianEmail = req.body['guardianPhone'+i];
+        let guardianPhone = req.body['guardianEmail'+i];
+
+        let fname = guardianName.substring(0, guardianName.indexOf(' '));
+        let lname = guardianName.substring(guardianName.indexOf(' ') + 1);
+        let guardianID;
 
         // Create the person for the guardian
-        var sql = "CALL create_person ('" + fname + "', '" + lname + "', @personID); SELECT @personID;";
-        var guardianID;
+        let sql = "CALL create_person ('" + fname + "', '" + lname + "', @personID); SELECT @personID;";
         dbCon.query(sql, function(err, results) {
             if (err) {
                 throw err;
             }
+
             console.log("application.js: Obtained result from person table below");
             console.log(results);
             
             console.log(results[1]);
             console.log(results[1][0]);
             console.log(results[1][0]['@personID']);
+
+
             guardianID = results[1][0]['@personID'];
             if (guardianID === undefined || guardianID == 0) {
                 console.log("application.js: No ID returned");
@@ -130,6 +134,7 @@ function createGuardianPerson(applicationID, req, res){
     }
 
     // Fix valid GPA values
+    res.redirect('/');
 }
 
 function  generateContact(contact, contactType, guardianID){
@@ -148,8 +153,6 @@ function generateGuardian(guardianID, applicationID, annual_income, res){
             throw err;
         }
     });
-
-    res.redirect('/');
 }
 
 module.exports = router;
