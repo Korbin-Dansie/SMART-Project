@@ -5,7 +5,14 @@ var dbCon = require('../lib/database');
 
 /* GET application form page. */
 router.get('/', function (req, res, next) {
-    res.render('ApplicationForm', {});
+    var sql = "SELECT `public_school_level_id`, `level` FROM `public_school_level`;";
+    dbCon.query(sql, function(err, results) {
+        if (err) {
+            throw err;
+        }
+        let levels = results;
+        res.render('ApplicationForm', {levels: levels});
+    });
 });
 
 /* POST application form page. */
@@ -122,7 +129,7 @@ function createGuardianPerson(applicationID, req, res){
 
     }
 
-    res.redirect('/');
+    // Fix valid GPA values
 }
 
 function  generateContact(contact, contactType, guardianID){
@@ -141,6 +148,8 @@ function generateGuardian(guardianID, applicationID, annual_income, res){
             throw err;
         }
     });
+
+    res.redirect('/');
 }
 
 module.exports = router;
