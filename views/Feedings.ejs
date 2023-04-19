@@ -20,16 +20,18 @@
       console.log(elements);
 
       // Cannot use a for-in loop for some resons.
-      // Assign the advent listener to each feeding
+      // Assign the event listener to the label for each feeding
       for (let i = 0; i < elements.length; i++) {
         // https://stackoverflow.com/questions/4957207/how-to-check-uncheck-radio-button-on-click
         elements[i].addEventListener("mousedown", function(e) {
 
-          console.log(this.checked);
+          // Since we are getting the label in the event listener we need to get the coresponding input element
+          let self = document.getElementById(this.getAttribute("for"));
+          console.log(self);
 
-          if(this.checked){
+          if(self.checked){
             let unchecked = function(){
-              setTimeout(function(){this.checked != false}, 0);
+              setTimeout(function(){self.checked = false}, 0);
             };
 
             let unbind = function(){
@@ -37,15 +39,13 @@
             };
 
             let up = function(){
-              unchecked();
-              unbind();
+              unchecked;
+              unbind;
             }
 
-            this.addEventListener("mouseup", up());
+            this.addEventListener("mouseup", up);
             this.addEventListener("mouseout", unbind);
           }
-        
-
         }, false);
       }
     }
@@ -95,11 +95,11 @@
               <tr>
                 <th scope="col">Name</th>
                 <th scope="col">
-                  <input type="radio" class="btn-check feeding-button" name="options-outlined" id="success-outlined" autocomplete="off">
-                  <label class="btn btn-outline-success" for="success-outlined"><i class="bi bi-check-square-fill"></i></label>
+                  <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off">
+                  <label class="btn btn-outline-success feeding-button" for="success-outlined"><i class="bi bi-check-square-fill"></i></label>
 
-                  <input type="radio" class="btn-check feeding-button" name="options-outlined" id="danger-outlined" autocomplete="off">
-                  <label class="btn btn-outline-danger" for="danger-outlined"><i class="bi bi-x-square-fill"></i></label>
+                  <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                  <label class="btn btn-outline-danger feeding-button" for="danger-outlined"><i class="bi bi-x-square-fill"></i></label>
                   <span>Meal</span>
                 </th>
                 <th scope="col">Mon<br>04/03</th>
