@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,31 +9,35 @@
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
-  <script type="text/javascript" src="crypto-js.js"></script>
+  <script>
+    // Set the date pickers date to today
+    function loadStartDate(){
+      let datePicker = document.getElementById("datePicker");
+      datePicker.valueAsDate = new Date();
+    }
+  </script>
 </head>
 
-<body>
+<body onload="loadStartDate()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
           <%- include('partials/backbutton') %>
-          <div style="text-align:center"><h1>Feedings</h1></div>
+          <div style="text-align:center">
+            <h1>Feedings</h1>
+          </div>
           <div class="row">
             <form action="" method="post" id="form" class="d-flex">
               <div>
                 <input type="button" class="btn btn-primary" value="Last Week">
-              </div>      
+              </div>
               <div>
                 <input type="button" class="btn btn-primary ms-2" value="Yesterday">
-              </div>  
+              </div>
               <div class="me-auto ms-auto">
-                <input type="date" id="start" 
-                class="form-control"
-                name="trip-start"
-           value="2018-07-22"
-           min="2018-01-01" max="2018-12-31">    
-              </div>       
+                <input type="date" id="datePicker" class="form-control" name="trip-start" min="1970-01-01" max="9999-12-31">
+              </div>
               <div>
                 <input type="button" class="btn btn-primary me-2" value="Tomarrow">
               </div>
@@ -91,7 +96,7 @@
                 <td>N/A</td>
               </tr>
               <tr>
-                <td>Zola Isah</td> 
+                <td>Zola Isah</td>
                 <td>Breakfast</td>
                 <td>N/A</td>
                 <td>Absent</td>
@@ -205,4 +210,5 @@
     </div>
   </div>
 </body>
+
 </html>
