@@ -122,7 +122,7 @@ function createGuardianPerson(applicationID, req, res){
 
     }
 
-    // Fix valid GPA values
+    res.redirect('/');
 }
 
 function  generateContact(contact, contactType, guardianID){
@@ -141,8 +141,6 @@ function generateGuardian(guardianID, applicationID, annual_income, res){
             throw err;
         }
     });
-
-    res.redirect('/');
 }
 
 module.exports = router;
