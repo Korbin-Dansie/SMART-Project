@@ -14,6 +14,7 @@ router.get('/', function(req, res, next) {
   router.post('/', function(req, res, next) {
     // if they are already logged in, send them to the dashboard
     if (req.session.loggedIn) {
+        console.log(req.session.accountType);
         res.redirect('/');  // index page will redirect to appropriate dashboard
     }
       console.log("login.js: POST");

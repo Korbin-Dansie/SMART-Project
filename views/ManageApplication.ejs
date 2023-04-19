@@ -28,7 +28,7 @@
           <div class="text-center">
             <h3 class="text-primary">Manage Application</h3>
           </div>
-          <form method="post" action="" onSubmit="">
+          <form method="post" onSubmit="">
 
             <div class="row pt-4">
               <div class="col-md-6">
@@ -61,7 +61,7 @@
 
                 <!--Latitude-->
                 <div>
-                  <label>Address:</label>
+                  <label>Latitude:</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-door text-white"></i></span>
                     <input id="applicantAddress" type="text" class="form-control" placeholder="41.24122 N" value=<%=locals.applicationData['latitude'] %> readonly>
@@ -70,7 +70,7 @@
 
                 <!--Longitude-->
                 <div>
-                  <label>Address:</label>
+                  <label>Longitude:</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text bg-primary"><i class="bi bi-house-door text-white"></i></span>
                     <input id="applicantAddress" type="text" class="form-control" placeholder="2.10265 E" value=<%=locals.applicationData['longitude'] %> readonly>
@@ -227,6 +227,7 @@
                       </tbody>
                     </table>
 
+                    <!--
                     <div class="col-md-6 p-3">
                       <label>Guardian Name</label>
                       <div class="input-group">
@@ -273,66 +274,64 @@
                         Remove Last
                       </button>
                     </div>
-
                     <p id="guardianError" class="text-danger" style="height:25px"></p>
                   </div>
+                  -->
                 </div>
               </form>
+              </div>
 
               <!--Application Submission Date-->
-              <div class="col-md-6 mt-2">
-                <label>Date of Submission:</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text bg-primary"><i class="bi bi-calendar-date text-white"></i></span>
-                  <input id="applicantSubmitDate" type="text" class="form-control" placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'].toLocaleDateString('en-US') %> readonly>
-                </div>
-              </div>
-
-              <div class="col-md-6 mt-2">
-                <div>
-                  <!-- Application Status -->
-                  <label for="optionNoFilter">Application Status:</label>
+                <div class="col-md-6 mt-2">
+                  <label>Date of Submission:</label>
                   <div class="input-group mb-3">
-                    <span class="input-group-text bg-primary"><i class="bi bi-person-badge text-white"></i></span>
-                    <select class="form-select" id="applicationStatus" name="applicationStatus" required>
-                      <% if (locals.applicationData['application_status'] == "Wait Listed") { %>
-                      <option id="optionNoFilter" value="noFilter">No Filter</option>
-                      <option id="optionWaitListed" value="Wait Listed" selected>Wait Listed</option>
-                      <option id="optionAccepted" value="Accepted">Accepted</option>
-                      <option id="optionRejected" value="Rejected">Rejected</option>
-                      <option id="optionActive" value="Active">Active</option>
-                      <% } else if (locals.applicationData['application_status'] == "Accepted") { %>
-                      <option id="optionNoFilter" value="noFilter">No Filter</option>
-                      <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
-                      <option id="optionAccepted" value="Accepted" selected>Accepted</option>
-                      <option id="optionRejected" value="Rejected">Rejected</option>
-                      <option id="optionActive" value="Active">Active</option>
-                      <% } else if (locals.applicationData['application_status'] == "Rejected") { %>
-                      <option id="optionNoFilter" value="noFilter">No Filter</option>
-                      <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
-                      <option id="optionAccepted" value="Accepted">Accepted</option>
-                      <option id="optionRejected" value="Rejected" selected>Rejected</option>
-                      <option id="optionActive" value="Active">Active</option>
-                      <% } else { %>
-                      <option id="optionNoFilter" value="noFilter">No Filter</option>
-                      <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
-                      <option id="optionAccepted" value="Accepted">Accepted</option>
-                      <option id="optionRejected" value="Rejected">Rejected</option>
-                      <option id="optionActive" value="Active" selected>Active</option>
-                      <% } %>
-                    </select>
+                    <span class="input-group-text bg-primary"><i class="bi bi-calendar-date text-white"></i></span>
+                    <input id="applicantSubmitDate" type="text" class="form-control" placeholder="MM/DD/YYYY" value=<%=locals.applicationData['date_of_application'].toLocaleDateString('en-US') %> readonly>
                   </div>
                 </div>
-                <div class="text-center">
-                  <button class="btn btn-primary mt-2" type="submit">
-                    Submit Application Status
-                  </button>
+
+                <div class="col-md-6 mt-2">
+                    <div>
+                      <!-- Application Status -->
+                      <label for="optionNoFilter">Application Status:</label>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-primary"><i class="bi bi-person-badge text-white"></i></span>
+                        <select class="form-select" id="applicationStatus" name="applicationStatus" required>
+                          <% if (locals.applicationData['application_status'] == "Wait Listed") { %>
+                          <option id="optionWaitListed" value="Wait Listed" selected>Wait Listed</option>
+                          <option id="optionAccepted" value="Accepted">Accepted</option>
+                          <option id="optionRejected" value="Rejected">Rejected</option>
+                          <option id="optionActive" value="Active">Active</option>
+                          <% } else if (locals.applicationData['application_status'] == "Accepted") { %>
+                          <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                          <option id="optionAccepted" value="Accepted" selected>Accepted</option>
+                          <option id="optionRejected" value="Rejected">Rejected</option>
+                          <option id="optionActive" value="Active">Active</option>
+                          <% } else if (locals.applicationData['application_status'] == "Rejected") { %>
+                          <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                          <option id="optionAccepted" value="Accepted">Accepted</option>
+                          <option id="optionRejected" value="Rejected" selected>Rejected</option>
+                          <option id="optionActive" value="Active">Active</option>
+                          <% } else { %>
+                          <option id="optionWaitListed" value="Wait Listed">Wait Listed</option>
+                          <option id="optionAccepted" value="Accepted">Accepted</option>
+                          <option id="optionRejected" value="Rejected">Rejected</option>
+                          <option id="optionActive" value="Active" selected>Active</option>
+                          <% } %>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <button class="btn btn-primary mt-2" type="submit">
+                        Submit Application Status
+                      </button>
+                    </div>
                 </div>
-              </div>
-              <div class="text-center">
-                <p id="message" class="text-danger" style="height:25px">
-                  <%- locals.message %>
-                </p>
+                <div class="text-center">
+                  <p id="message" class="text-danger" style="height:25px">
+                    <%- locals.message %>
+                  </p>
+                </div>
               </div>
           </form>
         </div>

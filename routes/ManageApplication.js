@@ -40,7 +40,7 @@ function manageApplicationGetStep1(req, res, errorMessage){
           let guardianContacts = [];
           for (let i = 0; i < guardianContactResults.length / 4; i++) {
   
-            let guardianContactRecord = {phone: guardianContactResults[i * 4][0], email: guardianContactResults[i * 4 + 2][0]};
+            let guardianContactRecord = {email: guardianContactResults[i * 4][0], phone: guardianContactResults[i * 4 + 2][0]};
             guardianContacts.push(guardianContactRecord);
           }
   
@@ -67,6 +67,8 @@ function manageApplicationGetStep1(req, res, errorMessage){
 router.post("/", function (req, res, next) {
   console.log("POST ManageApplication.js");
 
+  console.log(req.query.applicationID);
+
   let obj = new Object;
   obj.application_id = req.query.applicationID;
 
@@ -87,9 +89,11 @@ function manageApplicationsStep1(req, res, obj){
 
     // If correct go to next step
     if(results[1][0]['@result'] == 0){
+      console.log("application doesn't exist");
       manageApplicationGetStep1(req, res, "Application id does not exist");
     }
     else{
+      console.log("application exists");
       manageApplicationsStep2(req, res, obj);
     }
   });
@@ -127,6 +131,8 @@ function manageApplicationStep3(req, res, obj){
     if (err) {
       throw err;
     }
+    console.log(obj.application_id);
+    console.log(obj.application_status_id);
     res.redirect("/applicationList");
   });
 }
