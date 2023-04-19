@@ -21,8 +21,14 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-  let dataToPass = encodeURIComponent(req.body.classID);
-  res.redirect('/Course?classID=' + dataToPass);
+  if (req.body.classID_grades === undefined) {
+    let dataToPass = encodeURIComponent(req.body.classID);
+    res.redirect('/Course?classID=' + dataToPass);
+  } else {
+    let dataToPass = encodeURIComponent(req.body.classID_grades);
+    res.redirect('/Gradebook?classID=' + dataToPass);
+  }
+  
 });
 
 module.exports = router;

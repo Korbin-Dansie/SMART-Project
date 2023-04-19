@@ -25,73 +25,41 @@
                     </div>
 
                     <div class="col-md-5 pb-2">
-                        <h3 class="text-primary">English 3</h3>
-                        <h5>John Doe</h5>
+                        <h3 class="text-primary"><%= locals.classDetails.subject_name %> <%= locals.classDetails.level_name %></h3>
+                        <h5><%= locals.classDetails.first_name %> <%= locals.classDetails.last_name %></h5>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mt-4">
-                            <div class="row mb-4 p-2 shadow-sm rounded border border-primary ">
-                                <h3 class="text-primary">Jane Doe</h3>
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 1 Vocab</h5>
-                                    </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">10/10</h5>
-                                    </div>
-                                </div>
+                            <% if (locals.students.length > 0) {
+                                for (let i = 0; i < locals.students.length; i++) { %>
+                                    <div class="row mb-4 p-2 shadow-sm rounded border border-primary ">
+                                        <h3 class="text-primary"><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></h3>
 
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 1 Quiz</h5>
+                                        <% if (locals.studentAssignments[i].length > 0) {
+                                            for (let j = 0; j < locals.studentAssignments[i].length; j++) { %>
+                                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                                                    <div class="col-6">
+                                                        <h5 class="text-primary"><%= locals.studentAssignments[i][j].assignment_name %></h5>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <% if (locals.studentAssignments[i][j].status == 'Success') { %>
+                                                            <h5 class="text-success"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                        <% } else { %>
+                                                            <h5 class="text-danger"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                            <% }
+                                        } else { %>
+                                            <p>No assignments found for student</p>
+                                        <% } %>
                                     </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">9/10</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 2 Vocab</h5>
-                                    </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">12/12</h5>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mb-4 p-2 shadow-sm rounded border border-primary ">
-                                <h3 class="text-primary">Jennifer Doe</h3>
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 1 Vocab</h5>
-                                    </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">10/10</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 1 Quiz</h5>
-                                    </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">8/10</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-6">
-                                        <h5 class="text-primary">Week 2 Vocab</h5>
-                                    </div>
-                                    <div class="col-6">
-                                        <h5 class="text-primary">12/12</h5>
-                                    </div>
-                                </div>
-                            </div>
+                                <% }
+                            } else { %>
+                                <p>No students found in class</p>
+                            <% } %>
                         </div>
-                        
                     </div>
                 </div>
             </div>
