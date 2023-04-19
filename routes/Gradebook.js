@@ -18,7 +18,7 @@ router.get('/', function (req, res, next) {
         let studentAssignmentsSQL = "";
 
         for (let i = 0; i < results[0].length; i++) {
-            studentAssignmentsSQL += "CALL select_student_assignments(" + results[0][i]['student_id'] + "); ";
+            studentAssignmentsSQL += "CALL select_student_assignments(" + results[0][i]['student_id'] + ", " + classID + "); ";
         }
 
         dbCon.query(studentAssignmentsSQL, function (err, studentAssignmentsResults) {
