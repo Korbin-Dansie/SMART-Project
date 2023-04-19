@@ -31,17 +31,17 @@
 
           if(self.checked){
             let unchecked = function(){
-              setTimeout(function(){self.checked = false;}, 100);
+              setTimeout(function(){self.checked = false;}, 0);
             };
 
             let unbind = function(){
-              this.removeEventListener("mouseup", up());
+              this.removeEventListener("mouseup", up);
             };
 
             let up = function(){
               unchecked();
               unbind();
-            }
+            };
 
             this.addEventListener("mouseup", up());
             this.addEventListener("mouseout", unbind());
