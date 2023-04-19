@@ -18,9 +18,28 @@
         <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
           <%- include('partials/backbutton') %>
           <div style="text-align:center"><h1>Feedings</h1></div>
-          <div class="d-inline">
-            <div class="float-start"><button class="btn btn-primary mt-2">Previous week</button></div>
-            <div class="float-end"><button class="btn btn-primary mt-2">Next week</button></div>
+          <div class="d-flex justify-content-between">
+            <form action="" method="post" id="form" class="row align-items-center">
+              <div class="col-auto">
+                <input type="button" class="form-control btn btn-primary" value="Last Week">
+              </div>      
+              <div class="col-auto">
+                <input type="button" class="form-control btn btn-primary" value="Yesterday">
+              </div>  
+              <div class="col-auto">
+                <input type="date" id="start" 
+                class="form-control"
+                name="trip-start"
+           value="2018-07-22"
+           min="2018-01-01" max="2018-12-31">    
+              </div>       
+              <div class="col-auto">
+                <input type="button" class="form-control btn btn-primary" value="Tomarrow">
+              </div>
+              <div class="col-auto">
+                <input type="button" class="form-contro btn btn-primary" value="Next Week">
+              </div>
+            </form>
           </div>
           <table class="table table-striped table-hover table-sm">
             <thead>
