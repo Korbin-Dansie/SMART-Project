@@ -42,8 +42,8 @@
             };
 
             let unbind = function() {
-              this.removeEventListener("mouseup", up);
-              this.removeEventListener("mouseleave", unbind);
+              this.removeEventListener("mouseup", up, true);
+              this.removeEventListener("mouseleave", unbind, true);
             };
 
             let up = function(event) {
