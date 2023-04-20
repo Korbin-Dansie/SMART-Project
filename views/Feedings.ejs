@@ -21,7 +21,6 @@
 
       // Cannot use a for-in loop for some resons.
       // Assign the event listener to the label for each feeding
-      // TODO: Only works once. If you unclick the button you cannot reclick the button until you leave.
       for (let i = 0; i < elements.length; i++) {
         // https://stackoverflow.com/questions/4957207/how-to-check-uncheck-radio-button-on-click
         elements[i].addEventListener("mousedown", function(e) {
@@ -31,7 +30,11 @@
 
           // When check trigger
           if (self.checked) {
+
+            // Store the the value in a attribue so we can tell the value in the async code
+            // This allows the user to click the button more than once without having to leave the button
             self.setAttribute("data-checked", self.checked);
+
             let unchecked = function() {
               setTimeout(function() {
                 if(self.getAttribute("data-checked") == "true"){
@@ -48,7 +51,7 @@
 
             let up = function(event) {
               unchecked();
-              unbind();
+              unbind();              
             };
 
             this.addEventListener("mouseup", up);
