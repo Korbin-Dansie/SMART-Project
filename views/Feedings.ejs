@@ -36,15 +36,17 @@
 
             let unbind = function(){
               this.removeEventListener("mouseup", up);
+              console.log("Unbind");
             };
 
             let up = function(){
               unchecked();
               unbind();
+              console.log("Uncheck");
             };
 
-            this.addEventListener("mouseup", up());
-            this.addEventListener("mouseout", unbind());
+            this.addEventListener("mouseup", up);
+            this.addEventListener("mouseout", unbind);
           }
         }, false);
       }
