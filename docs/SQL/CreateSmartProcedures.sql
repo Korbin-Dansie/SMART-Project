@@ -742,3 +742,25 @@ BEGIN
 END;
 $$
 
+/***************************************************************
+* Procedure get_feedings
+* <comment>Procedure get_feedings created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_feedings`(
+    date_feed DATE
+)
+BEGIN
+	IF date_feed IS NOT NULL THEN
+		SELECT
+		`student_id`,
+		`meal_time_id`,
+		`date_feed`,
+		`is_done`
+		FROM
+		student_feeding
+        WHERE
+        student_feeding.`date_feed` = date_feed;
+    END IF;
+END;
+$$
+

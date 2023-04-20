@@ -3,7 +3,7 @@ var router = express.Router();
 
 var dbCon = require('../lib/database');
 
-/* GET home page. */
+/* GET list of students that need feeding */
 router.get('/students', function(req, res, next) {
   let sql = "CALL get_students_with_meal_assistance();";
   dbCon.query(sql, function (err, results) {
@@ -18,6 +18,33 @@ router.get('/students', function(req, res, next) {
         );
     });
     return res.send(Object.values(students));
+  });
+});
+
+/* GET list of students that are feed today */
+router.get('/date', function(req, res, next) {
+  let date = req.query.date;
+  if(date == undefined){
+    date = null;
+  }
+  let sql = "CALL get_feedings(?);";
+  dbCon.query(sql, [req.query.date], function (err, results) {
+    if (err) {
+      throw err;
+    }
+
+    // If we did not send a date return null
+    if(results[0] == undefined){
+      return res.send([]);
+    }
+
+    let feedings = new Array();
+    results[0].forEach(element => {
+      feedings.push(
+            {...element}
+        );
+    });
+    return res.send(Object.values(feedings));
   });
 });
 

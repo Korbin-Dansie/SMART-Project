@@ -16,10 +16,9 @@
       datePicker.valueAsDate = new Date();
     }
 
-    function addEventListenersToFeedings(){
-            // Add event listener to all feedings
-            let elements = document.querySelectorAll(".feeding-button");
-      console.log(elements);
+    function addEventListenersToFeedings() {
+      // Add event listener to all feedings
+      let elements = document.querySelectorAll(".feeding-button");
 
       // Cannot use a for-in loop for some resons.
       // Assign the event listener to the label for each feeding
@@ -62,10 +61,97 @@
         }, false);
       }
     }
+
+    // Populate the feading table with the students
+    async function loadFeedings() {
+      // Store the date
+      let date = document.getElementById("datePicker");
+
+      // Store the meal id
+      let meal = document.getElementById("mealPicker");
+
+      // If both values are not filled exit
+      if (date == null || date == undefined || meal == undefined || meal == null) {
+        console.log("Date: " + date);
+        console.log("Meal: " + meal);
+
+        return;
+      }
+
+      let promiseStudents = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+
+            let students = JSON.parse(this.responseText);
+            resolve(students);
+          }
+        };
+        xhttp.open("GET", "students", true);
+        xhttp.send();
+      });
+
+      // For the each student see if they have a current feeding for today
+      let promiseFeedings = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+
+            let feedings = JSON.parse(this.responseText);
+            resolve(feedings);
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("date", window.location.href);
+        let params = new URLSearchParams(url.search);
+        params.append("date", date.value);
+        url.search = params;
+
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // Wait for the students and feeding promise
+      // Add a row for each student
+      let students;
+      let feedings;
+
+      await Promise.all([promiseStudents, promiseFeedings]).then((values) => {
+       students = values[0];
+       feedings = values[1];
+      });
+
+      // Delete all current rows
+      let tableBody = document.getElementById("feeding-table-body");
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+      }
+
+      // Add the rows
+      students.forEach(student => {
+        createTableRow(student.student_id, student.first_name, student.last_name, );
+      });
+    }
+
+    function createTableRow(student_id, first_name, last_name, is_feed) {
+      let tr = document.createElement("tr");
+
+      let td_name = document.createElement("td");
+      td_name.innerText = first_name + " " + last_name;
+      tr.appendChild(td_name);
+
+
+
+      let tableBody = document.getElementById("feeding-table-body");
+      tableBody.appendChild(tr);
+    }
   </script>
 </head>
 
-<body onload="loadStartDate(), addEventListenersToFeedings()">
+<body onload="loadStartDate(), addEventListenersToFeedings(), loadFeedings()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -77,10 +163,10 @@
           <div class="row">
             <form action="" method="post" id="form" class="d-flex align-items-center justify-content-center">
               <div class="inline me-1">
-                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31">
+                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
               </div>
               <div class="inline ms-1">
-                <select type="select" id="mealPicker" class="form-select" name="meal-time">
+                <select type="select" id="mealPicker" class="form-select" name="meal-time" onchange="loadFeedings()">
                   <%if(locals.meal_times != undefined || locals.meal_times != null) {
                       meal_times.forEach(meal_time => {
                         //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
@@ -104,7 +190,7 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="feeding-table-body">
               <%if(locals.students != undefined || locals.students != null) {
                 students.forEach(student => {
                       %>
