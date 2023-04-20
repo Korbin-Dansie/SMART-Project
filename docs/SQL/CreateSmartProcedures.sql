@@ -700,9 +700,8 @@ CREATE PROCEDURE IF NOT EXISTS `get_students_with_meal_assistance`(
 BEGIN
 	SELECT 
     s.`student_id`,
-    s.`student_status_id`,
-    s.`date_of_admission`,
-    s.`photograph`
+    p.`first_name`,
+	p.`last_name`
 	FROM 
 	`student` AS s
     INNER JOIN `application` AS a
@@ -712,6 +711,34 @@ BEGIN
     WHERE -- Only get active students in need of meal assistance
     s.student_status_id = 1 AND
     a.meal_assistance = TRUE;
+END;
+$$
+
+
+/***************************************************************
+* Procedure add_feeding
+* <comment>Procedure add_feeding created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `add_feeding`(
+	student_id MEDIUMINT UNSIGNED,
+    meal_time_id TINYINT UNSIGNED,
+    date_feed DATE,
+    is_done BOOLEAN
+)
+BEGIN
+	INSERT INTO `smart_project`.`student_feeding`
+	(
+	`student_id`,
+	`meal_time_id`,
+	`date_feed`,
+	`is_done`)
+	VALUES
+	(
+	student_id,
+	meal_time_id,
+	date_feed,
+	is_done
+    );
 END;
 $$
 

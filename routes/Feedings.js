@@ -4,6 +4,24 @@ var router = express.Router();
 var dbCon = require('../lib/database');
 
 /* GET home page. */
+router.get('/students', function(req, res, next) {
+  let sql = "CALL get_students_with_meal_assistance();";
+  dbCon.query(sql, function (err, results) {
+    if (err) {
+      throw err;
+    }
+
+    let students = new Array();
+    results[0].forEach(element => {
+      students.push(
+            {...element}
+        );
+    });
+    return res.send(Object.values(students));
+  });
+});
+
+/* GET home page. */
 router.get('/', function(req, res, next) {
   let obj = new Object();
   getStep1(req, res, obj);
