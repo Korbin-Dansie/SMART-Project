@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="col-md-5 pb-4">
-                        <h3 class="text-primary">English 3</h3>
+                        <h3 class="text-primary"><% if (!(locals.classData === undefined)) { %> <%= locals.classData.subject_name %> <% } %> <% if (!(locals.classData === undefined)) { %> <%= locals.classData.level_name %> <% } %></h3>
                     </div>
 
                     <div class="row">
