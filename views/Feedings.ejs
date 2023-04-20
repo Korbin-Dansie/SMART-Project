@@ -37,7 +37,7 @@
 
             let unchecked = function() {
               setTimeout(function() {
-                if(self.getAttribute("data-checked") == "true"){
+                if (self.getAttribute("data-checked") == "true") {
                   self.checked = false;
                   self.setAttribute("data-checked", self.checked);
                 }
@@ -51,7 +51,7 @@
 
             let up = function(event) {
               unchecked();
-              unbind();              
+              unbind();
             };
 
             this.addEventListener("mouseup", up);
@@ -59,16 +59,6 @@
           }
         }, false);
       }
-    }
-
-    // Uncheck the checkbox
-    function uncheckFeedings(selectedObject) {
-      console.log("Before: " + selectedObject.checked);
-
-
-
-      console.log("After: " + selectedObject.checked);
-
     }
   </script>
 </head>
@@ -84,20 +74,21 @@
           </div>
           <div class="row">
             <form action="" method="post" id="form" class="d-flex">
-              <div>
-                <input type="button" class="btn btn-primary" value="Last Week">
-              </div>
-              <div>
-                <input type="button" class="btn btn-primary ms-2" value="Yesterday">
-              </div>
               <div class="me-auto ms-auto">
-                <input type="date" id="datePicker" class="form-control" name="trip-start" min="1970-01-01" max="9999-12-31">
-              </div>
-              <div>
-                <input type="button" class="btn btn-primary me-2" value="Tomarrow">
-              </div>
-              <div>
-                <input type="button" class="btn btn-primary" value="Next Week">
+                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31">
+
+                <select type="select" id="mealPicker" class="form-select" name="meal-time">
+                  <%if(locals.meal_times != undefined || locals.meal_times != null) {
+                    meal_times.forEach(meal_time => {
+                      const firstLetter = meal_time.time.charAt(0)
+                      const firstLetterCap = firstLetter.toUpperCase()
+                      const remainingLetters = meal_time.time.slice(1)
+                      const capitalizedWord = firstLetterCap + remainingLetters
+                    %>
+                    <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
+                  <%});
+                }%>
+                </select>
               </div>
             </form>
           </div>
