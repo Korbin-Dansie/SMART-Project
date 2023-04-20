@@ -27,20 +27,11 @@ DROP PROCEDURE IF EXISTS `get_day_of_weeks`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
-DROP PROCEDURE IF EXISTS `get_userid_from_email`;
 DROP PROCEDURE IF EXISTS `login_user`;
 DROP PROCEDURE IF EXISTS `select_applications`;
 DROP PROCEDURE IF EXISTS `select_application_details`;
-DROP PROCEDURE IF EXISTS `select_class`;
-DROP PROCEDURE IF EXISTS `select_class_distinct_students`;
-DROP PROCEDURE IF EXISTS `select_class_students`;
-DROP PROCEDURE IF EXISTS `select_class_times`;
 DROP PROCEDURE IF EXISTS `select_contact_info`;
 DROP PROCEDURE IF EXISTS `select_guardians`;
-DROP PROCEDURE IF EXISTS `select_instructor_classes`;
-DROP PROCEDURE IF EXISTS `select_person_email`;
-DROP PROCEDURE IF EXISTS `select_person_phone`;
-DROP PROCEDURE IF EXISTS `select_students_and_class_status`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
 
 DELIMITER $$
@@ -78,20 +69,6 @@ BEGIN
  SELECT 0 INTO account_type; 
  SELECT user.account_type_id INTO account_type FROM user WHERE user.email = email 
  AND user.hashed_password = hashed_password; -- user type 0 is invalid, bad login
-END;
-$$
-
-
-/***************************************************************
-* Procedure get_userid_from_email
-* <comment>Procedure get_userid_from_email created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `get_userid_from_email` ( 
- IN email VARCHAR(255), 
- OUT userID TINYINT 
-) 
-BEGIN 
- SET userID = (SELECT user_id FROM user WHERE user.email = email LIMIT 1); 
 END;
 $$
 
@@ -244,7 +221,7 @@ CREATE PROCEDURE IF NOT EXISTS `select_guardians`(
  IN  applicationID MEDIUMINT
 )
 BEGIN
- SELECT guardian.person_id, person.first_name, person.last_name, annual_income
+ SELECT person.first_name, person.last_name, annual_income
  FROM guardian
  JOIN person ON person.person_id = guardian.person_id
  WHERE application_id = applicationID;
@@ -274,10 +251,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_public_school_level`(
  IN public_school_level_name VARCHAR(255)
 )
 BEGIN
- INSERT INTO `public_school_level`
- (`level`)
- VALUES
- (public_school_level_name);
+	INSERT INTO `public_school_level`
+	(`level`)
+	VALUES
+	(public_school_level_name);
 END;
 $$
 
@@ -291,9 +268,9 @@ CREATE PROCEDURE IF NOT EXISTS `create_student_status`(
 )
 BEGIN
 INSERT INTO `student_status`
- (`student_status`)
- VALUES
- (student_status);
+	(`student_status`)
+	VALUES
+	(student_status);
 END;
 $$
 
@@ -306,10 +283,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_contact_type`(
  IN contact_type VARCHAR(64)
 )
 BEGIN
- INSERT INTO `contact_type`
- (`type`)
- VALUES
- (contact_type);
+	INSERT INTO `contact_type`
+	(`type`)
+	VALUES
+	(contact_type);
 END;
 $$
 
@@ -322,10 +299,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_day_of_week`(
  IN day_of_week VARCHAR(64)
 )
 BEGIN
- INSERT INTO `day_of_week`
- (`name`)
- VALUES
- (day_of_week);
+	INSERT INTO `day_of_week`
+	(`name`)
+	VALUES
+	(day_of_week);
 END;
 $$
 
@@ -338,10 +315,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_meal_time`(
  IN meal_time VARCHAR(255)
 )
 BEGIN
- INSERT INTO `meal_time`
- (`time`)
- VALUES
- (meal_time);
+	INSERT INTO `meal_time`
+	(`time`)
+	VALUES
+	(meal_time);
 END;
 $$
 
@@ -354,10 +331,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_assignment_status`(
  IN assignment_status VARCHAR(64)
 )
 BEGIN
- INSERT INTO `assignment_status`
- (`status`)
- VALUES
- (assignment_status);
+	INSERT INTO `assignment_status`
+	(`status`)
+	VALUES
+	(assignment_status);
 END;
 $$
 
@@ -372,14 +349,14 @@ CREATE PROCEDURE IF NOT EXISTS `create_semester`(
  IN end_date DATE
 )
 BEGIN
- INSERT INTO `semester`
- (`description`,
- `start_date`,
- `end_date`)
- VALUES
- (semester_description,
- start_date,
- end_date);
+	INSERT INTO `semester`
+	(`description`,
+	`start_date`,
+	`end_date`)
+	VALUES
+	(semester_description,
+	start_date,
+	end_date);
 END;
 $$
 
@@ -393,12 +370,12 @@ CREATE PROCEDURE IF NOT EXISTS `create_subject`(
  IN level_id TINYINT UNSIGNED
 )
 BEGIN
- INSERT INTO `smart_project`.`subject`
- (`subject_name_id`,
+	INSERT INTO `smart_project`.`subject`
+	(`subject_name_id`,
     `level_id`)
- VALUES
- (subject_name_id,
- level_id);
+	VALUES
+	(subject_name_id,
+	level_id);
 END;
 $$
 
@@ -411,10 +388,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_level`(
  IN level_name VARCHAR(255)
 )
 BEGIN
- INSERT INTO `level`
- (`level_name`)
- VALUES
- (level_name);
+	INSERT INTO `level`
+	(`level_name`)
+	VALUES
+	(level_name);
 END;
 $$
 
@@ -427,10 +404,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_subject_name`(
  IN subject_name VARCHAR(255)
 )
 BEGIN
- INSERT INTO `subject_name`
- (`subject_name`)
- VALUES
- (subject_name);
+	INSERT INTO `subject_name`
+	(`subject_name`)
+	VALUES
+	(subject_name);
 END;
 $$
 
@@ -451,12 +428,12 @@ CREATE PROCEDURE IF NOT EXISTS `create_application`(
  OUT id INT
 )
 BEGIN
- INSERT INTO `application`
- (`person_id`, `application_status_id`, `public_school_level_id`, `date_of_birth`, `latitude`, `longitude`, 
-     `transportation_assistance`, `meal_assistance`, `essay`)
- VALUES
- (person_id, 1, public_school_level_id, date_of_birth, latitude, longitude, 
-     transportation_assistance, meal_assistance, essay);
+	INSERT INTO `application`
+	(`person_id`, `application_status_id`, `public_school_level_id`, `date_of_birth`, `latitude`, `longitude`, 
+	    `transportation_assistance`, `meal_assistance`, `essay`)
+	VALUES
+	(person_id, 1, public_school_level_id, date_of_birth, latitude, longitude, 
+	    transportation_assistance, meal_assistance, essay);
  
  SET id = LAST_INSERT_ID();
 END;
@@ -473,10 +450,10 @@ CREATE PROCEDURE IF NOT EXISTS `create_contact`(
  IN value VARCHAR(250)
 )
 BEGIN
- INSERT INTO `contact_information`
- (`person_id`, `contact_type_id`, `value`)
- VALUES
- (person_id, contact_type, value);
+	INSERT INTO `contact_information`
+	(`person_id`, `contact_type_id`, `value`)
+	VALUES
+	(person_id, contact_type, value);
 END;
 $$
 
@@ -506,8 +483,8 @@ CREATE PROCEDURE IF NOT EXISTS `check_application_id`(
  OUT result BOOLEAN
 )
 BEGIN
- SET result = (SELECT EXISTS(
-   SELECT * 
+	SET result = (SELECT EXISTS(
+		SELECT * 
         FROM `application`
         WHERE
         application.`application_id` = application_id
@@ -525,7 +502,7 @@ CREATE PROCEDURE IF NOT EXISTS `check_application_status`(
  OUT application_status_id TINYINT UNSIGNED
 )
 BEGIN    
- SELECT
+	SELECT
      `as`.`application_status_id`
      INTO 
      application_status_id
@@ -533,10 +510,10 @@ BEGIN
     WHERE `as`.`application_status` LIKE application_status
     LIMIT 1;
     
- IF application_status_id IS NULL
+	IF application_status_id IS NULL
     THEN
-   SET application_status_id = 0;
- END IF;
+		SET application_status_id = 0;
+	END IF;
 END;
 $$
 
@@ -550,9 +527,9 @@ CREATE PROCEDURE IF NOT EXISTS `update_application_status`(
  IN appliation_status_id TINYINT UNSIGNED
 )
 BEGIN
- UPDATE `application`
+	UPDATE `application`
     SET `application_status_id` = appliation_status_id
- WHERE `application_id` = application_id
+	WHERE `application_id` = application_id
     LIMIT 1;
 END;
 $$
@@ -565,13 +542,13 @@ $$
 CREATE PROCEDURE IF NOT EXISTS `get_semesters`(
 )
 BEGIN
- SELECT 
+	SELECT 
     `semester`.`semester_id`,
     `semester`.`description`,
     `semester`.`start_date`,
     `semester`.`end_date`
- FROM 
- `smart_project`.`semester`;
+	FROM 
+	`smart_project`.`semester`;
 END;
 $$
 
@@ -583,14 +560,14 @@ $$
 CREATE PROCEDURE IF NOT EXISTS `get_classes`(
 )
 BEGIN
- SELECT 
-   s.`subject_id`,
+	SELECT 
+		s.`subject_id`,
         s.`subject_name_id`,
         sn.`subject_name`,
         s.`level_id`,
         lv.`level_name`
- FROM 
- `subject` AS `s`
+	FROM 
+	`subject` AS `s`
     INNER JOIN `subject_name` AS `sn`
      ON s.`subject_name_id` = sn.`subject_name_id`
     LEFT JOIN `level` AS `lv`
@@ -600,160 +577,30 @@ $$
 
 
 /***************************************************************
-* Procedure select_instructor_classes
-* <comment>Procedure select_instructor_classes created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_instructor_classes`(
- IN instructor_id MEDIUMINT UNSIGNED
-)
-BEGIN
- SELECT class.class_id, semester.description, semester.start_date, semester.end_date, level.level_name, subject_name.subject_name
- FROM instructor_schedule
- JOIN class ON class.class_id = instructor_schedule.class_id
- JOIN semester ON semester.semester_id = class.semester_id
- JOIN subject ON subject.subject_id = class.subject_id
- JOIN level ON level.level_id = subject.level_id
- JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
- WHERE instructor_schedule.user_id = instructor_id; +
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_class
-* <comment>Procedure select_class created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_class`(
- IN class_id INT
-)
-BEGIN
- CALL select_class_times(class_id);
- SELECT person.first_name, person.last_name, subject_name.subject_name, level.level_name, semester.description
- FROM class
- JOIN instructor_schedule ON instructor_schedule.class_id = class_id
- JOIN user ON user.user_id = instructor_schedule.user_id
- JOIN person ON person.person_id = user.person_id
- JOIN subject ON subject.subject_id = class.subject_id
- JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
- JOIN level ON level.level_id = subject.level_id
- JOIN semester ON semester.semester_id = class.semester_id
- WHERE class.class_id = class_id;
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_class_times
-* <comment>Procedure select_class_times created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_class_times`(
- IN class_id INT
-)
-BEGIN
- SELECT class_time_id, start_time, end_time, day_of_week.name, class_time.group
- FROM class_time
- JOIN day_of_week ON day_of_week.day_of_week_id = class_time.day_of_week_id
- WHERE class_time.class_id = class_id;
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_class_students
-* <comment>Procedure select_class_students created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_class_students`(
- IN class_id INT
-)
-BEGIN
- SELECT person.first_name, person.last_name, class_time.group
- FROM student_schedule
- JOIN application ON application.student_id = student_schedule.student_id
- JOIN person ON person.person_id = application.person_id
- JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id
- JOIN class ON class.class_id = class_time.class_id
- WHERE student_schedule.class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id);
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_class_distinct_students
-* <comment>Procedure select_class_distinct_students created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_class_distinct_students`(
- IN class_id INT
-)
-BEGIN
- SELECT DISTINCT person.first_name, person.last_name
- FROM student_schedule
- JOIN application ON application.student_id = student_schedule.student_id
- JOIN person ON person.person_id = application.person_id
- JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id
- JOIN class ON class.class_id = class_time.class_id
- WHERE student_schedule.class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id);
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_person_phone
-* <comment>Procedure select_person_phone created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_person_phone` (
- IN person_id MEDIUMINT UNSIGNED
-)
-BEGIN
- SELECT value
- FROM contact_information
- WHERE contact_information.person_id = person_id
- AND contact_type_id = 1;-- 1 is the phone contact type
-END;
-$$
-
-
-/***************************************************************
-* Procedure select_person_email
-* <comment>Procedure select_person_email created if it didn't already exist.</comment>
-***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_person_email` (
- IN person_id MEDIUMINT UNSIGNED
-)
-BEGIN
- SELECT value
- FROM contact_information
- WHERE contact_information.person_id = person_id
- AND contact_type_id = 2;-- 2 is the email contact type
-END;
-$$
-
-
-/***************************************************************
-* Procedure get_day_of_weeks
+* Procedure get_day_of_week
 * <comment>Procedure get_day_of_week created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `get_day_of_weeks`(
 )
 BEGIN
- SELECT `day_of_week_id`, `name`
- FROM `smart_project`.`day_of_week`
+	SELECT `day_of_week_id`, `name`
+	FROM `smart_project`.`day_of_week`
     ORDER BY `day_of_week_id` ASC;
 END;
 $$
-
 
 /***************************************************************
 * Procedure create_class
 * <comment>Procedure create_class created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_class`(
- IN semester_id SMALLINT UNSIGNED,
+CREATE PROCEDURE IF NOT EXISTS `create_class`(
+	IN semester_id SMALLINT UNSIGNED,
     IN subject_name_id SMALLINT UNSIGNED,
     IN level_id TINYINT UNSIGNED,
     OUT class_id INT UNSIGNED
 )
 BEGIN
- -- Find the subject id
+	-- Find the subject id
     DECLARE subject_id SMALLINT UNSIGNED;
     
     SELECT s.`subject_id` 
@@ -764,11 +611,11 @@ BEGIN
     LIMIT 1;
     
     -- Start and end dates will be handled by a trigger
- INSERT INTO `class`
- (`semester_id`,
- `subject_id`)
- VALUES
- (semester_id, 
+	INSERT INTO `class`
+	(`semester_id`,
+	`subject_id`)
+	VALUES
+	(semester_id, 
     subject_id
     );
     
@@ -776,27 +623,26 @@ BEGIN
 END;
 $$
 
-
 /***************************************************************
 * Procedure create_class_time
 * <comment>Procedure create_class_time created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_class_time`(
- IN class_id INT UNSIGNED,
+CREATE PROCEDURE IF NOT EXISTS `create_class_time`(
+	IN class_id INT UNSIGNED,
     IN day_of_week_id TINYINT UNSIGNED,
     IN `group` TINYINT UNSIGNED,
     IN start_time TIME,
     IN end_time TIME
 )
 BEGIN
- INSERT INTO `class_time`
- (`class_id`,
- `day_of_week_id`,
- `group`,
- `start_time`,
- `end_time`)
- VALUES
- (class_id,
+	INSERT INTO `class_time`
+	(`class_id`,
+	`day_of_week_id`,
+	`group`,
+	`start_time`,
+	`end_time`)
+	VALUES
+	(class_id,
     day_of_week_id,
     `group`,
     start_time,
@@ -804,17 +650,16 @@ BEGIN
 END;
 $$
 
-
 /***************************************************************
 * Procedure create_instructor_schedule
 * <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_instructor_schedule`(
- IN email VARCHAR(255),
+CREATE PROCEDURE IF NOT EXISTS `create_instructor_schedule`(
+	IN email VARCHAR(255),
     IN class_id INT UNSIGNED
 )
 BEGIN
- -- Since we are storing the email in the session we need to get the user_id from their email
+	-- Since we are storing the email in the session we need to get the user_id from their email
     DECLARE user_id MEDIUMINT UNSIGNED;
     
     SELECT u.user_id INTO user_id
@@ -822,30 +667,51 @@ BEGIN
     WHERE u.email LIKE email;
     
     INSERT INTO `instructor_schedule`
- (`user_id`,
- `class_id`)
- VALUES
- (user_id,
+	(`user_id`,
+	`class_id`)
+	VALUES
+	(user_id,
     class_id);
 END;
 $$
 
 
 /***************************************************************
-* Procedure select_students_and_class_status
-* <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
+* Procedure get_meal_times
+* <comment>Procedure get_meal_times created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `select_students_and_class_status`(
-  IN class_id INT UNSIGNED 
+CREATE PROCEDURE IF NOT EXISTS `get_meal_times`(
 )
 BEGIN
- 
-    SELECT student.student_id, person.first_name, person.last_name, class_time.class_time_id, class_time.group
-    FROM student
-    LEFT JOIN student_schedule ON student_schedule.student_id = student.student_id
-    LEFT JOIN class_time ON student_schedule.class_time_id = class_time.class_time_id AND class_time.class_id = class_id
-    JOIN application ON student.student_id = application.student_id
-    JOIN person ON application.person_id = person.person_id
-    WHERE student_status_id = 1;
+	SELECT 
+    `meal_time_id`,
+    `time`
+	FROM `meal_time`;
 END;
 $$
+
+
+/***************************************************************
+* Procedure get_students_with_meal_assistance
+* <comment>Procedure get_students_with_meal_assistance created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_students_with_meal_assistance`(
+)
+BEGIN
+	SELECT 
+    s.`student_id`,
+    s.`student_status_id`,
+    s.`date_of_admission`,
+    s.`photograph`
+	FROM 
+	`student` AS s
+    INNER JOIN `application` AS a
+    ON a.student_id = s.student_id
+    INNER JOIN `person` AS p
+    ON p.person_id = a.person_id
+    WHERE -- Only get active students in need of meal assistance
+    s.student_status_id = 1 AND
+    a.meal_assistance = TRUE;
+END;
+$$
+

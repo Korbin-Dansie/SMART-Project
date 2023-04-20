@@ -73,21 +73,23 @@
             <h1>Feedings</h1>
           </div>
           <div class="row">
-            <form action="" method="post" id="form" class="d-flex">
-              <div class="me-auto ms-auto">
+            <form action="" method="post" id="form" class="d-flex align-items-center justify-content-center">
+              <div class="inline me-1">
                 <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31">
-
+              </div>
+              <div class="inline ms-1">
                 <select type="select" id="mealPicker" class="form-select" name="meal-time">
                   <%if(locals.meal_times != undefined || locals.meal_times != null) {
-                    meal_times.forEach(meal_time => {
-                      const firstLetter = meal_time.time.charAt(0)
-                      const firstLetterCap = firstLetter.toUpperCase()
-                      const remainingLetters = meal_time.time.slice(1)
-                      const capitalizedWord = firstLetterCap + remainingLetters
-                    %>
-                    <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
+                      meal_times.forEach(meal_time => {
+                        //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
+                        const firstLetter = meal_time.time.charAt(0)
+                        const firstLetterCap = firstLetter.toUpperCase()
+                        const remainingLetters = meal_time.time.slice(1)
+                        const capitalizedWord = firstLetterCap + remainingLetters
+                      %>
+                  <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
                   <%});
-                }%>
+                  }%>
                 </select>
               </div>
             </form>
@@ -97,165 +99,25 @@
               <tr>
                 <th scope="col">Name</th>
                 <th scope="col">
-                  <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off">
-                  <label class="btn btn-outline-success feeding-button" for="success-outlined"><i class="bi bi-check-square-fill"></i></label>
-
-                  <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
-                  <label class="btn btn-outline-danger feeding-button" for="danger-outlined"><i class="bi bi-x-square-fill"></i></label>
                   <span>Meal</span>
                 </th>
-                <th scope="col">Mon<br>04/03</th>
-                <th scope="col">Tue<br>04/04</th>
-                <th scope="col">Wed<br>04/05</th>
-                <th scope="col">Thu<br>04/06</th>
-                <th scope="col">Fri<br>04/07</th>
               </tr>
             </thead>
             <tbody>
+              <%if(locals.students != undefined || locals.students != null) {
+                students.forEach(student => {
+                      %>
               <tr>
-                <td>Efua Keita</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
+                <td><%=student.first_name%></td>
+                <td> <input type="radio" class="btn-check" name="options-outlined-<%=student.student_id%>" id="success-outlined-<%=student.student_id%>" autocomplete="off">
+                  <label class="btn btn-outline-success feeding-button" for="success-outlined-<%=student.student_id%>"><i class="bi bi-check-square-fill"></i></label>
+
+                  <input type="radio" class="btn-check" name="options-outlined-<%=student.student_id%>" id="danger-outlined-<%=student.student_id%>" autocomplete="off">
+                  <label class="btn btn-outline-danger feeding-button" for="danger-outlined-<%=student.student_id%>"><i class="bi bi-x-square-fill"></i></label>
+                </td>
               </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Kwame Omer</td>
-                <td>Breakfast</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Zola Isah</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Oluchi Yao</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Precious Omar</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Hadiza Ngoy</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Chidinma Sani</td>
-                <td>Breakfast</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Taraji Domingos</td>
-                <td>Breakfast</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
+              <%});
+                  }%>
             </tbody>
           </table>
         </div>

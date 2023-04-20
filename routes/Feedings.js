@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   getStep1(req, res, obj);
 });
 
-// Load the current feedings for today
+// Load the meal times
 function getStep1(req, res, obj){
   let sql = "CALL `get_meal_times`()";
   dbCon.query(sql, function (err, results) {
@@ -29,10 +29,29 @@ function getStep1(req, res, obj){
   });
 }
 
-// Load the current meal times
+// Load the current students in need of meal assistance
 function getStep2(req, res, obj){
-  res.render('Feedings', {...obj});
+  let sql = "CALL get_students_with_meal_assistance();";
+  dbCon.query(sql, function (err, results) {
+    if (err) {
+      throw err;
+    }
+
+    let students = new Array();
+    results[0].forEach(element => {
+      students.push(
+            {...element}
+        );
+    });
+
+    obj.students = students;
+    getStep3(req, res, obj)
+  });
 }
 
+// Load if anybody has already been feed
+function getStep3(req, res, obj){
+    res.render('Feedings', {...obj});
+}
 
 module.exports = router;
