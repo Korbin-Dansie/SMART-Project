@@ -132,26 +132,93 @@
 
       // Add the rows
       students.forEach(student => {
-        createTableRow(student.student_id, student.first_name, student.last_name, );
+        tableBody.appendChild(
+        createTableRow(student.student_id, student.first_name, student.last_name, student.is_feed)
+        );
       });
+
+      // Add event listeners
+      addEventListenersToFeedings();
     }
 
     function createTableRow(student_id, first_name, last_name, is_feed) {
       let tr = document.createElement("tr");
 
+      // Add name
       let td_name = document.createElement("td");
       td_name.innerText = first_name + " " + last_name;
       tr.appendChild(td_name);
 
+      // Add buttons
+      let td_feed = document.createElement("td");
+      td_feed.appendChild(createSuccessButton(student_id, is_feed));
+      td_feed.appendChild(createSuccessLabel(student_id, is_feed));
+      td_feed.appendChild(createDangeButton(student_id, is_feed));
+      td_feed.appendChild(createDangeLabel(student_id, is_feed));
 
-
-      let tableBody = document.getElementById("feeding-table-body");
-      tableBody.appendChild(tr);
+      tr.appendChild(td_feed);
+      return tr;
     }
+
+    function createSuccessButton(student_id, is_feed){
+      let input_success = document.createElement("input");
+      input_success.setAttribute("type", "radio");
+      input_success.setAttribute("name", "options-outlined-" + student_id);
+      input_success.setAttribute("id", "success-outlined-" + student_id);
+      input_success.setAttribute("autocomplete", "off");
+      input_success.classList.add("btn-check");
+
+      return input_success;
+    }
+
+    function createSuccessLabel(student_id, is_feed){
+      let input_success_label = document.createElement("label");
+      input_success_label.setAttribute("for", "success-outlined-" + student_id);
+      input_success_label.classList.add(
+        "btn",
+        "btn-outline-success",
+        "feeding-button"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-check-square-fill");
+
+      input_success_label.appendChild(i_check);
+      return input_success_label;
+    }
+    
+    function createDangeButton(student_id, is_feed){
+      let input_success = document.createElement("input");
+      input_success.setAttribute("type", "radio");
+      input_success.setAttribute("name", "options-outlined-" + student_id);
+      input_success.setAttribute("id", "danger-outlined-" + student_id);
+      input_success.setAttribute("autocomplete", "off");
+      input_success.classList.add("btn-check");
+
+      return input_success;
+    }
+
+    function createDangeLabel(student_id, is_feed){
+      let input_success_label = document.createElement("label");
+      input_success_label.setAttribute("for", "danger-outlined-" + student_id);
+      input_success_label.classList.add(
+        "btn",
+        "btn-outline-danger",
+        "feeding-button"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-x-square-fill");
+
+      input_success_label.appendChild(i_check);
+      return input_success_label;
+    }
+  
+  
   </script>
 </head>
 
-<body onload="loadStartDate(), addEventListenersToFeedings(), loadFeedings()">
+<body onload="loadStartDate(), loadFeedings()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -191,20 +258,6 @@
               </tr>
             </thead>
             <tbody id="feeding-table-body">
-              <%if(locals.students != undefined || locals.students != null) {
-                students.forEach(student => {
-                      %>
-              <tr>
-                <td><%=student.first_name%></td>
-                <td> <input type="radio" class="btn-check" name="options-outlined-<%=student.student_id%>" id="success-outlined-<%=student.student_id%>" autocomplete="off">
-                  <label class="btn btn-outline-success feeding-button" for="success-outlined-<%=student.student_id%>"><i class="bi bi-check-square-fill"></i></label>
-
-                  <input type="radio" class="btn-check" name="options-outlined-<%=student.student_id%>" id="danger-outlined-<%=student.student_id%>" autocomplete="off">
-                  <label class="btn btn-outline-danger feeding-button" for="danger-outlined-<%=student.student_id%>"><i class="bi bi-x-square-fill"></i></label>
-                </td>
-              </tr>
-              <%});
-                  }%>
             </tbody>
           </table>
           <div class="d-flex justify-content-end align-items-center">
