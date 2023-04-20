@@ -31,20 +31,24 @@
 
           // When check trigger
           if (self.checked) {
+            self.setAttribute("data-checked", self.checked);
             let unchecked = function() {
               setTimeout(function() {
-                self.checked = false;
+                if(self.getAttribute("data-checked") == "true"){
+                  self.checked = false;
+                  self.setAttribute("data-checked", self.checked);
+                }
               }, 0);
             };
 
-            let unbind = function(event) {
+            let unbind = function() {
               this.removeEventListener("mouseup", up);
               this.removeEventListener("mouseleave", unbind);
             };
 
             let up = function(event) {
               unchecked();
-              unbind(event);
+              unbind();
             };
 
             this.addEventListener("mouseup", up);
