@@ -91,33 +91,32 @@
         if (bIsEqual) {
           date.disabled = false;
           meal.disabled = false;
-          for(let element of [date, meal]){
+          for (let element of [date, meal]) {
             element.removeAttribute("data-toggle");
             element.removeAttribute("title");
           }
-        } 
+        }
         // They are different
         else {
           date.disabled = true;
           meal.disabled = true;
-          for(let element of [date, meal]){
+          for (let element of [date, meal]) {
             element.setAttribute("data-bs-toggle", "tooltip");
             element.setAttribute("title", "Save / Cancel before changing the date");
           }
         }
       }
 
-      const updateWorkingFeedings = function(e){
+      const updateWorkingFeedings = function(e) {
         let name = e.target.getAttribute("name");
         let studentId = e.target.getAttribute("data-student-id");
 
         // Get the check input, or undefined if not value is clicked
         let input = document.querySelector('input[name=' + name + ']:checked');
 
-        if(input == undefined){
+        if (input == undefined) {
           workingFeedings.delete(Number(studentId));
-        }
-        else{
+        } else {
           workingFeedings.set(Number(studentId), Number(input.value));
         }
 
@@ -129,9 +128,10 @@
         // If clicked add it to the list
         elements[i].addEventListener("click", clicked);
         let input = document.getElementById(elements[i].getAttribute("for"));
-        input.addEventListener("change", lockDateAndMealPicker);
-        input.addEventListener("change", updateWorkingFeedings);
 
+        // Update feedings needs to come before updating the lock, since the lock takes the workding feeds value
+        input.addEventListener("change", updateWorkingFeedings);
+        input.addEventListener("change", lockDateAndMealPicker);
       }
     }
 
@@ -318,6 +318,32 @@
       input_success_label.appendChild(i_check);
       return input_success_label;
     }
+
+    // Reset all feeding to the current feedings
+    function clearFeedings() {
+      let elements = document.querySelectorAll(".feeding-button");
+      for (let i = 0; i < elements.length; i++) {
+        // If clicked add it to the list
+        let input = document.getElementById(elements[i].getAttribute("for"));
+        let studentId = input.getAttribute("data-student-id");
+
+        // Find the corresponding student id in the map 
+        let feedingValue = currentFeedings.get(Number(studentId));
+        console.log("studentId", studentId);
+        console.log("feedingValue", feedingValue);
+
+        // That means we did NOT find it in the map
+        if (input.value == feedingValue) {
+          input.checked = true;
+        } else {
+          input.checked = false;
+        }
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
+      }
+    }
   </script>
 </head>
 
@@ -364,7 +390,7 @@
             </tbody>
           </table>
           <div class="d-flex justify-content-end align-items-center">
-            <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1">
+            <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
             </div>
             <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
             </div>
