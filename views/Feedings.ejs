@@ -32,7 +32,7 @@
       // Assign the event listener to the label for each feeding
       for (let i = 0; i < elements.length; i++) {
         // https://stackoverflow.com/questions/4957207/how-to-check-uncheck-radio-button-on-click
-        elements[i].addEventListener("mousedown", function(e) {
+        let down = function(e) {
 
           // Since we are getting the label in the event listener we need to get the coresponding input element
           let self = document.getElementById(this.getAttribute("for"));
@@ -45,8 +45,10 @@
             self.setAttribute("data-checked", self.checked);
 
             // Remove the item from the working map
-            let unchecked = function() {
+            const unchecked = function() {
               setTimeout(function() {
+                console.log("unchecked", this, self);
+
                 if (self.getAttribute("data-checked") == "true") {
                   self.checked = false;
                   self.setAttribute("data-checked", self.checked);
@@ -54,35 +56,38 @@
                   // Update the working string by deleting the entery
                   workingFeedings.delete(Number(self.getAttribute("data-student-id")));
                 }
-                console.log(workingFeedings);
               }, 0);
             };
 
-            let unbind = function() {
-              this.removeEventListener("mouseup", up, true);
+            const unbind = function() {
+              console.log("Unbind", this);
               this.removeEventListener("mouseleave", unbind, true);
+              this.removeEventListener("mouseup", up, true);
             };
 
-            let up = function(event) {
-              unchecked();
-              unbind();
+            const up = function(event) {
+              console.log("Up", this);
+              unchecked.bind(this)();
+              unbind.bind(this)();
             };
 
-            this.addEventListener("mouseup", up);
-            this.addEventListener("mouseleave", unbind);
+            this.addEventListener("mouseup", up.bind(this), {once: true});
+            this.addEventListener("mouseleave", unbind.bind(this), {once: true});
+            console.log(this);
           } else {
             self.checked = true;
             // Add the entry to the working string
             let studentId = self.getAttribute("data-student-id");
             let name = "options-outlined-" + studentId;
-    
+
             let value = document.querySelector('input[name=' + name + ']:checked').value;
 
             console.log("value: ", value);
             workingFeedings.set(Number(self.getAttribute("data-student-id")), Number(value));
             console.log(workingFeedings);
           }
-        }, false);
+        }
+        elements[i].addEventListener("mousedown", down, false);
       }
     }
 
