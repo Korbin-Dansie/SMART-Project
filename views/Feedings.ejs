@@ -88,7 +88,9 @@
             resolve(students);
           }
         };
-        xhttp.open("GET", "students", true);
+        let url = new URL("students", window.location.href + window.location.pathname);
+        console.log(url);
+        xhttp.open("GET", url, true);
         xhttp.send();
       });
 
@@ -105,11 +107,11 @@
         };
 
         // Add the date the the url
-        let url = new URL("date", window.location.href);
+        let url = new URL("date", window.location.href + window.location.pathname);
         let params = new URLSearchParams(url.search);
         params.append("date", date.value);
         url.search = params;
-
+        console.log(url);
         xhttp.open("GET", url, true);
         xhttp.send();
       });
