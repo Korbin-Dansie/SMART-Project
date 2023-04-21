@@ -76,6 +76,10 @@
         }, inputs); // use inputs as this
 
         e.preventDefault();
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
       };
 
       const lockDateAndMealPicker = function(e) {
@@ -87,12 +91,23 @@
         let date = document.getElementById("datePicker");
         let meal = document.getElementById("mealPicker");
 
+        // They are the same
         if (bIsEqual) {
           date.disabled = false;
           meal.disabled = false;
-        } else {
+          for(let element of [date, meal]){
+            element.removeAttribute("data-toggle");
+            element.removeAttribute("title");
+          }
+        } 
+        // They are different
+        else {
           date.disabled = true;
           meal.disabled = true;
+          for(let element of [date, meal]){
+            element.setAttribute("data-bs-toggle", "tooltip");
+            element.setAttribute("title", "Save / Cancel before changing the date");
+          }
         }
       }
 
@@ -102,8 +117,7 @@
         // If clicked add it to the list
         elements[i].addEventListener("click", clicked);
         let input = document.getElementById(elements[i].getAttribute("for"));
-        console.log(input);
-        elements[i].addEventListener("click", lockDateAndMealPicker);
+        input.addEventListener("change", lockDateAndMealPicker);
       }
     }
 
