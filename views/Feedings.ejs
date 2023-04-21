@@ -28,67 +28,48 @@
       // Add event listener to all feedings
       let elements = document.querySelectorAll(".feeding-button");
 
-      // Cannot use a for-in loop for some resons.
-      // Assign the event listener to the label for each feeding
-      for (let i = 0; i < elements.length; i++) {
-       
-        // https://stackoverflow.com/questions/4957207/how-to-check-uncheck-radio-button-on-click
-        const down = function(e) {
+      const clicked = function(e) {
+             let input = document.getElementById(this.getAttribute("for"));
+            // If input was clicked for a second time set its value to false
+            let bClickedAgain = false;
+            if(input.checked == true){
+              console.log("click on me again!");
+              bClickedAgain = true;
+            }
 
-          // Since we are getting the label in the event listener we need to get the coresponding input element
-          let selecteddElement = e.currentTarget;
-          let self = document.getElementById(selecteddElement.getAttribute("for"));
-
-          // When check trigger
-          if (self.checked) {
-
-            // Store the the value in a attribue so we can tell the value in the async code
-            // This allows the user to click the button more than once without having to leave the button
-
-            // Remove the item from the working map
-            const unchecked = function() {
-              setTimeout(function() {
-
-                  self.checked = false;
-                  self.setAttribute("data-checked", self.checked);
-
-                  // Update the working string by deleting the entery
-                  workingFeedings.delete(Number(self.getAttribute("data-student-id")));
-                
-              }, 0);
-            };
-
-            const unbind = function() {
-              selecteddElement.removeEventListener("mouseleave", unbind);
-              selecteddElement.removeEventListener("mouseup", up);
-            };
-
-            const up = function(event) {
-              unchecked();
-              unbind();
-            };
-
-            selecteddElement.addEventListener("mouseup", up);
-            selecteddElement.addEventListener("mouseleave", unbind);
-          }
-        };
-
-        // If clicked add it to the list
-        const clickMe = function(e) {
-          let self = document.getElementById(this.getAttribute("for"));
-          self.checked = true;
-
-            // Add the entry to the working string
-            let studentId = self.getAttribute("data-student-id");
+            // Get the name of the input
+            let studentId = input.getAttribute("data-student-id");
             let name = "options-outlined-" + studentId;
 
-            let value = document.querySelector('input[name=' + name + ']:checked').value;
+            console.log("input", input.getAttribute("id"));
 
+            // Set all other inputs to false, so there can only be one clicked
+            let inputs = document.querySelectorAll('input[name=' + name + ']');
+
+            inputs.forEach(function(element, index){
+              console.log(element);
+              if(element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0){
+                this[index].checked = false;
+              }
+              // If we clicked on a different input set it to true else set it to false
+              else if(bClickedAgain == false){
+                console.log("else if!", element);
+                this[index].checked = true;
+              }
+              else{
+                console.log("else!");
+                this[index].checked = false;
+              }
+            }, inputs); // use inputs as this
+
+            let value = document.querySelector('input[name=' + name + ']').value;
             workingFeedings.set(Number(studentId), Number(value));
+            e.preventDefault();
         };
 
-        elements[i].addEventListener("mousedown", down);
-        elements[i].addEventListener("click", clickMe);
+      for (let i = 0; i < elements.length; i++) { 
+        // If clicked add it to the list
+        elements[i].addEventListener("click", clicked);
       }
     }
 
@@ -209,7 +190,7 @@
 
     function createSuccessButton(student_id, is_feed) {
       let input_success = document.createElement("input");
-      input_success.setAttribute("type", "radio");
+      input_success.setAttribute("type", "checkbox");
       input_success.setAttribute("name", "options-outlined-" + student_id);
       input_success.setAttribute("id", "success-outlined-" + student_id);
       input_success.setAttribute("data-student-id", student_id);
@@ -244,7 +225,7 @@
 
     function createDangeButton(student_id, is_feed) {
       let input_success = document.createElement("input");
-      input_success.setAttribute("type", "radio");
+      input_success.setAttribute("type", "checkbox");
       input_success.setAttribute("name", "options-outlined-" + student_id);
       input_success.setAttribute("id", "danger-outlined-" + student_id);
       input_success.setAttribute("autocomplete", "off");
