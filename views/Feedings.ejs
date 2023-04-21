@@ -119,8 +119,6 @@
         } else {
           workingFeedings.set(Number(studentId), Number(input.value));
         }
-
-        console.log(workingFeedings);
       };
       // Add event listener to all feedings
       let elements = document.querySelectorAll(".feeding-button");
@@ -200,7 +198,8 @@
         tableBody.removeChild(tableBody.firstChild);
       }
 
-      // Add the rows
+      // Add the rows and reset the current feedings
+      currentFeedings = new Map();
       students.forEach(student => {
         // Is student feed this meal
         let studentElementinArray = feedings.find(
@@ -329,8 +328,6 @@
 
         // Find the corresponding student id in the map 
         let feedingValue = currentFeedings.get(Number(studentId));
-        console.log("studentId", studentId);
-        console.log("feedingValue", feedingValue);
 
         // That means we did NOT find it in the map
         if (input.value == feedingValue) {
