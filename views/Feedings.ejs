@@ -31,8 +31,9 @@
       // Cannot use a for-in loop for some resons.
       // Assign the event listener to the label for each feeding
       for (let i = 0; i < elements.length; i++) {
+       
         // https://stackoverflow.com/questions/4957207/how-to-check-uncheck-radio-button-on-click
-        let down = function(e) {
+        const down = function(e) {
 
           // Since we are getting the label in the event listener we need to get the coresponding input element
           let selecteddElement = e.currentTarget;
@@ -56,6 +57,7 @@
 
                   // Update the working string by deleting the entery
                   workingFeedings.delete(Number(self.getAttribute("data-student-id")));
+                  console.log(workingFeedings);
                 }
               }, 0);
             };
@@ -72,10 +74,16 @@
               unbind();
             };
 
-            this.addEventListener("mouseup", up);
-            this.addEventListener("mouseleave", unbind);
-          } else {
-            self.checked = true;
+            selecteddElement.addEventListener("mouseup", up);
+            selecteddElement.addEventListener("mouseleave", unbind);
+          }
+        };
+
+        // If clicked add it to the list
+        const clickMe = function(e) {
+          let self = document.getElementById(this.getAttribute("for"));
+          self.checked = true;
+
             // Add the entry to the working string
             let studentId = self.getAttribute("data-student-id");
             let name = "options-outlined-" + studentId;
@@ -83,11 +91,13 @@
             let value = document.querySelector('input[name=' + name + ']:checked').value;
 
             console.log("value: ", value);
-            workingFeedings.set(Number(self.getAttribute("data-student-id")), Number(value));
+            workingFeedings.set(Number(studentId), Number(value));
             console.log(workingFeedings);
-          }
-        }
+        };
+
         elements[i].addEventListener("mousedown", down);
+        elements[i].addEventListener("click", clickMe);
+
       }
     }
 
