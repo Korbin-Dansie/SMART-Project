@@ -24,46 +24,86 @@
       datePicker.valueAsDate = new Date();
     }
 
+    /**
+     * // https://stackoverflow.com/questions/35948335/how-can-i-check-if-two-map-objects-are-equal
+     * @param {Map} map1
+     * @param {Map} map2
+     */
+    function compareMaps(map1, map2) {
+      let testVal;
+      if (map1.size !== map2.size) {
+        return false;
+      }
+      for (let [key, val] of map1) {
+        testVal = map2.get(key);
+        // in cases of an undefined value, make sure the key
+        // actually exists on the object so there are no false positives
+        if (testVal !== val || (testVal === undefined && !map2.has(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
     function addEventListenersToFeedings() {
+      const clicked = function(e) {
+        let input = document.getElementById(this.getAttribute("for"));
+        // If input was clicked for a second time set its value to false
+        let bClickedAgain = false;
+        if (input.checked == true) {
+          bClickedAgain = true;
+        }
+
+        // Get the name of the input
+        let studentId = input.getAttribute("data-student-id");
+        let name = "options-outlined-" + studentId;
+
+        // Set all other inputs to false, so there can only be one clicked
+        let inputs = document.querySelectorAll('input[name=' + name + ']');
+
+        inputs.forEach(function(element, index) {
+          if (element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0) {
+            this[index].checked = false;
+          }
+          // If we clicked on a different input set it to true else set it to false
+          else if (bClickedAgain == false) {
+            this[index].checked = true;
+            workingFeedings.set(Number(studentId), Number(this[index].value));
+          } else {
+            this[index].checked = false;
+            workingFeedings.delete(Number(studentId));
+          }
+        }, inputs); // use inputs as this
+
+        e.preventDefault();
+      };
+
+      const lockDateAndMealPicker = function(e) {
+        console.log("Changed!");
+
+        // If currentFeeds is equal to workingFeedings unlock else lock
+        let bIsEqual = compareMaps(currentFeedings, workingFeedings);
+
+        let date = document.getElementById("datePicker");
+        let meal = document.getElementById("mealPicker");
+
+        if (bIsEqual) {
+          date.disabled = false;
+          meal.disabled = false;
+        } else {
+          date.disabled = true;
+          meal.disabled = true;
+        }
+      }
+
       // Add event listener to all feedings
       let elements = document.querySelectorAll(".feeding-button");
-
-      const clicked = function(e) {
-             let input = document.getElementById(this.getAttribute("for"));
-            // If input was clicked for a second time set its value to false
-            let bClickedAgain = false;
-            if(input.checked == true){
-              bClickedAgain = true;
-            }
-
-            // Get the name of the input
-            let studentId = input.getAttribute("data-student-id");
-            let name = "options-outlined-" + studentId;
-
-            // Set all other inputs to false, so there can only be one clicked
-            let inputs = document.querySelectorAll('input[name=' + name + ']');
-
-            inputs.forEach(function(element, index){
-              if(element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0){
-                this[index].checked = false;
-              }
-              // If we clicked on a different input set it to true else set it to false
-              else if(bClickedAgain == false){
-                this[index].checked = true;
-                workingFeedings.set(Number(studentId), Number(this[index].value));
-              }
-              else{
-                this[index].checked = false;
-                workingFeedings.delete(Number(studentId));
-              }
-            }, inputs); // use inputs as this
-
-            e.preventDefault();
-        };
-
-      for (let i = 0; i < elements.length; i++) { 
+      for (let i = 0; i < elements.length; i++) {
         // If clicked add it to the list
         elements[i].addEventListener("click", clicked);
+        let input = document.getElementById(elements[i].getAttribute("for"));
+        console.log(input);
+        elements[i].addEventListener("click", lockDateAndMealPicker);
       }
     }
 
