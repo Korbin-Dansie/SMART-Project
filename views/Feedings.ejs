@@ -44,32 +44,26 @@
 
             // Store the the value in a attribue so we can tell the value in the async code
             // This allows the user to click the button more than once without having to leave the button
-            self.setAttribute("data-checked", self.checked);
 
             // Remove the item from the working map
             const unchecked = function() {
               setTimeout(function() {
-                console.log("unchecked", this, self);
 
-                if (self.getAttribute("data-checked") == "true") {
                   self.checked = false;
                   self.setAttribute("data-checked", self.checked);
 
                   // Update the working string by deleting the entery
                   workingFeedings.delete(Number(self.getAttribute("data-student-id")));
-                  console.log(workingFeedings);
-                }
+                
               }, 0);
             };
 
             const unbind = function() {
-              console.log("Unbind", selecteddElement);
               selecteddElement.removeEventListener("mouseleave", unbind);
               selecteddElement.removeEventListener("mouseup", up);
             };
 
             const up = function(event) {
-              console.log("Up", this);
               unchecked();
               unbind();
             };
@@ -90,14 +84,11 @@
 
             let value = document.querySelector('input[name=' + name + ']:checked').value;
 
-            console.log("value: ", value);
             workingFeedings.set(Number(studentId), Number(value));
-            console.log(workingFeedings);
         };
 
         elements[i].addEventListener("mousedown", down);
         elements[i].addEventListener("click", clickMe);
-
       }
     }
 
@@ -111,8 +102,6 @@
 
       // If both values are not filled exit
       if (date == null || date == undefined || meal == undefined || meal == null) {
-        console.log("Date: " + date);
-        console.log("Meal: " + meal);
         return;
       }
 
@@ -184,7 +173,6 @@
             createTableRow(student.student_id, student.first_name, student.last_name, studentElementinArray.is_done)
           );
           currentFeedings.set(student.student_id, studentElementinArray.is_done);
-          console.log(student.student_id, studentElementinArray.is_done);
 
         } else {
           tableBody.appendChild(
@@ -195,10 +183,6 @@
 
       // Now set the working set to the current set
       workingFeedings = new Map(currentFeedings);
-      workingFeedings.set(1, 0);
-
-      console.log(currentFeedings);
-      console.log(workingFeedings);
 
       // Add event listeners
       addEventListenersToFeedings();
