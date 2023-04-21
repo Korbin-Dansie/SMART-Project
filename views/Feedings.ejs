@@ -341,6 +341,62 @@
         input.dispatchEvent(ev);
       }
     }
+
+    // Submit the form
+    async function submitFeedings(e) {
+      // // If the current map and working map are the same do nothing
+      // if (compareMaps(currentFeedings, workingFeedings)) {
+      //   return;
+      // }
+
+      // https://stackoverflow.com/questions/13611614/submit-the-form-using-ajax
+      // Find all feedings that are added into working. These are the ones to insert
+      let promiseInsert = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            resolve(JSON.parse(this.responseText));
+          }
+          else if(this.readyState == 4 && this.status != 200){
+            console.log(error);
+            reject();
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("insertFeedings", window.location.href + window.location.pathname);
+
+        try{
+          xhttp.open("POST", url, true);
+        }
+        catch(err){
+          console.log(err);
+          return false;
+        }
+
+        xhttp.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded"
+        );
+
+        let form = document.getElementById("form");
+        let formData = new FormData(form);
+        xhttp.send(formData);
+      });
+
+      // Find all feedings that are different in the current from working. These are the ones to update
+
+      // Find all feedings that are removed from current. These are the ones to be deleted
+
+      console.log("qwer");
+
+      await Promise.all([promiseInsert]).then((values) => {
+        console.log("asdf");
+      });
+      console.log("zxcv");
+
+    }
   </script>
 </head>
 
@@ -354,7 +410,7 @@
             <h1>Feedings</h1>
           </div>
           <div class="row">
-            <form action="" method="post" id="form" class="d-flex align-items-center justify-content-center">
+            <form id="form" class="d-flex align-items-center justify-content-center" onsubmit="submitFeedings(); return false;">
               <div class="inline me-1">
                 <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
               </div>
