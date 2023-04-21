@@ -35,7 +35,8 @@
         let down = function(e) {
 
           // Since we are getting the label in the event listener we need to get the coresponding input element
-          let self = document.getElementById(this.getAttribute("for"));
+          let selecteddElement = e.currentTarget;
+          let self = document.getElementById(selecteddElement.getAttribute("for"));
 
           // When check trigger
           if (self.checked) {
@@ -60,20 +61,19 @@
             };
 
             const unbind = function() {
-              console.log("Unbind", this);
-              this.removeEventListener("mouseleave", unbind, true);
-              this.removeEventListener("mouseup", up, true);
+              console.log("Unbind", selecteddElement);
+              selecteddElement.removeEventListener("mouseleave", unbind);
+              selecteddElement.removeEventListener("mouseup", up);
             };
 
             const up = function(event) {
               console.log("Up", this);
-              unchecked.bind(this)();
-              unbind.bind(this)();
+              unchecked();
+              unbind();
             };
 
-            this.addEventListener("mouseup", up.bind(this), {once: true});
-            this.addEventListener("mouseleave", unbind.bind(this), {once: true});
-            console.log(this);
+            this.addEventListener("mouseup", up);
+            this.addEventListener("mouseleave", unbind);
           } else {
             self.checked = true;
             // Add the entry to the working string
@@ -87,7 +87,7 @@
             console.log(workingFeedings);
           }
         }
-        elements[i].addEventListener("mousedown", down, false);
+        elements[i].addEventListener("mousedown", down);
       }
     }
 
