@@ -33,7 +33,6 @@
             // If input was clicked for a second time set its value to false
             let bClickedAgain = false;
             if(input.checked == true){
-              console.log("click on me again!");
               bClickedAgain = true;
             }
 
@@ -41,29 +40,24 @@
             let studentId = input.getAttribute("data-student-id");
             let name = "options-outlined-" + studentId;
 
-            console.log("input", input.getAttribute("id"));
-
             // Set all other inputs to false, so there can only be one clicked
             let inputs = document.querySelectorAll('input[name=' + name + ']');
 
             inputs.forEach(function(element, index){
-              console.log(element);
               if(element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0){
                 this[index].checked = false;
               }
               // If we clicked on a different input set it to true else set it to false
               else if(bClickedAgain == false){
-                console.log("else if!", element);
                 this[index].checked = true;
+                workingFeedings.set(Number(studentId), Number(this[index].value));
               }
               else{
-                console.log("else!");
                 this[index].checked = false;
+                workingFeedings.delete(Number(studentId));
               }
             }, inputs); // use inputs as this
 
-            let value = document.querySelector('input[name=' + name + ']').value;
-            workingFeedings.set(Number(studentId), Number(value));
             e.preventDefault();
         };
 
