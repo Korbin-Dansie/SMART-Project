@@ -10,6 +10,14 @@
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
   <script>
+    // Holds what the feedings looked like from the database
+    // Used to see if we have made any changes
+    let currentFeedings = new Map();
+
+    // Holds the current feeding that we have changed before submiting them to the database
+    let workingFeedings = new Map();
+
+
     // Set the date pickers date to today
     function loadStartDate() {
       let datePicker = document.getElementById("datePicker");
@@ -36,12 +44,17 @@
             // This allows the user to click the button more than once without having to leave the button
             self.setAttribute("data-checked", self.checked);
 
+            // Remove the item from the working map
             let unchecked = function() {
               setTimeout(function() {
                 if (self.getAttribute("data-checked") == "true") {
                   self.checked = false;
                   self.setAttribute("data-checked", self.checked);
+
+                  // Update the working string by deleting the entery
+                  workingFeedings.delete(Number(self.getAttribute("data-student-id")));
                 }
+                console.log(workingFeedings);
               }, 0);
             };
 
@@ -57,6 +70,17 @@
 
             this.addEventListener("mouseup", up);
             this.addEventListener("mouseleave", unbind);
+          } else {
+            self.checked = true;
+            // Add the entry to the working string
+            let studentId = self.getAttribute("data-student-id");
+            let name = "options-outlined-" + studentId;
+    
+            let value = document.querySelector('input[name=' + name + ']:checked').value;
+
+            console.log("value: ", value);
+            workingFeedings.set(Number(self.getAttribute("data-student-id")), Number(value));
+            console.log(workingFeedings);
           }
         }, false);
       }
@@ -74,7 +98,6 @@
       if (date == null || date == undefined || meal == undefined || meal == null) {
         console.log("Date: " + date);
         console.log("Meal: " + meal);
-
         return;
       }
 
@@ -89,7 +112,6 @@
           }
         };
         let url = new URL("students", window.location.href + window.location.pathname);
-        console.log(url);
         xhttp.open("GET", url, true);
         xhttp.send();
       });
@@ -111,7 +133,6 @@
         let params = new URLSearchParams(url.search);
         params.append("date", date.value);
         url.search = params;
-        console.log(url);
         xhttp.open("GET", url, true);
         xhttp.send();
       });
@@ -135,23 +156,34 @@
       // Add the rows
       students.forEach(student => {
         // Is student feed this meal
-        let isFeed = feedings.find(
+        let studentElementinArray = feedings.find(
           (element) => {
             return element.student_id == student.student_id && element.meal_time_id == meal.value;
           }
         );
 
         // If is feed is not found / undefined set is done to null
-        if (isFeed != undefined) {
+        // Set the curringFeeding Set.
+        if (studentElementinArray != undefined) {
           tableBody.appendChild(
-            createTableRow(student.student_id, student.first_name, student.last_name, isFeed.is_done)
+            createTableRow(student.student_id, student.first_name, student.last_name, studentElementinArray.is_done)
           );
+          currentFeedings.set(student.student_id, studentElementinArray.is_done);
+          console.log(student.student_id, studentElementinArray.is_done);
+
         } else {
           tableBody.appendChild(
             createTableRow(student.student_id, student.first_name, student.last_name, null)
           );
         }
       });
+
+      // Now set the working set to the current set
+      workingFeedings = new Map(currentFeedings);
+      workingFeedings.set(1, 0);
+
+      console.log(currentFeedings);
+      console.log(workingFeedings);
 
       // Add event listeners
       addEventListenersToFeedings();
@@ -181,10 +213,14 @@
       input_success.setAttribute("type", "radio");
       input_success.setAttribute("name", "options-outlined-" + student_id);
       input_success.setAttribute("id", "success-outlined-" + student_id);
+      input_success.setAttribute("data-student-id", student_id);
+      input_success.setAttribute("value", 1);
+
+
       input_success.setAttribute("autocomplete", "off");
       input_success.classList.add("btn-check");
-      if(is_feed != null){
-        if(is_feed == "1"){
+      if (is_feed != null) {
+        if (is_feed == "1") {
           input_success.checked = true;
         }
       }
@@ -213,10 +249,12 @@
       input_success.setAttribute("name", "options-outlined-" + student_id);
       input_success.setAttribute("id", "danger-outlined-" + student_id);
       input_success.setAttribute("autocomplete", "off");
+      input_success.setAttribute("data-student-id", student_id);
       input_success.classList.add("btn-check");
-      
-      if(is_feed != null){
-        if(is_feed == "0"){
+      input_success.setAttribute("value", 0);
+
+      if (is_feed != null) {
+        if (is_feed == "0") {
           input_success.checked = true;
         }
       }
