@@ -223,6 +223,14 @@
         }
       });
 
+      let hiddent = document.createElement("input");
+      hiddent.setAttribute("type", "hidden");
+      hiddent.setAttribute("value", "Hello Hiddent");
+      hiddent.setAttribute("name", "hiddent");
+      tableBody.appendChild(hiddent);
+
+
+
       // Now set the working set to the current set
       workingFeedings = new Map(currentFeedings);
 
@@ -344,6 +352,7 @@
 
     // Submit the form
     async function submitFeedings(e) {
+      e.preventDefault();
       // // If the current map and working map are the same do nothing
       // if (compareMaps(currentFeedings, workingFeedings)) {
       //   return;
@@ -357,8 +366,7 @@
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             resolve(JSON.parse(this.responseText));
-          }
-          else if(this.readyState == 4 && this.status != 200){
+          } else if (this.readyState == 4 && this.status != 200) {
             console.log(error);
             reject();
           }
@@ -367,10 +375,9 @@
         // Add the date the the url
         let url = new URL("insertFeedings", window.location.href + window.location.pathname);
 
-        try{
+        try {
           xhttp.open("POST", url, true);
-        }
-        catch(err){
+        } catch (err) {
           console.log(err);
           return false;
         }
@@ -382,6 +389,10 @@
 
         let form = document.getElementById("form");
         let formData = new FormData(form);
+        // List key/value pairs
+        for (let [name, value] of formData) {
+          console.log(name, value);
+        }
         xhttp.send(formData);
       });
 
@@ -409,8 +420,9 @@
           <div style="text-align:center">
             <h1>Feedings</h1>
           </div>
+          <form id="form" class="d-flex align-items-center justify-content-center" onsubmit="submitFeedings(event);">
+
           <div class="row">
-            <form id="form" class="d-flex align-items-center justify-content-center" onsubmit="submitFeedings(); return false;">
               <div class="inline me-1">
                 <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
               </div>
@@ -419,10 +431,10 @@
                   <%if(locals.meal_times != undefined || locals.meal_times != null) {
                       meal_times.forEach(meal_time => {
                         //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
-                        const firstLetter = meal_time.time.charAt(0)
-                        const firstLetterCap = firstLetter.toUpperCase()
-                        const remainingLetters = meal_time.time.slice(1)
-                        const capitalizedWord = firstLetterCap + remainingLetters
+                        const firstLetter = meal_time.time.charAt(0);
+                        const firstLetterCap = firstLetter.toUpperCase();
+                        const remainingLetters = meal_time.time.slice(1);
+                        const capitalizedWord = firstLetterCap + remainingLetters;
                       %>
                   <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
                   <%});
