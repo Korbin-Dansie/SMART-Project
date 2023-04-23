@@ -56,7 +56,7 @@
 
         // Get the name of the input
         let studentId = input.getAttribute("data-student-id");
-        let name = "options-outlined[" + studentId + "]";
+        let name = "options-outlined-" + studentId + "";
 
         // Set all other inputs to false, so there can only be one clicked
         let inputs = document.querySelectorAll(`input[name="${name}"]`);
@@ -92,7 +92,7 @@
           date.disabled = false;
           meal.disabled = false;
           for (let element of [date, meal]) {
-            element.removeAttribute("data-toggle");
+            element.removeAttribute("data-bs-toggle");
             element.removeAttribute("title");
           }
         }
@@ -113,10 +113,6 @@
 
         // Get the check input, or undefined if not value is clicked
         let input = document.querySelector(`input[name="${name}"]:checked`);
-        
-        if(input == null){
-          console.error("No checked input");
-        }
 
         if (input == undefined) {
           workingFeedings.delete(Number(studentId));
@@ -249,7 +245,7 @@
       td_feed.appendChild(createSuccessButton(student_id, is_feed));
       td_feed.appendChild(createSuccessLabel(student_id, is_feed));
       td_feed.appendChild(createDangeButton(student_id, is_feed));
-      td_feed.appendChild(createDangeLabel(student_id, is_feed));
+      td_feed.appendChild(createDangerLabel(student_id, is_feed));
 
       tr.appendChild(td_feed);
       return tr;
@@ -258,7 +254,7 @@
     function createSuccessButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_success.setAttribute("name", "options-outlined-" + student_id + "");
       input_success.setAttribute("id", "success-outlined-" + student_id);
       input_success.setAttribute("data-student-id", student_id);
       input_success.setAttribute("value", 1);
@@ -293,7 +289,7 @@
     function createDangeButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_success.setAttribute("name", "options-outlined-" + student_id + "]");
       input_success.setAttribute("id", "danger-outlined-" + student_id);
       input_success.setAttribute("autocomplete", "off");
       input_success.setAttribute("data-student-id", student_id);
@@ -308,7 +304,7 @@
       return input_success;
     }
 
-    function createDangeLabel(student_id, is_feed) {
+    function createDangerLabel(student_id, is_feed) {
       let input_success_label = document.createElement("label");
       input_success_label.setAttribute("for", "danger-outlined-" + student_id);
       input_success_label.classList.add(
@@ -349,65 +345,25 @@
     }
 
     // Submit the form
-    async function submitFeedings(e) {
-      e.preventDefault();
-      // // If the current map and working map are the same do nothing
-      // if (compareMaps(currentFeedings, workingFeedings)) {
-      //   return;
-      // }
+    function submitFeedings(e) {
 
-      // https://stackoverflow.com/questions/13611614/submit-the-form-using-ajax
-      // Find all feedings that are added into working. These are the ones to insert
-      let promiseInsert = new Promise((resolve, reject) => {
-        // Create an AJAX request to get the students
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            resolve(JSON.parse(this.responseText));
-          } else if (this.readyState == 4 && this.status != 200) {
-            console.log(error);
-            reject();
-          }
-        };
+      // // Add the working Map as an array to the form
+      // // So that we can send the student ids to the server
+      // let form = document.getElementById("form");
+      // // console.log("old", new FormData(form));
 
-        // Add the date the the url
-        let url = new URL("insertFeedings", window.location.href + window.location.pathname);
+      // // // if (workingFeedings.size > 0) {
+      // // //   for (const [key, value] of workingFeedings) {
+      // // //     const input = document.createElement("input");
+      // // //     input.setAttribute("type", "hidden");
+      // // //     input.setAttribute("value", key); // This lets us save the students id
+      // // //     input.setAttribute("name", "student-id");
+      // // //     form.appendChild(input);
+      // // //   }
+      // // // }
 
-        try {
-          xhttp.open("POST", url, true);
-        } catch (err) {
-          console.log(err);
-          return false;
-        }
-
-        // https://plainenglish.io/blog/parsing-post-data-3-different-ways-in-node-js-e39d9d11ba8
-        xhttp.setRequestHeader(
-          "Content-Type",
-          "application/x-www-form-urlencoded"
-        );
-
-        let form = document.getElementById("form");
-        let formData = new FormData(form);
-
-        // List key/value pairs
-        for (let [name, value] of formData) {
-          console.log(name, value);
-        }
-        console.log(formData);
-        xhttp.send(formData);
-      });
-
-      // Find all feedings that are different in the current from working. These are the ones to update
-
-      // Find all feedings that are removed from current. These are the ones to be deleted
-
-      console.log("qwer");
-
-      await Promise.all([promiseInsert]).then((values) => {
-        console.log("asdf");
-      });
-      console.log("zxcv");
-
+      // // console.log("new", new FormData(form));
+      // return true;
     }
   </script>
 </head>
@@ -423,7 +379,7 @@
           </div>
           <form id="form" class="" action="feedings/insertFeedings" method="post">
 
-          <div class="d-flex flex-row align-content-center justify-content-center">
+            <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
                 <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
               </div>
@@ -442,25 +398,25 @@
                   }%>
                 </select>
               </div>
-          </div>
-          <table class="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">
-                  <span>Meal</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody id="feeding-table-body">
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-end align-items-center">
-            <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
             </div>
-            <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
+            <table class="table table-striped table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">
+                    <span>Meal</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="feeding-table-body">
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-end align-items-center">
+              <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
+              </div>
+              <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
+              </div>
             </div>
-          </div>
           </form>
         </div>
       </div>
