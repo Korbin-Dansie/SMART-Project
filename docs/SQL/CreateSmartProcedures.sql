@@ -743,6 +743,21 @@ END;
 $$
 
 /***************************************************************
+* Procedure delete_feedings
+* <comment>Procedure delete_feedings created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `delete_feedings`(
+    meal_time_id TINYINT UNSIGNED,
+    date_feed DATE
+)
+BEGIN
+	DELETE FROM `student_feeding`
+    WHERE `student_feeding`.`date_feed` = date_feed AND
+    `student_feeding`.`meal_time_id` = meal_time_id;
+END;
+$$
+
+/***************************************************************
 * Procedure get_feedings
 * <comment>Procedure get_feedings created if it didn't already exist.</comment>
 ***************************************************************/
