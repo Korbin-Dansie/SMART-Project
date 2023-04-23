@@ -49,32 +49,14 @@ router.get("/date", function (req, res, next) {
 router.post("/insertFeedings", function (req, res, next) {
   // req.rawBody = data;
   // req.jsonBody = JSON.parse(data);
-  console.log("query,", req.query.search);
-    console.log("query,", req.body);
+  console.log("Request Body,", req.body);
 
+  let date = req.body['feed-date'];
+  let meal = req.body['meal-time'];
 
-  let data = req.body;
-  console.log(data);
+  console.log("Date/Meal", date, "/", meal);
 
-  let date = data['feed-date'];
-  let meal = data['meal-time'];
-
-  console.log("Date/Meal", date, meal);
-
-  // for (let i = 1; data[/"options-outlined\[\d\]/] != undefined; i++) {
-  //   let feeding = data["options-outlined[" + i + "]"];
-  //   console.log("Feeding", feeding);
-  // }
-
-  console.log(data(/'options-outlined\[\d\]'/));
-
-  // .forEach(element => {
-  
-  //   console.log(element);
-  // });
-
-
-  return res.send([]);
+  return res.redirect("/feedings");
 });
 
 /* GET home page. */
