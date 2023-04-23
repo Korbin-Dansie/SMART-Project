@@ -73,14 +73,21 @@ router.post("/insertFeedings", function (req, res, next) {
       throw err;
     }
 
+    // For each student Id insert it into the database
     for (let index = 0; index < studentIds.length; index++) {
-      let currentStudentIndex = studentIds[index]
+      let currentStudentIndex = studentIds[index];
       let sql = "CALL add_feeding(?,?,?,?)";
+
+      // Get the data from the form to tell wether the user clicked feed or not feed
       let is_done = req.body[`options-outlined[${currentStudentIndex}]`];
+
+      // Now insert into the database
       dbCon.query(sql, [currentStudentIndex, meal, date, is_done], function (err, results) {
         if (err) {
           throw err;
         }
+
+        // See if we are done with the for loop and it so return to the feedings page
         if(index + 1 == studentIds.length){
           return res.redirect("/feedings");
         }
