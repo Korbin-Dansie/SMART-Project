@@ -51,22 +51,47 @@ router.post("/insertFeedings", function (req, res, next) {
   // req.jsonBody = JSON.parse(data);
   console.log("Request Body,", req.body);
 
-  let date = req.body['feed-date'];
-  let meal = req.body['meal-time'];
+  let date = req.body["feed-date"];
+  let meal = req.body["meal-time"];
 
   // Check if we have student ids
   // If we only have 1 id we have to treat it differnt because it is not an array.
-  if(req.body['student-id'] != undefined){
-    if(!Array.isArray(req.body['student-id'])){
-      req.body[['student-id']] = new Array(req.body['student-id']);
+  let studentIds = new Array();
+  if (req.body["student-id"] != undefined) {
+    // If it is an array set studentIds equal to id
+    if (Array.isArray(req.body["student-id"])) {
+      studentIds = new Array(...req.body["student-id"]);
+    } else {
+      studentIds = new Array(req.body["student-id"]);
     }
   }
 
-  console.log("Request Body After,", req.body);
+  // Delete all feedings for the selected date, then insert any (may be zero) feedings for the selected date
+  let sql = "CALL delete_feedings(?,?)";
+  dbCon.query(sql, [meal, date], function (err, results) {
+    if (err) {
+      throw err;
+    }
 
-  console.log("Date/Meal", date, "/", meal);
+    for (let index = 0; index < studentIds.length; index++) {
+      let currentStudentIndex = studentIds[index]
+      let sql = "CALL add_feeding(?,?,?,?)";
+      let is_done = req.body[`options-outlined[${currentStudentIndex}]`];
+      dbCon.query(sql, [currentStudentIndex, meal, date, is_done], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        if(index + 1 == studentIds.length){
+          return res.redirect("/feedings");
+        }
+      }); // End of add 
+    }
 
-  return res.redirect("/feedings");
+    // If we have no student return
+    if(studentIds.length == 0){
+      return res.redirect("/feedings");
+    }
+  }); // end of delete
 });
 
 /* GET home page. */
