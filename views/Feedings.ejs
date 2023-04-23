@@ -56,7 +56,7 @@
 
         // Get the name of the input
         let studentId = input.getAttribute("data-student-id");
-        let name = "options-outlined-" + studentId + "";
+        let name = "options-outlined[" + studentId + "]";
 
         // Set all other inputs to false, so there can only be one clicked
         let inputs = document.querySelectorAll(`input[name="${name}"]`);
@@ -254,7 +254,7 @@
     function createSuccessButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined-" + student_id + "");
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
       input_success.setAttribute("id", "success-outlined-" + student_id);
       input_success.setAttribute("data-student-id", student_id);
       input_success.setAttribute("value", 1);
@@ -289,7 +289,7 @@
     function createDangeButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined-" + student_id + "]");
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
       input_success.setAttribute("id", "danger-outlined-" + student_id);
       input_success.setAttribute("autocomplete", "off");
       input_success.setAttribute("data-student-id", student_id);
@@ -347,23 +347,31 @@
     // Submit the form
     function submitFeedings(e) {
 
-      // // Add the working Map as an array to the form
-      // // So that we can send the student ids to the server
-      // let form = document.getElementById("form");
-      // // console.log("old", new FormData(form));
+      // Add the working Map as an array to the form
+      // So that we can send the student ids to the server
+      let form = document.getElementById("form");
 
-      // // // if (workingFeedings.size > 0) {
-      // // //   for (const [key, value] of workingFeedings) {
-      // // //     const input = document.createElement("input");
-      // // //     input.setAttribute("type", "hidden");
-      // // //     input.setAttribute("value", key); // This lets us save the students id
-      // // //     input.setAttribute("name", "student-id");
-      // // //     form.appendChild(input);
-      // // //   }
-      // // // }
+      // Enable the Date/Meal pickers so there data is added
+      let date = document.getElementById("datePicker");
+      let meal = document.getElementById("mealPicker");
 
-      // // console.log("new", new FormData(form));
-      // return true;
+      date.disabled = false;
+      meal.disabled = false;
+
+      console.log("old", new FormData(form));
+
+      if (workingFeedings.size > 0) {
+        for (const [key, value] of workingFeedings) {
+          const input = document.createElement("input");
+          input.setAttribute("type", "hidden");
+          input.setAttribute("value", key); // This lets us save the students id
+          input.setAttribute("name", "student-id");
+          form.appendChild(input);
+        }
+      }
+
+      console.log("new", new FormData(form));
+      return true;
     }
   </script>
 </head>
@@ -377,7 +385,7 @@
           <div style="text-align:center">
             <h1>Feedings</h1>
           </div>
-          <form id="form" class="" action="feedings/insertFeedings" method="post">
+          <form id="form" class="" action="feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
 
             <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">

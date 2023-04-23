@@ -54,6 +54,16 @@ router.post("/insertFeedings", function (req, res, next) {
   let date = req.body['feed-date'];
   let meal = req.body['meal-time'];
 
+  // Check if we have student ids
+  // If we only have 1 id we have to treat it differnt because it is not an array.
+  if(req.body['student-id'] != undefined){
+    if(!Array.isArray(req.body['student-id'])){
+      req.body[['student-id']] = new Array(req.body['student-id']);
+    }
+  }
+
+  console.log("Request Body After,", req.body);
+
   console.log("Date/Meal", date, "/", meal);
 
   return res.redirect("/feedings");
