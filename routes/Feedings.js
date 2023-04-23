@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 var dbCon = require("../lib/database");
+const con = require("../lib/database");
 
 /* GET list of students that need feeding */
 router.get("/students", function (req, res, next) {
@@ -46,8 +47,32 @@ router.get("/date", function (req, res, next) {
 
 /* GET list of students that are feed today */
 router.post("/insertFeedings", function (req, res, next) {
-  console.log(req.body);
-  console.log("Here");
+  // req.rawBody = data;
+  // req.jsonBody = JSON.parse(data);
+  console.log("query,", req.query.search);
+    console.log("query,", req.body);
+
+
+  let data = req.body;
+  console.log(data);
+
+  let date = data['feed-date'];
+  let meal = data['meal-time'];
+
+  console.log("Date/Meal", date, meal);
+
+  // for (let i = 1; data[/"options-outlined\[\d\]/] != undefined; i++) {
+  //   let feeding = data["options-outlined[" + i + "]"];
+  //   console.log("Feeding", feeding);
+  // }
+
+  console.log(data(/'options-outlined\[\d\]'/));
+
+  // .forEach(element => {
+  
+  //   console.log(element);
+  // });
+
 
   return res.send([]);
 });
@@ -72,31 +97,8 @@ function getStep1(req, res, obj) {
     });
 
     obj.meal_times = meal_times;
-    getStep2(req, res, obj);
+    res.render("Feedings", { ...obj });
   });
-}
-
-// Load the current students in need of meal assistance
-function getStep2(req, res, obj) {
-  let sql = "CALL get_students_with_meal_assistance();";
-  dbCon.query(sql, function (err, results) {
-    if (err) {
-      throw err;
-    }
-
-    let students = new Array();
-    results[0].forEach((element) => {
-      students.push({ ...element });
-    });
-
-    obj.students = students;
-    getStep3(req, res, obj);
-  });
-}
-
-// Load if anybody has already been feed
-function getStep3(req, res, obj) {
-  res.render("Feedings", { ...obj });
 }
 
 module.exports = router;

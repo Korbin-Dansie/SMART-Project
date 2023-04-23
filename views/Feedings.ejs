@@ -56,10 +56,10 @@
 
         // Get the name of the input
         let studentId = input.getAttribute("data-student-id");
-        let name = "options-outlined-" + studentId;
+        let name = "options-outlined[" + studentId + "]";
 
         // Set all other inputs to false, so there can only be one clicked
-        let inputs = document.querySelectorAll('input[name=' + name + ']');
+        let inputs = document.querySelectorAll(`input[name="${name}"]`);
 
         inputs.forEach(function(element, index) {
           if (element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0) {
@@ -112,7 +112,11 @@
         let studentId = e.target.getAttribute("data-student-id");
 
         // Get the check input, or undefined if not value is clicked
-        let input = document.querySelector('input[name=' + name + ']:checked');
+        let input = document.querySelector(`input[name="${name}"]:checked`);
+        
+        if(input == null){
+          console.error("No checked input");
+        }
 
         if (input == undefined) {
           workingFeedings.delete(Number(studentId));
@@ -120,6 +124,8 @@
           workingFeedings.set(Number(studentId), Number(input.value));
         }
       };
+
+
       // Add event listener to all feedings
       let elements = document.querySelectorAll(".feeding-button");
       for (let i = 0; i < elements.length; i++) {
@@ -252,7 +258,7 @@
     function createSuccessButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined-" + student_id);
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
       input_success.setAttribute("id", "success-outlined-" + student_id);
       input_success.setAttribute("data-student-id", student_id);
       input_success.setAttribute("value", 1);
@@ -287,7 +293,7 @@
     function createDangeButton(student_id, is_feed) {
       let input_success = document.createElement("input");
       input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined-" + student_id);
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
       input_success.setAttribute("id", "danger-outlined-" + student_id);
       input_success.setAttribute("autocomplete", "off");
       input_success.setAttribute("data-student-id", student_id);
@@ -415,7 +421,7 @@
           <div style="text-align:center">
             <h1>Feedings</h1>
           </div>
-          <form id="form" class="" onsubmit="submitFeedings(event);">
+          <form id="form" class="" action="feedings/insertFeedings" method="post">
 
           <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
