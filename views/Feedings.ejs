@@ -374,6 +374,7 @@
           return false;
         }
 
+        // https://plainenglish.io/blog/parsing-post-data-3-different-ways-in-node-js-e39d9d11ba8
         xhttp.setRequestHeader(
           "Content-Type",
           "application/x-www-form-urlencoded"
@@ -381,10 +382,12 @@
 
         let form = document.getElementById("form");
         let formData = new FormData(form);
+
         // List key/value pairs
         for (let [name, value] of formData) {
           console.log(name, value);
         }
+        console.log(formData);
         xhttp.send(formData);
       });
 
