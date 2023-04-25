@@ -47,8 +47,10 @@
                                                     <div class="col-6">
                                                         <% if (locals.studentAssignments[i][j].status == 'Success') { %>
                                                             <h5 class="text-success"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
-                                                        <% } else { %>
+                                                        <% } else if (locals.studentAssignments[i][j].status == 'Fail') { %>
                                                             <h5 class="text-danger"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                        <% } else { %>
+                                                            <h5>-/<%= locals.studentAssignments[i][j].points_possible %></h5>
                                                         <% } %>
                                                     </div>
                                                 </div>
