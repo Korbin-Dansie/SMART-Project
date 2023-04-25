@@ -21,7 +21,11 @@
     // Set the date pickers date to today
     function loadStartDate() {
       let datePicker = document.getElementById("datePicker");
-      datePicker.valueAsDate = new Date();
+      let date = new Date();
+      datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+      let i = 0;
+      i++;
     }
 
     /**
