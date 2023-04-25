@@ -44,7 +44,7 @@
                                                     <div class="col-6">
                                                         <h5 class="text-primary"><%= locals.studentAssignments[i][j].assignment_name %></h5>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <div class="col-3">
                                                         <% if (locals.studentAssignments[i][j].status == 'Success') { %>
                                                             <h5 class="text-success"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
                                                         <% } else if (locals.studentAssignments[i][j].status == 'Fail') { %>
@@ -52,6 +52,11 @@
                                                         <% } else { %>
                                                             <h5>-/<%= locals.studentAssignments[i][j].points_possible %></h5>
                                                         <% } %>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <button class="btn btn-primary" type="submit">
+                                                            Edit Grade
+                                                        </button>
                                                     </div>
                                                 </div>
                                             <% }

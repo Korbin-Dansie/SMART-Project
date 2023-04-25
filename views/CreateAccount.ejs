@@ -42,19 +42,12 @@
   }
 
   function showModal() {
-      const urlParams = new URLSearchParams(window.location.search);
-      let save = urlParams.get("save");
-      if(save != undefined || save != null){
-        if(Number(save) == 1){
-          const urlParams = new URLSearchParams(window.location.search);
-          urlParams.delete("save");
-
-          window.history.replaceState(null, null, "?" + urlParams.toString());
-          var myModal = new bootstrap.Modal(document.getElementById("myModal"), {});
-         myModal.show();
-        }
-      }
+    let saveConfirm = document.getElementById("saveConfirm").value;
+    if (saveConfirm) {
+      var myModal = new bootstrap.Modal(document.getElementById("myModal"), {});
+      myModal.show();
     }
+  }
 </script>
 
 <body onLoad="showModal();">
@@ -62,6 +55,8 @@
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+
+          <input id="saveConfirm" type="hidden" value=<%= locals.saveConfirm %>>
 
           <a href="/" class="btn btn-secondary mt-2 position-relative top-0 start-0">Back</a>
 
@@ -118,9 +113,11 @@
             </div>
             <input type="hidden" id="hash" name="hash">
             <input type="hidden" id="salt" name="salt">
-            <button class="btn btn-primary mt-2" type="submit">
-              Submit
-            </button>
+            <div class="text-center">
+              <button class="btn btn-primary mt-2" type="submit">
+                Submit
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -136,7 +133,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>New Account Created Successfully</p>
+          <p><%- locals.saveMessage %></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

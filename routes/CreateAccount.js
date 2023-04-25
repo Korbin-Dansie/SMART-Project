@@ -29,10 +29,7 @@ router.post('/', function(req, res, next) {
       if (rows[1][0]['@result'] == 0) {
         // Account created successfully
         console.log("CreateAccount.js: Account successfully created");
-        let params = new URLSearchParams();
-        params.append("save", 1);
-
-        res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));
+        res.render('CreateAccount', { saveConfirm: true, saveMessage: "New " + accountType + " created associated to " + email});
       } else {
         // This email address is already being used
         console.log("CreateAccount.js: Email address already in use");
