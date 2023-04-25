@@ -89,12 +89,10 @@ router.post("/insertFeedings", function (req, res, next) {
 
         // See if we are done with the for loop and it so return to the feedings page
         if(index + 1 == studentIds.length){
-          let url = "../";
           let params = new URLSearchParams();
           params.append("date", date);
           params.append("mealtime", meal);
           console.log("params", params);
-          url.search = params;
   
           return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));
         }
@@ -103,14 +101,12 @@ router.post("/insertFeedings", function (req, res, next) {
 
     // If we have no student return
     if(studentIds.length == 0){
-      let url = new URL("/feedings");
-      let params = new URLSearchParams(url.search);
+      let params = new URLSearchParams();
       params.append("date", date);
       params.append("mealtime", meal);
-      url.search = params;
+      console.log("params", params);
 
-      return res.redirect(url);
-}
+      return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));}
   }); // end of delete
 });
 
