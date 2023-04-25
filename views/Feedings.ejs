@@ -162,6 +162,7 @@
             resolve(students);
           }
         };
+
         let url = new URL("students", window.location.href + window.location.pathname);
         xhttp.open("GET", url, true);
         xhttp.send();
@@ -389,7 +390,7 @@
           <div style="text-align:center">
             <h1>Feedings</h1>
           </div>
-          <form id="form" class="" action="feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
+          <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
 
             <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
