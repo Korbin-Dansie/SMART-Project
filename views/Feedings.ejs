@@ -20,12 +20,31 @@
 
     // Set the date pickers date to today
     function loadStartDate() {
+      // Check for URL parmas, and if they exist use thoses
       let datePicker = document.getElementById("datePicker");
-      let date = new Date();
-      datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 
-      let i = 0;
-      i++;
+      const urlParams = new URLSearchParams(window.location.search);
+      let selectedDate = urlParams.get("date");
+      if(selectedDate != undefined || selectedDate != null){
+        datePicker.valueAsDate = new Date(selectedDate);
+      }
+      else{
+        let date = new Date();
+        datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      }
+    }
+
+    // Set the meal picker if we have params
+    function loadMealPicker() {
+      // Check for URL parmas, and if they exist use thoses
+      let mealPicker = document.getElementById("mealPicker");
+      console.log(mealPicker);
+      const urlParams = new URLSearchParams(window.location.search);
+      let mealtime = urlParams.get("mealtime");
+      if(mealtime != undefined || mealtime != null){
+        console.log(mealtime);
+        mealPicker.value = mealtime;
+      }
     }
 
     /**
@@ -381,7 +400,7 @@
   </script>
 </head>
 
-<body onload="loadStartDate(), loadFeedings()">
+<body onload="loadStartDate(); loadMealPicker(); loadFeedings()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">

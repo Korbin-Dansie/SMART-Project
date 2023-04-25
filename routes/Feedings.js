@@ -49,8 +49,6 @@ router.get("/date", function (req, res, next) {
 router.post("/insertFeedings", function (req, res, next) {
   // req.rawBody = data;
   // req.jsonBody = JSON.parse(data);
-  console.log("Request Body,", req.body);
-
   let date = req.body["feed-date"];
   let meal = req.body["meal-time"];
 
@@ -92,7 +90,6 @@ router.post("/insertFeedings", function (req, res, next) {
           let params = new URLSearchParams();
           params.append("date", date);
           params.append("mealtime", meal);
-          console.log("params", params);
   
           return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));
         }
@@ -104,7 +101,6 @@ router.post("/insertFeedings", function (req, res, next) {
       let params = new URLSearchParams();
       params.append("date", date);
       params.append("mealtime", meal);
-      console.log("params", params);
 
       return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));}
   }); // end of delete
