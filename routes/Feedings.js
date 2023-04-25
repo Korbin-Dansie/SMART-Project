@@ -90,6 +90,7 @@ router.post("/insertFeedings", function (req, res, next) {
           let params = new URLSearchParams();
           params.append("date", date);
           params.append("mealtime", meal);
+          params.append("save", 1);
   
           return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));
         }
@@ -101,6 +102,7 @@ router.post("/insertFeedings", function (req, res, next) {
       let params = new URLSearchParams();
       params.append("date", date);
       params.append("mealtime", meal);
+      params.append("save", 1);
 
       return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));}
   }); // end of delete
@@ -109,6 +111,7 @@ router.post("/insertFeedings", function (req, res, next) {
 /* GET home page. */
 router.get("/", function (req, res, next) {
   let obj = new Object();
+
   getStep1(req, res, obj);
 });
 
