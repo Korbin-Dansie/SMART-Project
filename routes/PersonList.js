@@ -48,7 +48,8 @@ function parseStudentClassInfo(studentTable, class_time_table, res){
     var weekday = classTime['name'].slice(0,3);
     var startTime = classTime["start_time"].slice(0,5);
     var endTime = classTime["end_time"].slice(0,5);
-    class_time_list.push({id:classTime["class_time_id"], value: (weekday + " " + startTime + "-" + endTime)})
+    var groupNum = classTime["group"] + 1;
+    class_time_list.push({id:classTime["class_time_id"], value: (weekday + " " + startTime + "-" + endTime), group: groupNum })
   });
   // Create a better table of all students
   var studentArray = [];

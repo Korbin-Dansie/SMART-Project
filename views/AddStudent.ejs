@@ -8,14 +8,29 @@
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
-  <script type="text/javascript" src="crypto-js.js"></script>
+  <style>
+    td>button:hover>i {
+      color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+    }
+  </style>
+  <script>
+    function addStudentSchedule(this){
+      // Check what is chosen in the dropdown
+      
+      // If the student is already added to a class time in that group, remove it
+      // Add the student to the class time
+    }
+    function deleteStudentSchedule(studentID, classTimeID){
+      // Remove the student from that class time
+    }
+  </script>
 </head>
 
 <body>
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
-        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+        <div class="col-md-4 w-50 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>All Active Students</h1></div>
           <form> <!-- TODO: Input form post info-->
             <!-- DROPDOWN MENU OF CLASS TIMES HERE-->
@@ -27,7 +42,7 @@
                 <select id="classTime" name="classTime"
                   class="form-control" placeholder="Select">
                   <% for (var i = 0; i < classTimes.length; i ++) { %>
-                    <option value="<%= classTimes[i]['id'] %>"><%= classTimes[i]['value'] %></option>
+                    <option value="<%= classTimes[i]['id'] %>"><%= classTimes[i]['value'] %> Group:<%= classTimes[i]['group'] %></option>
                   <% } %>
                 </select>
               </div>
@@ -41,6 +56,7 @@
                   <% for (var i = 0; i <= totalClassGroups; i ++) { %>
                     <th scope="col">Group <%= i+1 %></th>
                   <% } %>
+                  <th scope="col">Add</th>
                 </tr>
               </thead>
               <tbody>
@@ -52,13 +68,18 @@
                           var classTimeID = studentTable[i]['group_'+j]; 
                           for (var k = 0; k < classTimes.length; k ++ ) {
                             if (classTimes[k]['id'] == classTimeID) {
-                                %><%= classTimes[classTimeID-1]['value'] %><%
+                                %><%= classTimes[classTimeID-1]['value'] %>
+                                  <button class="btn btn-outline-danger mx-2 float-end" type="button" onclick="deleteStudentSchedule(<%= studentTable[i]['id'] %>, <%= classTimeID %>);" style="visibility: visible;"><i class="bi bi-x-circle text-danger"></i></button>
+                                <%
                                 break;
                             }
-                          }%>
+                          } %>
                           
                         <% } %></td>
                     <% } %>
+                    <td>
+                      <button class="btn btn-primary pt-2 " type="button" onclick="addStudentSchedule(<%= studentTable[i]['id'] %>);">Add</button>
+                    </td>
                   </tr>
                 <% } %>
               </tbody>
