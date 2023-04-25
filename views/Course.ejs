@@ -106,23 +106,25 @@
                                 </button>
                             </div>
                             <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">10/21/2022</h5>
-                                    </div>
-                                    <div class="col-8">
-                                        <h5 class="text-primary">Week 1 Vocab</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">3/14/2022</h5>
-                                    </div>
-                                    <div class="col-8">
-                                        <h5 class="text-primary">Sample Assignment</h5>
-                                    </div>
-                                </div>
+                                <% if (locals.classAssignments.length > 0) { %>
+                                    <% for (let i = 0; i < locals.classAssignments.length; i++) { %>
+                                        <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                                            <div class="col-4">
+                                                <h5 class="text-primary"><%= locals.classAssignments[i].due_date.toLocaleDateString('en-US') %></h5>
+                                            </div>
+                                            <div class="col-6">
+                                                <h5 class="text-primary"><%= locals.classAssignments[i].assignment_name %></h5>
+                                            </div>
+                                            <div class="col-2">
+                                                <h5 class="text-primary"><%= locals.classAssignments[i].points_possible %></h5>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } else { %>
+                                    <p>
+                                        No assignments found
+                                    </p>
+                                <% } %>
                             </div>
                         </div>
                     </div>
