@@ -593,7 +593,7 @@ $$
 * Procedure create_class
 * <comment>Procedure create_class created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_class`(
+CREATE PROCEDURE IF NOT EXISTS `create_class`(
 	IN semester_id SMALLINT UNSIGNED,
     IN subject_name_id SMALLINT UNSIGNED,
     IN level_id TINYINT UNSIGNED,
@@ -627,7 +627,7 @@ $$
 * Procedure create_class_time
 * <comment>Procedure create_class_time created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_class_time`(
+CREATE PROCEDURE IF NOT EXISTS `create_class_time`(
 	IN class_id INT UNSIGNED,
     IN day_of_week_id TINYINT UNSIGNED,
     IN `group` TINYINT UNSIGNED,
@@ -654,7 +654,7 @@ $$
 * Procedure create_instructor_schedule
 * <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `create_instructor_schedule`(
+CREATE PROCEDURE IF NOT EXISTS `create_instructor_schedule`(
 	IN email VARCHAR(255),
     IN class_id INT UNSIGNED
 )
@@ -674,3 +674,108 @@ BEGIN
     class_id);
 END;
 $$
+
+
+/***************************************************************
+* Procedure get_meal_times
+* <comment>Procedure get_meal_times created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_meal_times`(
+)
+BEGIN
+	SELECT 
+    `meal_time_id`,
+    `time`
+	FROM `meal_time`;
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_students_with_meal_assistance
+* <comment>Procedure get_students_with_meal_assistance created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_students_with_meal_assistance`(
+)
+BEGIN
+	SELECT 
+    s.`student_id`,
+    p.`first_name`,
+	p.`last_name`
+	FROM 
+	`student` AS s
+    INNER JOIN `application` AS a
+    ON a.student_id = s.student_id
+    INNER JOIN `person` AS p
+    ON p.person_id = a.person_id
+    WHERE -- Only get active students in need of meal assistance
+    s.student_status_id = 1 AND
+    a.meal_assistance = TRUE;
+END;
+$$
+
+
+/***************************************************************
+* Procedure add_feeding
+* <comment>Procedure add_feeding created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `add_feeding`(
+	student_id MEDIUMINT UNSIGNED,
+    meal_time_id TINYINT UNSIGNED,
+    date_feed DATE,
+    is_done BOOLEAN
+)
+BEGIN
+	INSERT INTO `smart_project`.`student_feeding`
+	(
+	`student_id`,
+	`meal_time_id`,
+	`date_feed`,
+	`is_done`)
+	VALUES
+	(
+	student_id,
+	meal_time_id,
+	date_feed,
+	is_done
+    );
+END;
+$$
+
+/***************************************************************
+* Procedure delete_feedings
+* <comment>Procedure delete_feedings created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `delete_feedings`(
+    meal_time_id TINYINT UNSIGNED,
+    date_feed DATE
+)
+BEGIN
+	DELETE FROM `student_feeding`
+    WHERE `student_feeding`.`date_feed` = date_feed AND
+    `student_feeding`.`meal_time_id` = meal_time_id;
+END;
+$$
+
+/***************************************************************
+* Procedure get_feedings
+* <comment>Procedure get_feedings created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_feedings`(
+    date_feed DATE
+)
+BEGIN
+	IF date_feed IS NOT NULL THEN
+		SELECT
+		`student_id`,
+		`meal_time_id`,
+		`date_feed`,
+		`is_done`
+		FROM
+		student_feeding
+        WHERE
+        student_feeding.`date_feed` = date_feed;
+    END IF;
+END;
+$$
+

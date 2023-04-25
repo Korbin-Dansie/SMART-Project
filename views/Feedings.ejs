@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,181 +9,451 @@
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
-  <script type="text/javascript" src="crypto-js.js"></script>
+  <script>
+    // Holds what the feedings looked like from the database
+    // Used to see if we have made any changes
+    let currentFeedings = new Map();
+
+    // Holds the current feeding that we have changed before submiting them to the database
+    let workingFeedings = new Map();
+
+
+    // Set the date pickers date to today
+    function loadStartDate() {
+      // Check for URL parmas, and if they exist use thoses
+      let datePicker = document.getElementById("datePicker");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let selectedDate = urlParams.get("date");
+      if(selectedDate != undefined || selectedDate != null){
+        datePicker.valueAsDate = new Date(selectedDate);
+      }
+      else{
+        let date = new Date();
+        datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      }
+    }
+
+    // Set the meal picker if we have params
+    function loadMealPicker() {
+      // Check for URL parmas, and if they exist use thoses
+      let mealPicker = document.getElementById("mealPicker");
+      console.log(mealPicker);
+      const urlParams = new URLSearchParams(window.location.search);
+      let mealtime = urlParams.get("mealtime");
+      if(mealtime != undefined || mealtime != null){
+        console.log(mealtime);
+        mealPicker.value = mealtime;
+      }
+    }
+
+    /**
+     * // https://stackoverflow.com/questions/35948335/how-can-i-check-if-two-map-objects-are-equal
+     * @param {Map} map1
+     * @param {Map} map2
+     */
+    function compareMaps(map1, map2) {
+      let testVal;
+      if (map1.size !== map2.size) {
+        return false;
+      }
+      for (let [key, val] of map1) {
+        testVal = map2.get(key);
+        // in cases of an undefined value, make sure the key
+        // actually exists on the object so there are no false positives
+        if (testVal !== val || (testVal === undefined && !map2.has(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function addEventListenersToFeedings() {
+      const clicked = function(e) {
+        let input = document.getElementById(this.getAttribute("for"));
+        // If input was clicked for a second time set its value to false
+        let bClickedAgain = false;
+        if (input.checked == true) {
+          bClickedAgain = true;
+        }
+
+        // Get the name of the input
+        let studentId = input.getAttribute("data-student-id");
+        let name = "options-outlined[" + studentId + "]";
+
+        // Set all other inputs to false, so there can only be one clicked
+        let inputs = document.querySelectorAll(`input[name="${name}"]`);
+
+        inputs.forEach(function(element, index) {
+          if (element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0) {
+            this[index].checked = false;
+          }
+          // If we clicked on a different input set it to true else set it to false
+          else if (bClickedAgain == false) {
+            this[index].checked = true;
+          } else {
+            this[index].checked = false;
+          }
+        }, inputs); // use inputs as this
+
+        e.preventDefault();
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
+      };
+
+      const lockDateAndMealPicker = function(e) {
+        // If currentFeeds is equal to workingFeedings unlock else lock
+        let bIsEqual = compareMaps(currentFeedings, workingFeedings);
+
+        let date = document.getElementById("datePicker");
+        let meal = document.getElementById("mealPicker");
+
+        // They are the same
+        if (bIsEqual) {
+          date.disabled = false;
+          meal.disabled = false;
+          for (let element of [date, meal]) {
+            element.removeAttribute("data-bs-toggle");
+            element.removeAttribute("title");
+          }
+        }
+        // They are different
+        else {
+          date.disabled = true;
+          meal.disabled = true;
+          for (let element of [date, meal]) {
+            element.setAttribute("data-bs-toggle", "tooltip");
+            element.setAttribute("title", "Save / Cancel before changing the date");
+          }
+        }
+      }
+
+      const updateWorkingFeedings = function(e) {
+        let name = e.target.getAttribute("name");
+        let studentId = e.target.getAttribute("data-student-id");
+
+        // Get the check input, or undefined if not value is clicked
+        let input = document.querySelector(`input[name="${name}"]:checked`);
+
+        if (input == undefined) {
+          workingFeedings.delete(Number(studentId));
+        } else {
+          workingFeedings.set(Number(studentId), Number(input.value));
+        }
+      };
+
+
+      // Add event listener to all feedings
+      let elements = document.querySelectorAll(".feeding-button");
+      for (let i = 0; i < elements.length; i++) {
+        // If clicked add it to the list
+        elements[i].addEventListener("click", clicked);
+        let input = document.getElementById(elements[i].getAttribute("for"));
+
+        // Update feedings needs to come before updating the lock, since the lock takes the workding feeds value
+        input.addEventListener("change", updateWorkingFeedings);
+        input.addEventListener("change", lockDateAndMealPicker);
+      }
+    }
+
+    // Populate the feading table with the students
+    async function loadFeedings() {
+      // Store the date
+      let date = document.getElementById("datePicker");
+
+      // Store the meal id
+      let meal = document.getElementById("mealPicker");
+
+      // If both values are not filled exit
+      if (date == null || date == undefined || meal == undefined || meal == null) {
+        return;
+      }
+
+      let promiseStudents = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+
+            let students = JSON.parse(this.responseText);
+            resolve(students);
+          }
+        };
+
+        let url = new URL("students", window.location.href + window.location.pathname);
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // For the each student see if they have a current feeding for today
+      let promiseFeedings = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+
+            let feedings = JSON.parse(this.responseText);
+            resolve(feedings);
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("date", window.location.href + window.location.pathname);
+        let params = new URLSearchParams(url.search);
+        params.append("date", date.value);
+        url.search = params;
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // Wait for the students and feeding promise
+      // Add a row for each student
+      let students = new Array();
+      let feedings = new Array();
+
+      await Promise.all([promiseStudents, promiseFeedings]).then((values) => {
+        students = values[0];
+        feedings = values[1];
+      });
+
+      // Delete all current rows
+      let tableBody = document.getElementById("feeding-table-body");
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+      }
+
+      // Add the rows and reset the current feedings
+      currentFeedings = new Map();
+      students.forEach(student => {
+        // Is student feed this meal
+        let studentElementinArray = feedings.find(
+          (element) => {
+            return element.student_id == student.student_id && element.meal_time_id == meal.value;
+          }
+        );
+
+        // If is feed is not found / undefined set is done to null
+        // Set the curringFeeding Set.
+        if (studentElementinArray != undefined) {
+          tableBody.appendChild(
+            createTableRow(student.student_id, student.first_name, student.last_name, studentElementinArray.is_done)
+          );
+          currentFeedings.set(student.student_id, studentElementinArray.is_done);
+
+        } else {
+          tableBody.appendChild(
+            createTableRow(student.student_id, student.first_name, student.last_name, null)
+          );
+        }
+      });
+
+      // Now set the working set to the current set
+      workingFeedings = new Map(currentFeedings);
+
+      // Add event listeners
+      addEventListenersToFeedings();
+    }
+
+    function createTableRow(student_id, first_name, last_name, is_feed) {
+      let tr = document.createElement("tr");
+
+      // Add name
+      let td_name = document.createElement("td");
+      td_name.innerText = first_name + " " + last_name;
+      tr.appendChild(td_name);
+
+      // Add buttons
+      let td_feed = document.createElement("td");
+      td_feed.appendChild(createSuccessButton(student_id, is_feed));
+      td_feed.appendChild(createSuccessLabel(student_id, is_feed));
+      td_feed.appendChild(createDangeButton(student_id, is_feed));
+      td_feed.appendChild(createDangerLabel(student_id, is_feed));
+
+      tr.appendChild(td_feed);
+      return tr;
+    }
+
+    function createSuccessButton(student_id, is_feed) {
+      let input_success = document.createElement("input");
+      input_success.setAttribute("type", "checkbox");
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_success.setAttribute("id", "success-outlined-" + student_id);
+      input_success.setAttribute("data-student-id", student_id);
+      input_success.setAttribute("value", 1);
+
+
+      input_success.setAttribute("autocomplete", "off");
+      input_success.classList.add("btn-check");
+      if (is_feed != null) {
+        if (is_feed == "1") {
+          input_success.checked = true;
+        }
+      }
+      return input_success;
+    }
+
+    function createSuccessLabel(student_id, is_feed) {
+      let input_success_label = document.createElement("label");
+      input_success_label.setAttribute("for", "success-outlined-" + student_id);
+      input_success_label.classList.add(
+        "btn",
+        "btn-outline-success",
+        "feeding-button"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-check-square-fill");
+
+      input_success_label.appendChild(i_check);
+      return input_success_label;
+    }
+
+    function createDangeButton(student_id, is_feed) {
+      let input_success = document.createElement("input");
+      input_success.setAttribute("type", "checkbox");
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_success.setAttribute("id", "danger-outlined-" + student_id);
+      input_success.setAttribute("autocomplete", "off");
+      input_success.setAttribute("data-student-id", student_id);
+      input_success.classList.add("btn-check");
+      input_success.setAttribute("value", 0);
+
+      if (is_feed != null) {
+        if (is_feed == "0") {
+          input_success.checked = true;
+        }
+      }
+      return input_success;
+    }
+
+    function createDangerLabel(student_id, is_feed) {
+      let input_success_label = document.createElement("label");
+      input_success_label.setAttribute("for", "danger-outlined-" + student_id);
+      input_success_label.classList.add(
+        "btn",
+        "btn-outline-danger",
+        "feeding-button"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-x-square-fill");
+
+      input_success_label.appendChild(i_check);
+      return input_success_label;
+    }
+
+    // Reset all feeding to the current feedings
+    function clearFeedings() {
+      let elements = document.querySelectorAll(".feeding-button");
+      for (let i = 0; i < elements.length; i++) {
+        // If clicked add it to the list
+        let input = document.getElementById(elements[i].getAttribute("for"));
+        let studentId = input.getAttribute("data-student-id");
+
+        // Find the corresponding student id in the map 
+        let feedingValue = currentFeedings.get(Number(studentId));
+
+        // That means we did NOT find it in the map
+        if (input.value == feedingValue) {
+          input.checked = true;
+        } else {
+          input.checked = false;
+        }
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
+      }
+    }
+
+    // Submit the form
+    function submitFeedings(e) {
+
+      // Add the working Map as an array to the form
+      // So that we can send the student ids to the server
+      let form = document.getElementById("form");
+
+      // Enable the Date/Meal pickers so there data is added
+      let date = document.getElementById("datePicker");
+      let meal = document.getElementById("mealPicker");
+
+      date.disabled = false;
+      meal.disabled = false;
+
+      console.log("old", new FormData(form));
+
+      if (workingFeedings.size > 0) {
+        for (const [key, value] of workingFeedings) {
+          const input = document.createElement("input");
+          input.setAttribute("type", "hidden");
+          input.setAttribute("value", key); // This lets us save the students id
+          input.setAttribute("name", "student-id");
+          form.appendChild(input);
+        }
+      }
+
+      console.log("new", new FormData(form));
+      return true;
+    }
+  </script>
 </head>
 
-<body>
+<body onload="loadStartDate(); loadMealPicker(); loadFeedings()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
-        <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
-          <div style="text-align:center"><h1>Feedings</h1></div>
-          <div class="d-inline">
-            <div class="float-start"><button class="btn btn-primary mt-2">Previous week</button></div>
-            <div class="float-end"><button class="btn btn-primary mt-2">Next week</button></div>
+        <div class="col-md-8 col-sm-12 shadow-lg p-5 bg-light">
+          <%- include('partials/backbutton') %>
+          <div style="text-align:center">
+            <h1>Feedings</h1>
           </div>
-          <table class="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Meal</th>
-                <th scope="col">Mon<br>04/03</th>
-                <th scope="col">Tue<br>04/04</th>
-                <th scope="col">Wed<br>04/05</th>
-                <th scope="col">Thu<br>04/06</th>
-                <th scope="col">Fri<br>04/07</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Efua Keita</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Kwame Omer</td>
-                <td>Breakfast</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Zola Isah</td> 
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Oluchi Yao</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Precious Omar</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Hadiza Ngoy</td>
-                <td>Breakfast</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Chidinma Sani</td>
-                <td>Breakfast</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Taraji Domingos</td>
-                <td>Breakfast</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Lunch</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-            </tbody>
-          </table>
+          <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
+
+            <div class="d-flex flex-row align-content-center justify-content-center">
+              <div class="inline me-1">
+                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
+              </div>
+              <div class="inline ms-1">
+                <select type="select" id="mealPicker" class="form-select" name="meal-time" onchange="loadFeedings()">
+                  <%if(locals.meal_times != undefined || locals.meal_times != null) {
+                      meal_times.forEach(meal_time => {
+                        //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
+                        const firstLetter = meal_time.time.charAt(0);
+                        const firstLetterCap = firstLetter.toUpperCase();
+                        const remainingLetters = meal_time.time.slice(1);
+                        const capitalizedWord = firstLetterCap + remainingLetters;
+                      %>
+                  <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
+                  <%});
+                  }%>
+                </select>
+              </div>
+            </div>
+            <table class="table table-striped table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">
+                    <span>Meal</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="feeding-table-body">
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-end align-items-center">
+              <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
+              </div>
+              <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </body>
+
 </html>
