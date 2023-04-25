@@ -37,6 +37,8 @@ router.get('/', function (req, res, next) {
             res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: studentAssignments});
 
         });
+      } else {
+        res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: []});
       }
     });
 });
