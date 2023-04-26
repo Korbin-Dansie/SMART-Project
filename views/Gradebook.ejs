@@ -12,6 +12,56 @@
 </head>
 
 <script>
+
+    function beginUpdateGrade(button) {
+        //console.log(button.parentElement.parentElement.children.gradeForm.children.assignment.children);
+        let assignmentNode = button.parentElement.parentElement.children.assignment;
+        let gradeDisplay = assignmentNode.children.displayGrade;
+        let gradeEdit = assignmentNode.children.editGrade;
+        let saveBtn = button.parentElement.parentElement.children.gradeSaveBtn;
+
+        button.parentElement.style.display = "none";
+        saveBtn.style.display = "initial";
+
+        gradeDisplay.style.display = "none";
+        gradeEdit.style.display = "initial";
+    }
+
+    function submitGradeEdits(button) {
+        let assignmentNode = button.parentElement.parentElement.children.assignment;
+        let studentAssignmentID = assignmentNode.children.studentAssignmentID.value;
+        let grade = assignmentNode.children.editGrade.children.span.children.editGradeInput.value;
+        let pointsPossible = assignmentNode.children.assignmentPointsPossible.value;
+        let gradeDisplay = assignmentNode.children.displayGrade;
+        let gradeEdit = assignmentNode.children.editGrade;
+        let editBtn = button.parentElement.parentElement.children.gradeEditBtn;
+
+        //console.log(grade);
+
+        if (grade != "" && Number(grade) >= 0) {
+
+            button.parentElement.style.display = "none";
+            editBtn.style.display = "initial";
+
+            gradeDisplay.style.display = "initial";
+            gradeEdit.style.display = "none";
+
+            //console.log(gradeDisplay.firstChild.nextSibling);
+
+            gradeDisplay.firstChild.nextSibling.innerHTML = grade + "/" + pointsPossible;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Gradebook", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                studentAssignmentID: studentAssignmentID,
+                assignmentGrade: grade,
+                classID: document.getElementById("classID").value
+            }));
+        }
+
+    }
+
 </script>
 
 <body>
@@ -21,6 +71,8 @@
                 <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light">
 
                     <a href="/" class="btn btn-secondary mt-2 position-relative top-0 start-0">Back</a>
+
+                    <input id="classID" type="hidden" value=<%= locals.classDetails.class_id %>>
 
                     <div class="text-center pb-4">
                         <h3 class="text-primary">Course Gradebook</h3>
@@ -36,25 +88,44 @@
                             <% if (locals.students.length > 0) {
                                 for (let i = 0; i < locals.students.length; i++) { %>
                                     <div class="row mb-4 p-2 shadow-sm rounded border border-primary ">
-                                        <h3 class="text-primary"><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></h3>
+                                        <h3 class="text-primary col-8"><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></h3>
+                                        
+                                        <button class="btn btn-primary float-end col-4" type="submit">
+                                            Award Certificate
+                                        </button>
 
                                         <% if (locals.studentAssignments[i].length > 0) {
                                             for (let j = 0; j < locals.studentAssignments[i].length; j++) { %>
                                                 <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                                                     <div class="col-6">
-                                                        <h5 class="text-primary"><%= locals.studentAssignments[i][j].assignment_name %></h5>
+                                                        <h5><%= locals.studentAssignments[i][j].assignment_name %></h5>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <% if (locals.studentAssignments[i][j].status == 'Success') { %>
-                                                            <h5 class="text-success"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
-                                                        <% } else if (locals.studentAssignments[i][j].status == 'Fail') { %>
-                                                            <h5 class="text-danger"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
-                                                        <% } else { %>
-                                                            <h5>-/<%= locals.studentAssignments[i][j].points_possible %></h5>
-                                                        <% } %>
+                                                    <div class="col-3" id="assignment">
+                                                        <input type="hidden" id="studentAssignmentID" value=<%= locals.studentAssignments[i][j].student_assignment_id %>>
+                                                        <input type="hidden" id="assignmentPointsPossible" value=<%= locals.studentAssignments[i][j].points_possible %>>
+
+                                                        <div id="displayGrade">
+                                                            <% if (locals.studentAssignments[i][j].status == 'Success') { %>
+                                                                <h5 class="text-success"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                            <% } else if (locals.studentAssignments[i][j].status == 'Fail') { %>
+                                                                <h5 class="text-danger"><%= locals.studentAssignments[i][j].grade %>/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                            <% } else { %>
+                                                                <h5>-/<%= locals.studentAssignments[i][j].points_possible %></h5>
+                                                            <% } %>
+                                                        </div>
+                                                        <div id="editGrade" style="display:none">
+                                                            <span id="span">
+                                                                <input id="editGradeInput" size="1" type="text" value=<%= locals.studentAssignments[i][j].grade %>> /<%= locals.studentAssignments[i][j].points_possible %>
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-3">
-                                                        <button class="btn btn-primary" type="submit">
+                                                    <div class="col-3" style="display:none" id="gradeSaveBtn">
+                                                        <button class="btn btn-primary" onClick="submitGradeEdits(this);">
+                                                            Save Grade
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-3" id="gradeEditBtn">
+                                                        <button class="btn btn-primary" onClick="beginUpdateGrade(this);">
                                                             Edit Grade
                                                         </button>
                                                     </div>

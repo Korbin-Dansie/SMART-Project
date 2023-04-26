@@ -43,4 +43,22 @@ router.get('/', function (req, res, next) {
     });
 });
 
+router.post('/', function (req, res, next) {
+  let assignmentID = req.body.studentAssignmentID;
+  let assignmentGrade = req.body.assignmentGrade;
+
+  console.log(assignmentID, assignmentGrade);
+
+  let sql = "CALL update_student_assignment_grade(?, ?);";
+  dbCon.query(sql, [assignmentID, assignmentGrade], function (err, results) {
+    if (err) {
+      throw err;
+    }
+    //console.log(results);
+    //console.log(results[3][0]);
+
+  });
+
+});
+
 module.exports = router;
