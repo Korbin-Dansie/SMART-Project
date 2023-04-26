@@ -46,11 +46,18 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   let assignmentID = req.body.studentAssignmentID;
   let assignmentGrade = req.body.assignmentGrade;
+  let pointsPossible = req.body.pointsPossible;
 
   console.log(assignmentID, assignmentGrade);
 
-  let sql = "CALL update_student_assignment_grade(?, ?);";
-  dbCon.query(sql, [assignmentID, assignmentGrade], function (err, results) {
+  let status = 1; // Pass
+
+  if (assignmentGrade < pointsPossible / 2) {
+    status = 2; // Fail
+  }
+
+  let sql = "CALL update_student_assignment_grade(?, ?, ?);";
+  dbCon.query(sql, [assignmentID, assignmentGrade, status], function (err, results) {
     if (err) {
       throw err;
     }

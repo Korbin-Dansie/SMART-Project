@@ -49,6 +49,13 @@
             //console.log(gradeDisplay.firstChild.nextSibling);
 
             gradeDisplay.firstChild.nextSibling.innerHTML = grade + "/" + pointsPossible;
+            gradeDisplay.firstChild.nextSibling.removeAttribute("class");
+
+            if (Number(grade) < Number(pointsPossible) / 2) {
+                gradeDisplay.firstChild.nextSibling.classList.add("text-danger");
+            } else {
+                gradeDisplay.firstChild.nextSibling.classList.add("text-success");
+            }
 
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/Gradebook", true);
@@ -56,7 +63,8 @@
             xhr.send(JSON.stringify({
                 studentAssignmentID: studentAssignmentID,
                 assignmentGrade: grade,
-                classID: document.getElementById("classID").value
+                classID: document.getElementById("classID").value,
+                pointsPossible: pointsPossible
             }));
         }
 
