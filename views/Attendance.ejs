@@ -8,32 +8,61 @@
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
-  <script type="text/javascript" src="crypto-js.js"></script>
+  <script>
+    // Holds what the attendance looked like from the database
+    // Used to see if we have made any changes
+    let currentAttendance = new Map();
+
+    // Holds the current attendance that we have changed before submiting them to the database
+    let workingAttendance = new Map();
+
+
+    // Set the date pickers date to today
+    function loadStartDate() {
+      // Check for URL parmas, and if they exist use thoses
+      let datePicker = document.getElementById("datePicker");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let selectedDate = urlParams.get("date");
+      if (selectedDate != undefined || selectedDate != null) {
+        datePicker.valueAsDate = new Date(selectedDate);
+      } else {
+        let date = new Date();
+        datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      }
+    }
+  </script>
 </head>
 
-<body>
+<body onload="loadStartDate();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>Attendance</h1></div>
-          <h3 style="text-align: center;">English 1 CRN: 208</h3>
+          <h3 style="text-align: center;"><%= locals.subject_name + " " + locals.level_name%></h3>
           <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
             <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
-                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
+                <input type="date" id="datePicker" class="form-control" name="attendance-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
               </div>
               <div class="inline ms-1">
                 <select type="select" id="mealPicker" class="form-select" name="meal-time" onchange="loadFeedings()">
-                  <%if(locals.meal_times != undefined || locals.meal_times != null) {
-                      meal_times.forEach(meal_time => {
-                        //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
-                        const firstLetter = meal_time.time.charAt(0);
-                        const firstLetterCap = firstLetter.toUpperCase();
-                        const remainingLetters = meal_time.time.slice(1);
-                        const capitalizedWord = firstLetterCap + remainingLetters;
+                  <%if(locals.groups != undefined || locals.groups != null) {
+                      groups.forEach(group => {
+                        let startTime = new Date();
+                        let timeParts = group.start_time.split(":");
+                        startTime.setHours(timeParts[0]);
+                        startTime.setMinutes(timeParts[1]);
+                        startTime.setSeconds(timeParts[2]);
+                        
+                        let endTime = new Date();
+                        timeParts = group.end_time.split(":");
+                        endTime.setHours(timeParts[0]);
+                        endTime.setMinutes(timeParts[1]);
+                        endTime.setSeconds(timeParts[2]);
                       %>
-                  <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
+                      <option value="<%=group.class_time_id%>"><%=group.group + ": " + group.name + " " + startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()%></option>
                   <%});
                   }%>
                 </select>
@@ -62,5 +91,6 @@
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 </html>

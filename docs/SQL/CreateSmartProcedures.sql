@@ -74,6 +74,20 @@ $$
 
 
 /***************************************************************
+* Procedure get_userid_from_email
+* <comment>Procedure get_userid_from_email created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_userid_from_email` ( 
+ IN email VARCHAR(255), 
+ OUT userID TINYINT 
+) 
+BEGIN 
+ SET userID = (SELECT user_id FROM user WHERE user.email = email LIMIT 1); 
+END;
+$$
+
+
+/***************************************************************
 * Procedure create_account_type
 * <comment>Procedure create_account_type created if it didn't already exist.</comment>
 ***************************************************************/
@@ -221,7 +235,7 @@ CREATE PROCEDURE IF NOT EXISTS `select_guardians`(
  IN  applicationID MEDIUMINT
 )
 BEGIN
- SELECT person.first_name, person.last_name, annual_income
+ SELECT guardian.person_id, person.first_name, person.last_name, annual_income
  FROM guardian
  JOIN person ON person.person_id = guardian.person_id
  WHERE application_id = applicationID;
@@ -376,6 +390,9 @@ BEGIN
 	VALUES
 	(subject_name_id,
 	level_id);
+
+ INSERT INTO certificate (name, subject_id)
+ VALUES (CONCAT((select subject_name from subject_name where subject_name.subject_name_id = subject_name_id), ' ', (select level_name from level where level.level_id = level_id)), LAST_INSERT_ID());
 END;
 $$
 
@@ -524,12 +541,12 @@ $$
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `update_application_status`(
  IN application_id MEDIUMINT UNSIGNED,
- IN appliation_status_id TINYINT UNSIGNED
+ IN application_status_id TINYINT UNSIGNED
 )
 BEGIN
 	UPDATE `application`
-    SET `application_status_id` = appliation_status_id
-	WHERE `application_id` = application_id
+    SET application.`application_status_id` = application_status_id
+	WHERE application.`application_id` = application_id
     LIMIT 1;
 END;
 $$
@@ -577,7 +594,190 @@ $$
 
 
 /***************************************************************
-* Procedure get_day_of_week
+* Procedure select_instructor_classes
+* <comment>Procedure select_instructor_classes created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_instructor_classes`(
+ IN instructor_id MEDIUMINT UNSIGNED
+)
+BEGIN
+	SELECT class.class_id, semester.description, semester.start_date, semester.end_date, level.level_name, subject_name.subject_name
+ FROM instructor_schedule
+ JOIN class ON class.class_id = instructor_schedule.class_id
+ JOIN semester ON semester.semester_id = class.semester_id
+ JOIN subject ON subject.subject_id = class.subject_id
+ JOIN level ON level.level_id = subject.level_id
+ JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
+ WHERE instructor_schedule.user_id = instructor_id; +
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class
+* <comment>Procedure select_class created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class`(
+ IN class_id INT
+)
+BEGIN
+ CALL select_class_times(class_id);
+ SELECT class.class_id, person.first_name, person.last_name, subject_name.subject_name, level.level_name, semester.description
+ FROM class
+ JOIN instructor_schedule ON instructor_schedule.class_id = class_id
+ JOIN user ON user.user_id = instructor_schedule.user_id
+ JOIN person ON person.person_id = user.person_id
+ JOIN subject ON subject.subject_id = class.subject_id
+ JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
+ JOIN level ON level.level_id = subject.level_id
+ JOIN semester ON semester.semester_id = class.semester_id
+ WHERE class.class_id = class_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_times
+* <comment>Procedure select_class_times created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_times`(
+ IN class_id INT
+)
+BEGIN
+ SELECT class_time_id, start_time, end_time, day_of_week.name, class_time.group
+ FROM class_time
+ JOIN day_of_week ON day_of_week.day_of_week_id = class_time.day_of_week_id
+ WHERE class_time.class_id = class_id
+ ORDER BY day_of_week.day_of_week_id\n; +
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_students
+* <comment>Procedure select_class_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_students`(
+ IN class_id INT
+)
+BEGIN
+ SELECT person.first_name, person.last_name, class_time.group
+ FROM student_schedule
+ JOIN application ON application.student_id = student_schedule.student_id
+ JOIN person ON person.person_id = application.person_id
+ JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id
+ JOIN class ON class.class_id = class_time.class_id
+ WHERE student_schedule.class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id);
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_distinct_students
+* <comment>Procedure select_class_distinct_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_distinct_students`(
+ IN class_id INT
+)
+BEGIN
+ SELECT DISTINCT person.first_name, person.last_name, student_schedule.student_id
+ FROM student_schedule
+ JOIN application ON application.student_id = student_schedule.student_id
+ JOIN person ON person.person_id = application.person_id
+ JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id
+ JOIN class ON class.class_id = class_time.class_id
+ WHERE student_schedule.class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id)
+ ORDER BY person.last_name\n; +
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_assignments
+* <comment>Procedure select_student_assignments created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_assignments`(
+ IN student_id INT,
+ IN class_id INT
+)
+BEGIN
+ SELECT student_assignment.student_assignment_id, assignment.assignment_name, assignment.due_date, assignment_status.status, student_assignment.submission_date, student_assignment.grade, assignment.points_possible
+ FROM student_assignment
+ JOIN assignment ON assignment.assignment_id = student_assignment.assignment_id
+ LEFT OUTER JOIN assignment_status ON assignment_status.assignment_status_id = student_assignment.assignment_status_id
+ WHERE student_assignment.student_id = student_id
+ AND assignment.class_id = class_id
+ ORDER BY assignment.due_date, assignment.assignment_name;
+END;
+$$
+
+
+/***************************************************************
+* Procedure update_student_assignment_grade
+* <comment>Procedure update_student_assignment_grade created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `update_student_assignment_grade`(
+ IN student_assignment_id INT,
+ IN grade INT,
+ IN status INT
+)
+BEGIN
+ UPDATE student_assignment
+ SET student_assignment.grade = grade, student_assignment.assignment_status_id = status
+ WHERE student_assignment.student_assignment_id = student_assignment_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_assignments
+* <comment>Procedure select_class_assignments created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_assignments`(
+ IN class_id INT
+)
+BEGIN
+ SELECT assignment.assignment_name, assignment.due_date, assignment.points_possible
+ FROM assignment
+ WHERE assignment.class_id = class_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_person_phone
+* <comment>Procedure select_person_phone created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_person_phone` (
+ IN person_id MEDIUMINT UNSIGNED
+)
+BEGIN
+ SELECT value
+ FROM contact_information
+ WHERE contact_information.person_id = person_id
+ AND contact_type_id = 1;-- 1 is the phone contact type
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_person_email
+* <comment>Procedure select_person_email created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_person_email` (
+ IN person_id MEDIUMINT UNSIGNED
+)
+BEGIN
+ SELECT value
+ FROM contact_information
+ WHERE contact_information.person_id = person_id
+ AND contact_type_id = 2;-- 2 is the email contact type
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_day_of_weeks
 * <comment>Procedure get_day_of_week created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `get_day_of_weeks`(
@@ -588,6 +788,7 @@ BEGIN
     ORDER BY `day_of_week_id` ASC;
 END;
 $$
+
 
 /***************************************************************
 * Procedure create_class
@@ -623,6 +824,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure create_class_time
 * <comment>Procedure create_class_time created if it didn't already exist.</comment>
@@ -650,6 +852,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure create_instructor_schedule
 * <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
@@ -672,6 +875,49 @@ BEGIN
 	VALUES
 	(user_id,
     class_id);
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_students_and_class_status
+* <comment>Procedure create_instructor_schedule created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_students_and_class_status`(
+  IN class_id INT UNSIGNED 
+)
+BEGIN
+	
+    SELECT student.student_id, person.first_name, person.last_name, class_time.class_time_id, class_time.group
+    FROM student
+    LEFT JOIN student_schedule ON student_schedule.student_id = student.student_id
+    LEFT JOIN class_time ON student_schedule.class_time_id = class_time.class_time_id AND class_time.class_id = class_id
+    JOIN application ON student.student_id = application.student_id
+    JOIN person ON application.person_id = person.person_id
+    WHERE student_status_id = 1;
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_students
+* <comment>Procedure get_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_students`( 
+)
+BEGIN
+	SELECT 
+    s.`student_id`,
+    s.`student_status_id`,
+    s.`date_of_admission`,
+    s.`photograph`,
+    p.`first_name`,
+    p.`last_name`
+	FROM `smart_project`.`student` AS s
+    INNER JOIN `application` AS a
+    ON a.`student_id` = s.`student_id`
+    INNER JOIN `person` AS p
+    ON p.`person_id` = a.`person_id`;
 END;
 $$
 
@@ -742,6 +988,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure delete_feedings
 * <comment>Procedure delete_feedings created if it didn't already exist.</comment>
@@ -756,6 +1003,7 @@ BEGIN
     `student_feeding`.`meal_time_id` = meal_time_id;
 END;
 $$
+
 
 /***************************************************************
 * Procedure get_feedings
@@ -774,8 +1022,76 @@ BEGIN
 		FROM
 		student_feeding
         WHERE
-        student_feeding.`date_feed` = date_feed;
+        student_feeding.date_feed = date_feed;
     END IF;
 END;
 $$
 
+
+/***************************************************************
+* Trigger trigger_application_status_accepted_insert
+* <comment>Trigger trigger_application_status_accepted_insert created if it didn't already exist.</comment>
+***************************************************************/
+CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_insert`
+ BEFORE INSERT
+ ON `application` FOR EACH ROW
+ BEGIN
+ 
+	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
+	-- If is is accepted create a student record, 2 =	Accepted
+    IF(NEW.application_status_id = 2)
+    THEN
+		-- We dont need to insert anything into student we just need the new row
+        -- because everyting is handled automatically, exept for their photo
+		INSERT INTO `student` VALUES ();
+		SET new_student_id = LAST_INSERT_ID();
+        SET NEW.student_id = new_student_id;
+    END IF;
+ END;
+$$
+
+
+/***************************************************************
+* Trigger trigger_application_status_accepted_update
+* <comment>Trigger trigger_application_status_accepted_update created if it didn't already exist.</comment>
+***************************************************************/
+CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_update`
+ BEFORE UPDATE
+ ON `application` FOR EACH ROW
+ BEGIN
+ 
+	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
+	-- If is is accepted create a student record, 2 =	Accepted
+    IF(NEW.application_status_id = 2 AND OLD.student_id IS NULL)
+    THEN
+		-- We dont need to insert anything into student we just need the new row
+        -- because everyting is handled automaticly, exept for their photo
+		INSERT INTO `student` VALUES ();
+		SET new_student_id = LAST_INSERT_ID();
+        SET NEW.student_id = new_student_id;
+    END IF;
+ END;
+$$
+
+
+/***************************************************************
+* Trigger trigger_insert_class
+* <comment>Trigger trigger_insert_class created if it didn't already exist.</comment>
+***************************************************************/
+CREATE TRIGGER IF NOT EXISTS `trigger_insert_class`
+ BEFORE INSERT
+ ON `class` FOR EACH ROW
+ BEGIN
+	-- Get the start and end dates from the semester the class is part of
+    DECLARE start_date DATE;
+    DECLARE end_date DATE;
+    
+    SELECT s.start_date, s.end_date
+    INTO start_date, end_date
+    FROM `semester` as s
+    WHERE s.semester_id = new.semester_id;
+    
+    SET new.start_date = start_date;
+    SET new.end_date = end_date;
+ END;
+$$
