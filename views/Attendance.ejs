@@ -18,88 +18,46 @@
         <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>Attendance</h1></div>
           <h3 style="text-align: center;">English 1 CRN: 208</h3>
-          <div class="d-inline">
-            <div class="float-start"><button class="btn btn-primary mt-2">Previous week</button></div>
-            <div class="float-end"><button class="btn btn-primary mt-2">Next week</button></div>
-          </div>
-          <table class="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Mon<br>04/03</th>
-                <th scope="col">Tue<br>04/04</th>
-                <th scope="col">Wed<br>04/05</th>
-                <th scope="col">Thu<br>04/06</th>
-                <th scope="col">Fri<br>04/07</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Efua Keita</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Kwame Omer</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Zola Isah</td> 
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Oluchi Yao</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Precious Omar</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-              <tr>
-                <td>Hadiza Ngoy</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>Present</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Chidinma Sani</td>
-                <td>Absent</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>Absent</td>
-                <td>N/A</td>
-              </tr>
-              <tr>
-                <td>Taraji Domingos</td>
-                <td>Present</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>N/A</td>
-                <td>=====</td>
-              </tr>
-            </tbody>
-          </table>
+          <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
+            <div class="d-flex flex-row align-content-center justify-content-center">
+              <div class="inline me-1">
+                <input type="date" id="datePicker" class="form-control" name="feed-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
+              </div>
+              <div class="inline ms-1">
+                <select type="select" id="mealPicker" class="form-select" name="meal-time" onchange="loadFeedings()">
+                  <%if(locals.meal_times != undefined || locals.meal_times != null) {
+                      meal_times.forEach(meal_time => {
+                        //https://www.freecodecamp.org/news/javascript-capitalize-first-letter-of-word/
+                        const firstLetter = meal_time.time.charAt(0);
+                        const firstLetterCap = firstLetter.toUpperCase();
+                        const remainingLetters = meal_time.time.slice(1);
+                        const capitalizedWord = firstLetterCap + remainingLetters;
+                      %>
+                  <option value="<%=meal_time.meal_time_id%>"><%=capitalizedWord%></option>
+                  <%});
+                  }%>
+                </select>
+              </div>
+            </div>
+            <table class="table table-striped table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">
+                    <span>Meal</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="feeding-table-body">
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-end align-items-center">
+              <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
+              </div>
+              <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
