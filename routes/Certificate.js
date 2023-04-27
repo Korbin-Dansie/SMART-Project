@@ -22,7 +22,18 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-    res.render('Certificate', {});
+    let classID = req.body.classID;
+    let studentID = req.body.studentID;
+
+    let sql = "CALL award_certificate(?, ?);";
+    dbCon.query(sql, [classID, studentID], function (err, results) {
+        if (err) {
+        throw err;
+        }
+        //console.log(results);
+        //console.log(results[3][0]);
+
+    });
 });
 
 module.exports = router;

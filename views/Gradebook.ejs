@@ -40,6 +40,16 @@
 
         if (grade != "" && Number(grade) >= 0) {
 
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Gradebook", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                studentAssignmentID: studentAssignmentID,
+                assignmentGrade: grade,
+                classID: document.getElementById("classID").value,
+                pointsPossible: pointsPossible
+            }));
+
             button.parentElement.style.display = "none";
             editBtn.style.display = "initial";
 
@@ -56,18 +66,23 @@
             } else {
                 gradeDisplay.firstChild.nextSibling.classList.add("text-success");
             }
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/Gradebook", true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({
-                studentAssignmentID: studentAssignmentID,
-                assignmentGrade: grade,
-                classID: document.getElementById("classID").value,
-                pointsPossible: pointsPossible
-            }));
         }
 
+    }
+
+    function awardCertificate(button) {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Certificate", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            classID: document.getElementById("classID").value,
+            studentID: button.parentElement.children.viewCertBtn.children.studentID.value
+        }));
+        
+        
+        button.style.display = "none";
+        button.parentElement.children.viewCertBtn.style.display = "initial";
     }
 
 </script>
@@ -99,25 +114,22 @@
                                         <h3 class="text-primary col-8"><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></h3>
 
                                         <% if (locals.certifiedStudents.some(e => e.student_id === locals.students[i].student_id)) { %>
-                                            <form method="get" action="/Certificate">
+                                            <form method="get" action="/Certificate" class="col-4 px-0">
                                                 <input name="studentID" type="hidden" value=<%= locals.students[i].student_id %>>
                                                 <input name="classID" type="hidden" value=<%= locals.classDetails.class_id %>>
-                                                <button class="btn btn-primary float-end col-4" type="submit">
+                                                <button class="btn btn-primary col-12" type="submit">
                                                     View Certificate
                                                 </button>
                                             </form>
-                                            <button class="btn btn-primary float-end col-4" style="display:none">
-                                                Award Certificate
-                                            </button>
                                         <% } else { %>
-                                            <form method="get" action="/Certificate" style="display:none">
-                                                <input name="studentID" type="hidden" value=<%= locals.students[i].student_id %>>
-                                                <input name="classID" type="hidden" value=<%= locals.classDetails.class_id %>>
-                                                <button class="btn btn-primary float-end col-4" type="submit">
+                                            <form id="viewCertBtn" method="get" action="/Certificate" style="display:none" class="col-4 px-0">
+                                                <input id="studentID" name="studentID" type="hidden" value=<%= locals.students[i].student_id %>>
+                                                <input id="classID" name="classID" type="hidden" value=<%= locals.classDetails.class_id %>>
+                                                <button class="btn btn-primary col-12" type="submit">
                                                     View Certificate
                                                 </button>
                                             </form>
-                                            <button class="btn btn-primary float-end col-4" type="submit">
+                                            <button class="btn btn-primary float-end col-4" onClick="awardCertificate(this)">
                                                 Award Certificate
                                             </button>
                                         <% } %>
