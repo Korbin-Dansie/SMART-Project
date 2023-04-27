@@ -6,13 +6,13 @@ var dbCon = require('../lib/database');
 router.get('/', function (req, res, next) {
     let classID = req.query.classID;
 
-    let sql = "CALL select_class_distinct_students(?); CALL select_class(?);";
-    dbCon.query(sql, [classID, classID], function (err, results) {
+    let sql = "CALL select_class_distinct_students(?); CALL select_class(?); CALL select_class_certified_students(?);";
+    dbCon.query(sql, [classID, classID, classID], function (err, results) {
       if (err) {
         throw err;
       }
       //console.log(results);
-      //console.log(results[3][0]);
+      //console.log(results[5]);
 
       if (results[0].length > 0) {
         let studentAssignmentsSQL = "";
@@ -34,11 +34,11 @@ router.get('/', function (req, res, next) {
 
             //console.log(studentAssignments);
 
-            res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: studentAssignments});
+            res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: studentAssignments, certifiedStudents: results[5]});
 
         });
       } else {
-        res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: []});
+        res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: [], certifiedStudents: []});
       }
     });
 });

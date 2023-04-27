@@ -97,10 +97,16 @@
                                 for (let i = 0; i < locals.students.length; i++) { %>
                                     <div class="row mb-4 p-2 shadow-sm rounded border border-primary ">
                                         <h3 class="text-primary col-8"><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></h3>
-                                        
-                                        <button class="btn btn-primary float-end col-4" type="submit">
-                                            Award Certificate
-                                        </button>
+
+                                        <% if (locals.certifiedStudents.some(e => e.student_id === locals.students[i].student_id)) { %>
+                                            <button class="btn btn-primary float-end col-4" type="submit">
+                                                View Certificate
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-primary float-end col-4" type="submit">
+                                                Award Certificate
+                                            </button>
+                                        <% } %>
 
                                         <% if (locals.studentAssignments[i].length > 0) {
                                             for (let j = 0; j < locals.studentAssignments[i].length; j++) { %>
