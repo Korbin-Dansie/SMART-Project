@@ -18,11 +18,20 @@
       }
       row.classList.add("table-primary");
 
+      // Get the Class Id from the row
+      let classId = row.getAttribute("data-classId");
+
       // enable the buttons
-      let btns = document.getElementsByClassName("btn btn-primary mt-2");
-      for (let i = 0; i < btns.length; i++) {
-        btns[i].disabled = false;
-      }
+      let attendanceLink = document.getElementById("attendanceButton");
+      attendanceLink.classList.remove("disabled");
+
+      // Set the attendance link with the class id 
+
+      let url = new URL(window.location.origin + "/attendance");
+      url.searchParams.append('classId', classId);
+
+      attendanceLink.setAttribute("href", url);
+
     }
   </script>
 </head>
@@ -40,7 +49,7 @@
             </div>
           </div>
           <div style="text-align:center"><h1>Instructor Dashboard</h1></div>
-          <button class="btn btn-primary mt-2" disabled>Attendance</button>
+          <a href="/attendance" id="attendanceButton" class="btn btn-primary disabled">Attendance</a>
           <a href="/newCourse" class="btn btn-primary mt-2">Create Course</a>
           <% if (locals.classes.length > 0) { %>
             <table id="table" class="table table-striped table-hover table-sm">
@@ -56,7 +65,7 @@
               </thead>
               <tbody>
                 <% for (let i = 0; i < locals.classes.length; i++) { %>
-                  <tr onclick="selectClass(this)">
+                  <tr onclick="selectClass(this)" data-classId="<%= locals.classes[i].class_id %>">
                     <td><%= locals.classes[i].subject_name %> <%= locals.classes[i].level_name %></td>
                     <td><%= locals.classes[i].description %></td>
                     <td><%= locals.classes[i].class_id %></td>
