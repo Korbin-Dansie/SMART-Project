@@ -500,30 +500,6 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`student_feeding` (
    ON DELETE RESTRICT
    ON UPDATE CASCADE)
 COMMENT = 'When a student has been feed'; 
-
-/***************************************************************
- * Create student_attendance
- ***************************************************************/
-CREATE TABLE IF NOT EXISTS `smart_project`.`student_attendance` (
-  `student_attendance_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `student_id` MEDIUMINT UNSIGNED NOT NULL,
-  `class_id` INT UNSIGNED NOT NULL,
-  `date_attended` DATE NOT NULL,
-  `is_present` BOOLEAN NOT NULL DEFAULT 1,
-  PRIMARY KEY (`student_attendance_id`),
-  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
-  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
-  CONSTRAINT `fk_student_attendance_student_id`
-    FOREIGN KEY (`student_id`)
-    REFERENCES `smart_project`.`student` (`student_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_student_attendance_class_id`
-    FOREIGN KEY (`class_id`)
-    REFERENCES `smart_project`.`class` (`class_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-COMMENT = 'Holds if a student was present';
  
  /***************************************************************
  * Create student_public_school_schedule
@@ -552,15 +528,18 @@ COMMENT = 'Holds a students public school schedule';
  * Create assignment
  ***************************************************************/
 CREATE TABLE IF NOT EXISTS `smart_project`.`assignment` (
-  `assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `class_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`assignment_id`),
-  INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
-  CONSTRAINT `fk_assignment_class_id`
-    FOREIGN KEY (`class_id`)
-    REFERENCES `smart_project`.`class` (`class_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
+	`assignment_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`assignment_name` VARCHAR(255) NOT NULL,
+	`due_date` DATE NOT NULL,
+	`points_possible` INT UNSIGNED NOT NULL,
+	`class_id` INT UNSIGNED NOT NULL,
+	PRIMARY KEY (`assignment_id`),
+	INDEX `class_id_fk_idx` (`class_id` ASC) VISIBLE,
+	CONSTRAINT `fk_assignment_class_id`
+		FOREIGN KEY (`class_id`)
+		REFERENCES `smart_project`.`class` (`class_id`)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE)
 COMMENT = 'Holds a classes assignments';
 
 /***************************************************************
@@ -649,6 +628,30 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`class_time` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 COMMENT = 'Holds a double array for possible class times.So table needs to hold Mondays 7:30-9:30 OR Tuesdays 1:30-3:30  (pick one of these) AND  Wednesdays 9:30-11:30 OR Thursdays 1:30-3:30 (pick one of these). So Group 1:  Mondays 7:30-9:30 OR Tuesdays 1:30-3:30, Group 2: Wednesdays 9:30-11:30 OR Thursdays 1:30-3:30';
+
+/***************************************************************
+ * Create student_attendance
+ ***************************************************************/
+CREATE TABLE IF NOT EXISTS `smart_project`.`student_attendance` (
+  `student_attendance_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `student_id` MEDIUMINT UNSIGNED NOT NULL,
+  `class_time_id` INT UNSIGNED NOT NULL,
+  `date_attended` DATE NOT NULL,
+  `is_present` BOOLEAN NOT NULL DEFAULT 1,
+  PRIMARY KEY (`student_attendance_id`),
+  INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
+  INDEX `class_time_id_fk_idx` (`class_time_id` ASC) VISIBLE,
+  CONSTRAINT `fk_student_attendance_student_id`
+    FOREIGN KEY (`student_id`)
+    REFERENCES `smart_project`.`student` (`student_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_student_attendance_class_time_id`
+    FOREIGN KEY (`class_time_id`)
+    REFERENCES `smart_project`.`class_time` (`class_time_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+COMMENT = 'Holds if a student was present';
 
 /***************************************************************
  * Create student_schedule
