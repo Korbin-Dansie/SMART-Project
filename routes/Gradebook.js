@@ -70,10 +70,10 @@ router.post('/', function (req, res, next) {
 
   console.log(assignmentID, assignmentGrade, pointsPossible);
   
-  let status = 1; // Pass
+  let status = 2; // Pass
 
   if (assignmentGrade < pointsPossible / 2) {
-    status = 2; // Fail
+    status = 1; // Fail
   }
   
   let sql = "CALL update_student_assignment_grade(?, ?, ?);";
