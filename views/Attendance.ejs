@@ -162,7 +162,7 @@
 
       const lockDateAndGroupPicker = function(e) {
         // If currentFeeds is equal to workingFeedings unlock else lock
-        let bIsEqual = compareMaps(currentFeedings, workingFeedings);
+        let bIsEqual = compareMaps(currentAttendance, workingAttendance);
 
         let date = document.getElementById("datePicker");
         let group = document.getElementById("groupPicker");
@@ -227,7 +227,7 @@
       let td_feed = document.createElement("td");
       td_feed.appendChild(createSuccessButton(student_id, did_attend));
       td_feed.appendChild(createSuccessLabel(student_id, did_attend));
-      td_feed.appendChild(createDangeButton(student_id, did_attend));
+      td_feed.appendChild(createDangerButton(student_id, did_attend));
       td_feed.appendChild(createDangerLabel(student_id, did_attend));
 
       tr.appendChild(td_feed);
@@ -270,7 +270,7 @@
       return input_success_label;
     }
 
-    function createDangeButton(student_id, is_feed) {
+    function createDangerButton(student_id, is_feed) {
       let input_danger = document.createElement("input");
       input_danger.setAttribute("type", "checkbox");
       input_danger.setAttribute("name", "options-outlined[" + student_id + "]");
@@ -307,14 +307,14 @@
 
     // Reset all feeding to the current feedings
     function clearAttendance() {
-      let elements = document.querySelectorAll(".feeding-button");
+      let elements = document.querySelectorAll(".attendance-button");
       for (let i = 0; i < elements.length; i++) {
         // If clicked add it to the list
         let input = document.getElementById(elements[i].getAttribute("for"));
         let studentId = input.getAttribute("data-student-id");
 
         // Find the corresponding student id in the map 
-        let feedingValue = currentFeedings.get(Number(studentId));
+        let feedingValue = currentAttendance.get(Number(studentId));
 
         // That means we did NOT find it in the map
         if (input.value == feedingValue) {
