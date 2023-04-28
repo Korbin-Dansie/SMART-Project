@@ -10,7 +10,6 @@
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
   <script>
     // Holds what the feedings looked like from the database
@@ -317,7 +316,8 @@
       input_success_label.classList.add(
         "btn",
         "btn-outline-success",
-        "feeding-button"
+        "feeding-button",
+        "me-1"
       );
 
       let i_check = document.createElement("i");
@@ -328,37 +328,38 @@
     }
 
     function createDangeButton(student_id, is_feed) {
-      let input_success = document.createElement("input");
-      input_success.setAttribute("type", "checkbox");
-      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
-      input_success.setAttribute("id", "danger-outlined-" + student_id);
-      input_success.setAttribute("autocomplete", "off");
-      input_success.setAttribute("data-student-id", student_id);
-      input_success.classList.add("btn-check");
-      input_success.setAttribute("value", 0);
+      let input_danger = document.createElement("input");
+      input_danger.setAttribute("type", "checkbox");
+      input_danger.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_danger.setAttribute("id", "danger-outlined-" + student_id);
+      input_danger.setAttribute("autocomplete", "off");
+      input_danger.setAttribute("data-student-id", student_id);
+      input_danger.classList.add("btn-check");
+      input_danger.setAttribute("value", 0);
 
       if (is_feed != null) {
         if (is_feed == "0") {
-          input_success.checked = true;
+          input_danger.checked = true;
         }
       }
-      return input_success;
+      return input_danger;
     }
 
     function createDangerLabel(student_id, is_feed) {
-      let input_success_label = document.createElement("label");
-      input_success_label.setAttribute("for", "danger-outlined-" + student_id);
-      input_success_label.classList.add(
+      let input_danger_label = document.createElement("label");
+      input_danger_label.setAttribute("for", "danger-outlined-" + student_id);
+      input_danger_label.classList.add(
         "btn",
         "btn-outline-danger",
-        "feeding-button"
+        "feeding-button",
+        "ms-1"
       );
 
       let i_check = document.createElement("i");
       i_check.classList.add("bi", "bi-x-square-fill");
 
-      input_success_label.appendChild(i_check);
-      return input_success_label;
+      input_danger_label.appendChild(i_check);
+      return input_danger_label;
     }
 
     // Reset all feeding to the current feedings
