@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
       //console.log(results[0]);
       //console.log(results[1]);
 
-      res.render('Course', {classTimes: results[0], classData: results[1][0], classStudents: results[3], classAssignments: results[5]});
+      res.render('Course', {classTimes: results[0], classData: results[1][0], classStudents: results[3], classAssignments: results[5], classID: classID});
     });
 });
 

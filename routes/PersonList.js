@@ -3,41 +3,13 @@ var router = express.Router();
 
 var dbCon = require('../lib/database');
 
-/* GET home page. */
+/* GET persons page. */
 router.get('/', function(req, res, next) {
   res.render('PersonList');
 });
 
-/* GET home page. */
-router.get('/addStudent', function(req, res, next) {
-  // Get the course ID
-  let classID = req.query.classID;
-  // Generate the proper data
-  //   List of students and if they're in the class
-  let sql = "CALL select_students_and_class_status(?);";
-  dbCon.query(sql, [classID], function (err, results) {
-    if (err) {
-      throw err;
-    }
-
-    console.log(results[0]);
-    console.log('========================================================');
-
-    // Get personList to dynamically change to add students to certain class times based on what class times are in the class
-    let sql2 = "CALL select_class_times(?);";
-    dbCon.query(sql2, [classID], function (err, results2) {
-      if (err) {
-        throw err;
-      }
-  
-      console.log(results2[0]);
-      parseStudentClassInfo(results[0], results2[0], res);
-
-    });
-  });
-
-  // TODO: set it up to recieve a POST to add/remove students then show the page again
-});
+/* GET add Student page. */
+router.get('/addStudent', loadStudentsPage);
 
 function parseStudentClassInfo(studentTable, class_time_table, res){
   // Iterate through the class times, make an array of them and find the highest group number
@@ -86,6 +58,78 @@ function parseStudentClassInfo(studentTable, class_time_table, res){
   console.log(studentArray);
   // Display the page with add/remove buttons
   res.render('AddStudent', {classTimes: class_time_list, studentTable: studentArray, totalClassGroups: groups});
+}
+
+router.post('/addStudent', function(req, res, next) {
+  // Get the variables
+  var action = req.body.action;
+  var student = Number(req.body.student);
+  var classTime = Number(req.body.classTime);
+  
+  var deleteSql = "DELETE student_schedule FROM student_schedule "
+  + "JOIN class_time ON student_schedule.class_time_id = class_time.class_time_id "
+  + "WHERE student_id = ? AND class_id = "
+  + "(SELECT class_id FROM class_time WHERE class_time_id = ?) "
+  + "AND `group` = "
+  + "(SELECT `group` FROM class_time WHERE class_time_id = ?); "
+  // Check the action
+  if (action == 'add'){
+    // If add student:
+    // If the student is already added to a class time in that group, remove it
+      dbCon.query(deleteSql, [student, classTime, classTime], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        // Add the student to the class time
+        var sql2 = "INSERT INTO student_schedule (student_id, class_time_id) "
+          + "VALUES (?, ?);"
+        dbCon.query(sql2, [student, classTime], function (err, results) {
+          if (err) {
+            throw err;
+          }
+          // Load the same page
+          loadStudentsPage(req, res, next);
+        });
+      });
+  } else if (action == 'remove'){
+  // If remove student:
+    // Remove the student from that class time
+    dbCon.query(deleteSql, [student, classTime, classTime], function (err, results) {
+      if (err) {
+        throw err;
+      }
+      // Load the same page
+      loadStudentsPage(req, res, next);
+    });
+  } else {loadStudentsPage(req, res, next);}
+});
+
+function loadStudentsPage(req, res, next) {
+  // Get the course ID
+  let classID = req.query.classID;
+  // Generate the proper data
+  //   List of students and if they're in the class
+  let sql = "CALL select_students_and_class_status(?);";
+  dbCon.query(sql, [classID], function (err, results) {
+    if (err) {
+      throw err;
+    }
+
+    console.log(results[0]);
+    console.log('========================================================');
+
+    // Get personList to dynamically change to add students to certain class times based on what class times are in the class
+    let sql2 = "CALL select_class_times(?);";
+    dbCon.query(sql2, [classID], function (err, results2) {
+      if (err) {
+        throw err;
+      }
+  
+      console.log(results2[0]);
+      parseStudentClassInfo(results[0], results2[0], res);
+
+    });
+  });
 }
 
 module.exports = router;

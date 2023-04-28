@@ -14,14 +14,18 @@
     }
   </style>
   <script>
-    function addStudentSchedule(this){
+    function addStudentSchedule(studentID){
       // Check what is chosen in the dropdown
-      
-      // If the student is already added to a class time in that group, remove it
-      // Add the student to the class time
+      var classTimeID = document.getElementById("classTimeSelect").value;
+      // Set request variables
+      document.getElementById("action").value = "add";
+      document.getElementById("student").value = studentID;
+      document.getElementById("classTime").value = classTimeID;
     }
     function deleteStudentSchedule(studentID, classTimeID){
-      // Remove the student from that class time
+      document.getElementById("action").value = "remove";
+      document.getElementById("student").value = studentID;
+      document.getElementById("classTime").value = classTimeID;
     }
   </script>
 </head>
@@ -32,14 +36,14 @@
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-50 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>All Active Students</h1></div>
-          <form> <!-- TODO: Input form post info-->
+          <form method="post"> <!-- TODO: Input form post info-->
             <!-- DROPDOWN MENU OF CLASS TIMES HERE-->
             <div>
               <label for="classTime">Class Time:</label>
               <div class="input-group mb-3">
                 <span class="input-group-text bg-primary"><i
                         class="bi bi-clock text-white"></i></span>
-                <select id="classTime" name="classTime"
+                <select id="classTimeSelect" name="classTimeSelect"
                   class="form-control" placeholder="Select">
                   <% for (var i = 0; i < classTimes.length; i ++) { %>
                     <option value="<%= classTimes[i]['id'] %>"><%= classTimes[i]['value'] %> Group:<%= classTimes[i]['group'] %></option>
@@ -69,7 +73,7 @@
                           for (var k = 0; k < classTimes.length; k ++ ) {
                             if (classTimes[k]['id'] == classTimeID) {
                                 %><%= classTimes[classTimeID-1]['value'] %>
-                                  <button class="btn btn-outline-danger mx-2 float-end" type="button" onclick="deleteStudentSchedule(<%= studentTable[i]['id'] %>, <%= classTimeID %>);" style="visibility: visible;"><i class="bi bi-x-circle text-danger"></i></button>
+                                  <button class="btn btn-outline-danger mx-2 float-end" onclick="deleteStudentSchedule(<%= studentTable[i]['id'] %>, <%= classTimeID %>);" style="visibility: visible;"><i class="bi bi-x-circle text-danger"></i></button>
                                 <%
                                 break;
                             }
@@ -78,12 +82,15 @@
                         <% } %></td>
                     <% } %>
                     <td>
-                      <button class="btn btn-primary pt-2 " type="button" onclick="addStudentSchedule(<%= studentTable[i]['id'] %>);">Add</button>
+                      <button class="btn btn-primary pt-2 " onclick="addStudentSchedule(<%= studentTable[i]['id'] %>);">Add</button>
                     </td>
                   </tr>
                 <% } %>
               </tbody>
             </table>
+            <input type="hidden" name="action" id ="action">
+            <input type="hidden" name="student" id ="student">
+            <input type="hidden" name="classTime" id ="classTime">
           </form>
         </div>
       </div>
