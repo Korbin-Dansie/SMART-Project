@@ -5,8 +5,10 @@ var dbCon = require('../lib/database');
 
 /* GET list of students that are in the group */
 router.get("/students", function (req, res, next) {
-  let sql = "CALL get_students_with_meal_assistance();";
-  dbCon.query(sql, function (err, results) {
+  let class_time_id = req.query['class_time_id'];
+
+  let sql = "CALL get_students_attendance_by_group(?);";
+  dbCon.query(sql,[class_time_id], function (err, results) {
     if (err) {
       throw err;
     }

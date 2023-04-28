@@ -20,6 +20,27 @@
     // Start day of the week, 1 = Sunday, 2 = Monday, 3 = Tuesday
     const startDay = 1;
 
+    /**
+     * // https://stackoverflow.com/questions/35948335/how-can-i-check-if-two-map-objects-are-equal
+     * @param {Map} map1
+     * @param {Map} map2
+     */
+     function compareMaps(map1, map2) {
+      let testVal;
+      if (map1.size !== map2.size) {
+        return false;
+      }
+      for (let [key, val] of map1) {
+        testVal = map2.get(key);
+        // in cases of an undefined value, make sure the key
+        // actually exists on the object so there are no false positives
+        if (testVal !== val || (testVal === undefined && !map2.has(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
 
     // Set the date pickers date to today
     function loadStartDate() {
@@ -38,6 +59,7 @@
 
     // Load the students into the table
     async function loadAttendance() {
+      
       // Store the date
       let date = document.getElementById("datePicker");
 
@@ -62,23 +84,251 @@
 
         // Add the date the the url
         let url = new URL("students", window.location.href + window.location.pathname);
-        // let params = new URLSearchParams(url.search);
-        // params.append("date", date.value);
-        // url.search = params;
+        let params = new URLSearchParams(url.search);
+        params.append("class_time_id", groupId.value);
+        url.search = params;
         xhttp.open("GET", url, true);
         xhttp.send();
       });
 
-      // Wait for the students and feeding promise
-      // Add a row for each student
+      // Wait for the students
       let students = new Array();
-      let feedings = new Array();
-
       await Promise.all([promiseStudents]).then((values) => {
         students = values[0];
       });
 
+      // Now that we have the students see if any of them have attendance
+
+      // TODO:
+
+
+
+      // Delete all current rows
+      let tableBody = document.getElementById("attendance-table-body");
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+      }
+
+      // Add the rows and reset the current feedings
+      currentAttendance = new Map();
+      students.forEach(student => {
+          tableBody.appendChild(
+            createTableRow(student.student_id, student.first_name, student.last_name, null)
+          );
+      });
+
+      // Now set the working set to the current set
+      workingAttendance = new Map(currentAttendance);
+
+      // Add event listeners
+      addEventListenersToAttendance();
     }
+  
+    
+    function addEventListenersToAttendance() {
+      const clicked = function(e) {
+        let input = document.getElementById(this.getAttribute("for"));
+        // If input was clicked for a second time set its value to false
+        let bClickedAgain = false;
+        if (input.checked == true) {
+          bClickedAgain = true;
+        }
+
+        // Get the name of the input
+        let studentId = input.getAttribute("data-student-id");
+        let name = "options-outlined[" + studentId + "]";
+
+        // Set all other inputs to false, so there can only be one clicked
+        let inputs = document.querySelectorAll(`input[name="${name}"]`);
+
+        inputs.forEach(function(element, index) {
+          if (element.getAttribute("id").localeCompare(input.getAttribute("id")) != 0) {
+            this[index].checked = false;
+          }
+          // If we clicked on a different input set it to true else set it to false
+          else if (bClickedAgain == false) {
+            this[index].checked = true;
+          } else {
+            this[index].checked = false;
+          }
+        }, inputs); // use inputs as this
+
+        e.preventDefault();
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
+      };
+
+      const lockDateAndGroupPicker = function(e) {
+        // If currentFeeds is equal to workingFeedings unlock else lock
+        let bIsEqual = compareMaps(currentFeedings, workingFeedings);
+
+        let date = document.getElementById("datePicker");
+        let group = document.getElementById("groupPicker");
+
+        // They are the same
+        if (bIsEqual) {
+          date.disabled = false;
+          group.disabled = false;
+          for (let element of [date, group]) {
+            element.removeAttribute("data-bs-toggle");
+            element.removeAttribute("title");
+          }
+        }
+        // They are different
+        else {
+          date.disabled = true;
+          group.disabled = true;
+          for (let element of [date, group]) {
+            element.setAttribute("data-bs-toggle", "tooltip");
+            element.setAttribute("title", "Save / Cancel before changing the date");
+          }
+        }
+      }
+
+      const updateWorkingAttendance = function(e) {
+        let name = e.target.getAttribute("name");
+        let studentId = e.target.getAttribute("data-student-id");
+
+        // Get the check input, or undefined if not value is clicked
+        let input = document.querySelector(`input[name="${name}"]:checked`);
+
+        if (input == undefined) {
+          workingAttendance.delete(Number(studentId));
+        } else {
+          workingAttendance.set(Number(studentId), Number(input.value));
+        }
+      };
+
+
+      // Add event listener to all feedings
+      let elements = document.querySelectorAll(".attendance-button");
+      for (let i = 0; i < elements.length; i++) {
+        // If clicked add it to the list
+        elements[i].addEventListener("click", clicked);
+        let input = document.getElementById(elements[i].getAttribute("for"));
+
+        // Update feedings needs to come before updating the lock, since the lock takes the workding feeds value
+        input.addEventListener("change", updateWorkingAttendance);
+        input.addEventListener("change", lockDateAndGroupPicker);
+      }
+    }
+
+    function createTableRow(student_id, first_name, last_name, did_attend) {
+      let tr = document.createElement("tr");
+
+      // Add name
+      let td_name = document.createElement("td");
+      td_name.innerText = first_name + " " + last_name;
+      tr.appendChild(td_name);
+
+      // Add buttons
+      let td_feed = document.createElement("td");
+      td_feed.appendChild(createSuccessButton(student_id, did_attend));
+      td_feed.appendChild(createSuccessLabel(student_id, did_attend));
+      td_feed.appendChild(createDangeButton(student_id, did_attend));
+      td_feed.appendChild(createDangerLabel(student_id, did_attend));
+
+      tr.appendChild(td_feed);
+      return tr;
+    }
+
+    function createSuccessButton(student_id, is_feed) {
+      let input_success = document.createElement("input");
+      input_success.setAttribute("type", "checkbox");
+      input_success.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_success.setAttribute("id", "success-outlined-" + student_id);
+      input_success.setAttribute("data-student-id", student_id);
+      input_success.setAttribute("value", 1);
+
+
+      input_success.setAttribute("autocomplete", "off");
+      input_success.classList.add("btn-check");
+      if (is_feed != null) {
+        if (is_feed == "1") {
+          input_success.checked = true;
+        }
+      }
+      return input_success;
+    }
+
+    function createSuccessLabel(student_id, is_feed) {
+      let input_success_label = document.createElement("label");
+      input_success_label.setAttribute("for", "success-outlined-" + student_id);
+      input_success_label.classList.add(
+        "btn",
+        "btn-outline-success",
+        "attendance-button",
+        "me-1"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-check-square-fill");
+
+      input_success_label.appendChild(i_check);
+      return input_success_label;
+    }
+
+    function createDangeButton(student_id, is_feed) {
+      let input_danger = document.createElement("input");
+      input_danger.setAttribute("type", "checkbox");
+      input_danger.setAttribute("name", "options-outlined[" + student_id + "]");
+      input_danger.setAttribute("id", "danger-outlined-" + student_id);
+      input_danger.setAttribute("autocomplete", "off");
+      input_danger.setAttribute("data-student-id", student_id);
+      input_danger.classList.add("btn-check");
+      input_danger.setAttribute("value", 0);
+
+      if (is_feed != null) {
+        if (is_feed == "0") {
+          input_danger.checked = true;
+        }
+      }
+      return input_danger;
+    }
+
+    function createDangerLabel(student_id, is_feed) {
+      let input_danger_label = document.createElement("label");
+      input_danger_label.setAttribute("for", "danger-outlined-" + student_id);
+      input_danger_label.classList.add(
+        "btn",
+        "btn-outline-danger",
+        "attendance-button",
+        "ms-1"
+      );
+
+      let i_check = document.createElement("i");
+      i_check.classList.add("bi", "bi-x-square-fill");
+
+      input_danger_label.appendChild(i_check);
+      return input_danger_label;
+    }
+
+    // Reset all feeding to the current feedings
+    function clearAttendance() {
+      let elements = document.querySelectorAll(".feeding-button");
+      for (let i = 0; i < elements.length; i++) {
+        // If clicked add it to the list
+        let input = document.getElementById(elements[i].getAttribute("for"));
+        let studentId = input.getAttribute("data-student-id");
+
+        // Find the corresponding student id in the map 
+        let feedingValue = currentFeedings.get(Number(studentId));
+
+        // That means we did NOT find it in the map
+        if (input.value == feedingValue) {
+          input.checked = true;
+        } else {
+          input.checked = false;
+        }
+
+        // Since we are chaning the values through code we need to fire their on change event
+        const ev = new Event("change");
+        input.dispatchEvent(ev);
+      }
+    }
+
   </script>
 </head>
 
@@ -86,7 +336,7 @@
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
-        <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
+        <div class="col-md-8 col-sm-12 shadow-lg p-5 bg-light">
           <div style="text-align:center">
             <h1>Attendance</h1>
           </div>
@@ -129,11 +379,11 @@
                   </th>
                 </tr>
               </thead>
-              <tbody id="feeding-table-body">
+              <tbody id="attendance-table-body">
               </tbody>
             </table>
             <div class="d-flex justify-content-end align-items-center">
-              <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearFeedings()">
+              <div class="d-inline"> <input type="button" value="Cancel" class="btn btn-secondary me-1" onclick="clearAttendance()">
               </div>
               <div class="d-inline"> <input type="submit" value="Save" class="btn btn-primary ms-1">
               </div>

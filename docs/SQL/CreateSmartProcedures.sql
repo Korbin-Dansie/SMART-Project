@@ -1,6 +1,7 @@
 USE `smart_project`;
 
 DROP PROCEDURE IF EXISTS `add_feeding`;
+DROP PROCEDURE IF EXISTS `award_certificate`;
 DROP PROCEDURE IF EXISTS `check_application_id`;
 DROP PROCEDURE IF EXISTS `check_application_status`;
 DROP PROCEDURE IF EXISTS `create_account_type`;
@@ -35,10 +36,12 @@ DROP PROCEDURE IF EXISTS `get_students`;
 DROP PROCEDURE IF EXISTS `get_students_with_meal_assistance`;
 DROP PROCEDURE IF EXISTS `get_userid_from_email`;
 DROP PROCEDURE IF EXISTS `login_user`;
+DROP PROCEDURE IF EXISTS `save_student_assignment_asset`;
 DROP PROCEDURE IF EXISTS `select_applications`;
 DROP PROCEDURE IF EXISTS `select_application_details`;
 DROP PROCEDURE IF EXISTS `select_class`;
 DROP PROCEDURE IF EXISTS `select_class_assignments`;
+DROP PROCEDURE IF EXISTS `select_class_certified_students`;
 DROP PROCEDURE IF EXISTS `select_class_distinct_students`;
 DROP PROCEDURE IF EXISTS `select_class_students`;
 DROP PROCEDURE IF EXISTS `select_class_times`;
@@ -49,6 +52,7 @@ DROP PROCEDURE IF EXISTS `select_person_email`;
 DROP PROCEDURE IF EXISTS `select_person_phone`;
 DROP PROCEDURE IF EXISTS `select_students_and_class_status`;
 DROP PROCEDURE IF EXISTS `select_student_assignments`;
+DROP PROCEDURE IF EXISTS `select_student_certificate`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
 DROP PROCEDURE IF EXISTS `update_student_assignment_grade`;
 
@@ -1196,72 +1200,25 @@ BEGIN
     END IF;
 END;
 $$
-
-
 /***************************************************************
-* Trigger trigger_application_status_accepted_insert
-* <comment>Trigger trigger_application_status_accepted_insert created if it didn't already exist.</comment>
+* Procedure get_students_attendance_by_group
+* <comment>Procedure get_students_attendance_by_group created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_insert`
- BEFORE INSERT
- ON `application` FOR EACH ROW
- BEGIN
- 
-	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
-	-- If is is accepted create a student record, 2 =	Accepted
-    IF(NEW.application_status_id = 2)
-    THEN
-		-- We dont need to insert anything into student we just need the new row
-        -- because everyting is handled automatically, exept for their photo
-		INSERT INTO `student` VALUES ();
-		SET new_student_id = LAST_INSERT_ID();
-        SET NEW.student_id = new_student_id;
-    END IF;
- END;
-$$
-
-
-/***************************************************************
-* Trigger trigger_application_status_accepted_update
-* <comment>Trigger trigger_application_status_accepted_update created if it didn't already exist.</comment>
-***************************************************************/
-CREATE TRIGGER IF NOT EXISTS `trigger_application_status_accepted_update`
- BEFORE UPDATE
- ON `application` FOR EACH ROW
- BEGIN
- 
-	DECLARE new_student_id MEDIUMINT UNSIGNED DEFAULT 0;
-	-- If is is accepted create a student record, 2 =	Accepted
-    IF(NEW.application_status_id = 2 AND OLD.student_id IS NULL)
-    THEN
-		-- We dont need to insert anything into student we just need the new row
-        -- because everyting is handled automaticly, exept for their photo
-		INSERT INTO `student` VALUES ();
-		SET new_student_id = LAST_INSERT_ID();
-        SET NEW.student_id = new_student_id;
-    END IF;
- END;
-$$
-
-
-/***************************************************************
-* Trigger trigger_insert_class
-* <comment>Trigger trigger_insert_class created if it didn't already exist.</comment>
-***************************************************************/
-CREATE TRIGGER IF NOT EXISTS `trigger_insert_class`
- BEFORE INSERT
- ON `class` FOR EACH ROW
- BEGIN
-	-- Get the start and end dates from the semester the class is part of
-    DECLARE start_date DATE;
-    DECLARE end_date DATE;
-    
-    SELECT s.start_date, s.end_date
-    INTO start_date, end_date
-    FROM `semester` as s
-    WHERE s.semester_id = new.semester_id;
-    
-    SET new.start_date = start_date;
-    SET new.end_date = end_date;
- END;
+CREATE PROCEDURE `get_students_attendance_by_group`(
+    IN class_time_id INT UNSIGNED,
+    IN date_attended_start DATE,
+    IN date_attended_end DATE
+)
+BEGIN
+	SELECT
+    att.`student_id`,
+    att.`date_attended`,
+    att.`is_present`
+	FROM `smart_project`.`student_attendance` AS att
+    INNER JOIN `class` AS c
+    ON c.class_id = att.class_id
+    INNER JOIN `class_time` AS ct
+    ON ct.class_id = c.class_id
+	WHERE ct.class_time_id = class_time_id;
+END;
 $$
