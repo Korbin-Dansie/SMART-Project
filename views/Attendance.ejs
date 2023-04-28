@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,6 +17,9 @@
     // Holds the current attendance that we have changed before submiting them to the database
     let workingAttendance = new Map();
 
+    // Start day of the week, 1 = Sunday, 2 = Monday, 3 = Tuesday
+    const startDay = 1;
+
 
     // Set the date pickers date to today
     function loadStartDate() {
@@ -31,25 +35,73 @@
         datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
       }
     }
+
+    // Load the students into the table
+    async function loadAttendance() {
+      // Store the date
+      let date = document.getElementById("datePicker");
+
+      // Store the group id
+      let groupId = document.getElementById("groupPicker");
+
+      // If both values are not filled exit
+      if (date == null || date == undefined || groupId == undefined || groupId == null) {
+        return;
+      }
+
+      // For each student
+      let promiseStudents = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            let feedings = JSON.parse(this.responseText);
+            resolve(feedings);
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("students", window.location.href + window.location.pathname);
+        // let params = new URLSearchParams(url.search);
+        // params.append("date", date.value);
+        // url.search = params;
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // Wait for the students and feeding promise
+      // Add a row for each student
+      let students = new Array();
+      let feedings = new Array();
+
+      await Promise.all([promiseStudents]).then((values) => {
+        students = values[0];
+      });
+
+    }
   </script>
 </head>
 
-<body onload="loadStartDate();">
+<body onload="loadStartDate(); loadAttendance()">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-75 shadow-lg p-5 bg-light">
-          <div style="text-align:center"><h1>Attendance</h1></div>
+          <div style="text-align:center">
+            <h1>Attendance</h1>
+          </div>
           <h3 style="text-align: center;"><%= locals.subject_name + " " + locals.level_name%></h3>
           <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
             <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
-                <input type="date" id="datePicker" class="form-control" name="attendance-date" min="1970-01-01" max="9999-12-31" onchange="loadFeedings()">
+                <input type="date" id="datePicker" class="form-control" name="attendance-date" min="1970-01-01" max="9999-12-31" onchange="loadAttendance()">
               </div>
               <div class="inline ms-1">
-                <select type="select" id="mealPicker" class="form-select" name="meal-time" onchange="loadFeedings()">
+                <select type="select" id="groupPicker" class="form-select" name="meal-time" onchange="loadAttendance()">
                   <%if(locals.groups != undefined || locals.groups != null) {
+                      // Get the max length and add spaces for difference
                       groups.forEach(group => {
+
                         let startTime = new Date();
                         let timeParts = group.start_time.split(":");
                         startTime.setHours(timeParts[0]);
@@ -62,7 +114,7 @@
                         endTime.setMinutes(timeParts[1]);
                         endTime.setSeconds(timeParts[2]);
                       %>
-                      <option value="<%=group.class_time_id%>"><%=group.group + ": " + group.name + " " + startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()%></option>
+                  <option value="<%=group.class_time_id%>"><%=(Number(group.group)+1) + ": " + group.name + " " + startTime.toLocaleTimeString() + " - " + endTime.toLocaleTimeString()%></option>
                   <%});
                   }%>
                 </select>
@@ -93,4 +145,5 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
+
 </html>

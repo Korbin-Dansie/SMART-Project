@@ -1,5 +1,6 @@
 USE `smart_project`;
 
+DROP PROCEDURE IF EXISTS `add_feeding`;
 DROP PROCEDURE IF EXISTS `check_application_id`;
 DROP PROCEDURE IF EXISTS `check_application_status`;
 DROP PROCEDURE IF EXISTS `create_account_type`;
@@ -22,17 +23,34 @@ DROP PROCEDURE IF EXISTS `create_student_status`;
 DROP PROCEDURE IF EXISTS `create_subject`;
 DROP PROCEDURE IF EXISTS `create_subject_name`;
 DROP PROCEDURE IF EXISTS `create_user`;
+DROP PROCEDURE IF EXISTS `delete_feedings`;
 DROP PROCEDURE IF EXISTS `get_classes`;
 DROP PROCEDURE IF EXISTS `get_day_of_weeks`;
+DROP PROCEDURE IF EXISTS `get_feedings`;
+DROP PROCEDURE IF EXISTS `get_meal_times`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
+DROP PROCEDURE IF EXISTS `get_students`;
+DROP PROCEDURE IF EXISTS `get_students_with_meal_assistance`;
+DROP PROCEDURE IF EXISTS `get_userid_from_email`;
 DROP PROCEDURE IF EXISTS `login_user`;
 DROP PROCEDURE IF EXISTS `select_applications`;
 DROP PROCEDURE IF EXISTS `select_application_details`;
+DROP PROCEDURE IF EXISTS `select_class`;
+DROP PROCEDURE IF EXISTS `select_class_assignments`;
+DROP PROCEDURE IF EXISTS `select_class_distinct_students`;
+DROP PROCEDURE IF EXISTS `select_class_students`;
+DROP PROCEDURE IF EXISTS `select_class_times`;
 DROP PROCEDURE IF EXISTS `select_contact_info`;
 DROP PROCEDURE IF EXISTS `select_guardians`;
+DROP PROCEDURE IF EXISTS `select_instructor_classes`;
+DROP PROCEDURE IF EXISTS `select_person_email`;
+DROP PROCEDURE IF EXISTS `select_person_phone`;
+DROP PROCEDURE IF EXISTS `select_students_and_class_status`;
+DROP PROCEDURE IF EXISTS `select_student_assignments`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
+DROP PROCEDURE IF EXISTS `update_student_assignment_grade`;
 
 DELIMITER $$
 $$ -- Clear it so the next SP output doest not contain all the comments ab
@@ -608,7 +626,7 @@ BEGIN
  JOIN subject ON subject.subject_id = class.subject_id
  JOIN level ON level.level_id = subject.level_id
  JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
- WHERE instructor_schedule.user_id = instructor_id; +
+ WHERE instructor_schedule.user_id = instructor_id;
 END;
 $$
 
@@ -648,7 +666,7 @@ BEGIN
  FROM class_time
  JOIN day_of_week ON day_of_week.day_of_week_id = class_time.day_of_week_id
  WHERE class_time.class_id = class_id
- ORDER BY day_of_week.day_of_week_id\n; +
+ ORDER BY day_of_week.day_of_week_id;
 END;
 $$
 
@@ -687,7 +705,159 @@ BEGIN
  JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id
  JOIN class ON class.class_id = class_time.class_id
  WHERE student_schedule.class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id)
- ORDER BY person.last_name\n; +
+ ORDER BY person.last_name, person.first_name;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_certified_students
+* <comment>Procedure select_class_certified_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_certified_students`(
+ IN class_id INT
+)
+BEGIN
+ SELECT student_certificate.student_id
+ FROM student_certificate
+ JOIN certificate ON certificate.certificate_id = student_certificate.certificate_id
+ JOIN class ON class.subject_id = certificate.subject_id
+ WHERE class.class_id = class_id
+ AND student_certificate.student_id IN (select student_id from student_schedule join class_time on class_time.class_time_id = student_schedule.class_time_id where class_time.class_id = class_id);
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_certificate
+* <comment>Procedure select_student_certificate created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_certificate`(
+ IN class_id INT,
+ IN student_id INT
+)
+BEGIN
+ CALL select_class(class_id);
+ SELECT person.first_name, person.last_name, student_certificate.date_awarded, certificate.name
+ FROM student_certificate
+ JOIN certificate ON certificate.certificate_id = student_certificate.certificate_id
+ JOIN class ON class.subject_id = certificate.subject_id
+ JOIN application ON application.student_id = student_id
+ JOIN person ON person.person_id = application.person_id
+ WHERE class.class_id = class_id
+ AND student_certificate.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure save_student_assignment_asset
+* <comment>Procedure save_student_assignment_asset created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `save_student_assignment_asset`(
+ IN student_assignment_id INT,
+ IN assetPath VARCHAR(255)
+)
+BEGIN
+ IF ((SELECT COUNT(*) FROM student_assignment_document WHERE student_assignment_document.student_assignment_id = student_assignment_id) > 0) THEN
+  UPDATE student_assignment_document
+  SET document_link = assetPath
+  WHERE student_assignment_document.student_assignment_id = student_assignment_id;
+ ELSE
+  INSERT INTO student_assignment_document(student_assignment_id, document_link)
+  VALUES(student_assignment_id, assetPath);
+ END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure award_certificate
+* <comment>Procedure award_certificate created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `award_certificate`(
+ IN class_id INT,
+ IN student_id INT
+)
+BEGIN
+ INSERT INTO student_certificate(student_id, certificate_id, date_awarded)
+ VALUES (student_id, (select certificate_id from certificate where subject_id = (select subject_id from class where class.class_id = class_id)), CURDATE());
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_class_certified_students
+* <comment>Procedure select_class_certified_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_class_certified_students`(
+ IN class_id INT
+)
+BEGIN
+ SELECT student_certificate.student_id
+ FROM student_certificate
+ JOIN certificate ON certificate.certificate_id = student_certificate.certificate_id
+ JOIN class ON class.subject_id = certificate.subject_id
+ WHERE class.class_id = class_id
+ AND student_certificate.student_id IN (select student_id from student_schedule join class_time on class_time.class_time_id = student_schedule.class_time_id where class_time.class_id = class_id);
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_certificate
+* <comment>Procedure select_student_certificate created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_certificate`(
+ IN class_id INT,
+ IN student_id INT
+)
+BEGIN
+ CALL select_class(class_id);
+ SELECT person.first_name, person.last_name, student_certificate.date_awarded, certificate.name
+ FROM student_certificate
+ JOIN certificate ON certificate.certificate_id = student_certificate.certificate_id
+ JOIN class ON class.subject_id = certificate.subject_id
+ JOIN application ON application.student_id = student_id
+ JOIN person ON person.person_id = application.person_id
+ WHERE class.class_id = class_id
+ AND student_certificate.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure save_student_assignment_asset
+* <comment>Procedure save_student_assignment_asset created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `save_student_assignment_asset`(
+ IN student_assignment_id INT,
+ IN assetPath VARCHAR(255)
+)
+BEGIN
+ IF ((SELECT COUNT(*) FROM student_assignment_document WHERE student_assignment_document.student_assignment_id = student_assignment_id) > 0) THEN
+  UPDATE student_assignment_document
+  SET document_link = assetPath
+  WHERE student_assignment_document.student_assignment_id = student_assignment_id;
+ ELSE
+  INSERT INTO student_assignment_document(student_assignment_id, document_link)
+  VALUES(student_assignment_id, assetPath);
+ END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure award_certificate
+* <comment>Procedure award_certificate created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `award_certificate`(
+ IN class_id INT,
+ IN student_id INT
+)
+BEGIN
+ INSERT INTO student_certificate(student_id, certificate_id, date_awarded)
+ VALUES (student_id, (select certificate_id from certificate where subject_id = (select subject_id from class where class.class_id = class_id)), CURDATE());
 END;
 $$
 

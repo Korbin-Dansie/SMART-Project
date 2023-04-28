@@ -27,7 +27,7 @@
 
       // Set the attendance link with the class id 
 
-      let url = new URL(window.location.origin + "/attendance");
+      let url = new URL(window.location.origin + "/attendance/");
       url.searchParams.append('classId', classId);
 
       attendanceLink.setAttribute("href", url);
