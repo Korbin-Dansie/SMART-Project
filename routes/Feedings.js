@@ -45,7 +45,7 @@ router.get("/date", function (req, res, next) {
   });
 });
 
-/* GET list of students that are feed today */
+/* POST delete all feedings for today then reinsert them */
 router.post("/insertFeedings", function (req, res, next) {
   // req.rawBody = data;
   // req.jsonBody = JSON.parse(data);

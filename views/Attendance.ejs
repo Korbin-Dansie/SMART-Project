@@ -25,7 +25,7 @@
      * @param {Map} map1
      * @param {Map} map2
      */
-     function compareMaps(map1, map2) {
+    function compareMaps(map1, map2) {
       let testVal;
       if (map1.size !== map2.size) {
         return false;
@@ -57,9 +57,37 @@
       }
     }
 
+
+    // Set the meal picker if we have params
+    function loadGroupPicker() {
+      // Check for URL parmas, and if they exist use thoses
+      let groupPicker = document.getElementById("groupPicker");
+      const urlParams = new URLSearchParams(window.location.search);
+      let groupTime = urlParams.get("class_time_id");
+      if (groupTime != undefined || groupTime != null) {
+        groupPicker.value = groupTime;
+      }
+    }
+
+    function showModal() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let save = urlParams.get("save");
+      if(save != undefined || save != null){
+        if(Number(save) == 1){
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.delete("save");
+
+          window.history.replaceState(null, null, "?" + urlParams.toString());
+          var myModal = new bootstrap.Modal(document.getElementById("myModal"), {});
+         myModal.show();
+        }
+      }
+    }
+
+
     // Load the students into the table
     async function loadAttendance() {
-      
+
       // Store the date
       let date = document.getElementById("datePicker");
 
@@ -98,11 +126,6 @@
       });
 
       // Now that we have the students see if any of them have attendance
-
-      // TODO:
-
-
-
       // Delete all current rows
       let tableBody = document.getElementById("attendance-table-body");
       while (tableBody.firstChild) {
@@ -112,9 +135,17 @@
       // Add the rows and reset the current feedings
       currentAttendance = new Map();
       students.forEach(student => {
+        if (student.is_present != null) {
+          tableBody.appendChild(
+            createTableRow(student.student_id, student.first_name, student.last_name, student.is_present)
+          );
+          currentAttendance.set(student.student_id, student.is_present);
+        } else {
           tableBody.appendChild(
             createTableRow(student.student_id, student.first_name, student.last_name, null)
           );
+        }
+
       });
 
       // Now set the working set to the current set
@@ -123,8 +154,8 @@
       // Add event listeners
       addEventListenersToAttendance();
     }
-  
-    
+
+
     function addEventListenersToAttendance() {
       const clicked = function(e) {
         let input = document.getElementById(this.getAttribute("for"));
@@ -199,6 +230,8 @@
         } else {
           workingAttendance.set(Number(studentId), Number(input.value));
         }
+        console.log("Current", currentAttendance);
+        console.log("Working", workingAttendance);
       };
 
 
@@ -329,6 +362,31 @@
       }
     }
 
+    // Submit the form
+    function submitAttendance(e) {
+
+      // Add the working Map as an array to the form
+      // So that we can send the student ids to the server
+      let form = document.getElementById("form");
+
+      // Enable the Date/Meal pickers so there data is added
+      let date = document.getElementById("datePicker");
+      let group = document.getElementById("groupPicker");
+
+      date.disabled = false;
+      group.disabled = false;
+
+      if (workingAttendance.size > 0) {
+        for (const [key, value] of workingAttendance) {
+          const input = document.createElement("input");
+          input.setAttribute("type", "hidden");
+          input.setAttribute("value", key); // This lets us save the students id
+          input.setAttribute("name", "student-id");
+          form.appendChild(input);
+        }
+      }
+      return true;
+    }
   </script>
 </head>
 
@@ -341,13 +399,13 @@
             <h1>Attendance</h1>
           </div>
           <h3 style="text-align: center;"><%= locals.subject_name + " " + locals.level_name%></h3>
-          <form id="form" class="" action="/feedings/insertFeedings" method="post" onsubmit="submitFeedings(event)">
+          <form id="form" class="" action="/attendance/insertAttendance" method="post" onsubmit="submitAttendance(event)">
             <div class="d-flex flex-row align-content-center justify-content-center">
               <div class="inline me-1">
                 <input type="date" id="datePicker" class="form-control" name="attendance-date" min="1970-01-01" max="9999-12-31" onchange="loadAttendance()">
               </div>
               <div class="inline ms-1">
-                <select type="select" id="groupPicker" class="form-select" name="meal-time" onchange="loadAttendance()">
+                <select type="select" id="groupPicker" class="form-select" name="group-time" onchange="loadAttendance()">
                   <%if(locals.groups != undefined || locals.groups != null) {
                       // Get the max length and add spaces for difference
                       groups.forEach(group => {
@@ -389,6 +447,23 @@
               </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" tabindex="-1" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Saved</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Saved attendance.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
