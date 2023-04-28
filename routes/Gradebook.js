@@ -1,7 +1,26 @@
 var express = require('express');
 var router = express.Router();
+var app = express();
 
 var dbCon = require('../lib/database');
+var multer = require('multer');
+
+// Taken from https://stackoverflow.com/a/39650303
+// Names the file we save from the upload with the appropriate file extension
+var path = require('path')
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/assignmentAssets')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)) //Appending extension
+  }
+})
+
+var upload = multer({ storage: storage });
+
+//var upload = multer({ dest: 'uploads/assignmentAssets' });
 
 router.get('/', function (req, res, next) {
     let classID = req.query.classID;
@@ -44,18 +63,19 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
+  console.log(req);
   let assignmentID = req.body.studentAssignmentID;
   let assignmentGrade = req.body.assignmentGrade;
   let pointsPossible = req.body.pointsPossible;
 
-  console.log(assignmentID, assignmentGrade);
-
+  console.log(assignmentID, assignmentGrade, pointsPossible);
+  
   let status = 1; // Pass
 
   if (assignmentGrade < pointsPossible / 2) {
     status = 2; // Fail
   }
-
+  
   let sql = "CALL update_student_assignment_grade(?, ?, ?);";
   dbCon.query(sql, [assignmentID, assignmentGrade, status], function (err, results) {
     if (err) {
@@ -64,8 +84,29 @@ router.post('/', function (req, res, next) {
     //console.log(results);
     //console.log(results[3][0]);
 
-  });
+    res.sendStatus(200);
 
+  });
+  
+});
+
+router.post('/upload', upload.single('myFile'), function (req, res, next) {
+  console.log(req.body.studentAssignmentID);
+  console.log(req.file);
+
+  let filePath = req.file.destination;
+  let fileName = req.file.filename;
+
+  let assetSQL = "CALL save_student_assignment_asset(?, ?)";
+  dbCon.query(assetSQL, [req.body.studentAssignmentID, (filePath + "/" + fileName)], function (err, results) {
+    if (err) {
+      throw err;
+    }
+    //console.log(results);
+    //console.log(results[3][0]);
+
+    res.sendStatus(200);
+  });
 });
 
 module.exports = router;

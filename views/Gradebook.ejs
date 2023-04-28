@@ -31,6 +31,7 @@
         let assignmentNode = button.parentElement.parentElement.children.assignment;
         let studentAssignmentID = assignmentNode.children.studentAssignmentID.value;
         let grade = assignmentNode.children.editGrade.children.span.children.editGradeInput.value;
+        let asset = assignmentNode.children.editGrade.children.span.children.myFile;
         let pointsPossible = assignmentNode.children.assignmentPointsPossible.value;
         let gradeDisplay = assignmentNode.children.displayGrade;
         let gradeEdit = assignmentNode.children.editGrade;
@@ -68,6 +69,41 @@
             }
         }
 
+    }
+
+    function cancelGradeEdits(button) {
+        let assignmentNode = button.parentElement.parentElement.children.assignment;
+        let gradeDisplay = assignmentNode.children.displayGrade;
+        let gradeEdit = assignmentNode.children.editGrade;
+        let editBtn = button.parentElement.parentElement.children.gradeEditBtn;
+        let studentGrade = assignmentNode.children.studentGradePoints.value;
+
+        gradeEdit.children.span.children.editGradeInput.value = studentGrade;
+
+        button.parentElement.style.display = "none";
+        editBtn.style.display = "initial";
+
+        gradeDisplay.style.display = "initial";
+        gradeEdit.style.display = "none";
+    }
+
+    function uploadAssignmentAsset(button) {
+        let assignmentNode = button.parentElement.parentElement.children.assignment;
+        let asset = assignmentNode.children.editGrade.children.span.children.myFile;
+        let studentAssignmentID = assignmentNode.children.editGrade.children.span.children.studentAssignmentID;
+
+        //assignmentNode.children.editGrade.children.span.children.assetForm.submit();
+
+        if (asset.files[0] != undefined) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Gradebook/upload", true);
+            //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+            var formData = new FormData();
+            formData.append("studentAssignmentID", studentAssignmentID.value);
+            formData.append("myFile", asset.files[0]);
+
+            xhr.send(formData);
+        }
     }
 
     function awardCertificate(button) {
@@ -137,12 +173,13 @@
                                         <% if (locals.studentAssignments[i].length > 0) {
                                             for (let j = 0; j < locals.studentAssignments[i].length; j++) { %>
                                                 <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                                    <div class="col-6">
+                                                    <div class="col-5">
                                                         <h5><%= locals.studentAssignments[i][j].assignment_name %></h5>
                                                     </div>
-                                                    <div class="col-3" id="assignment">
+                                                    <div class="col-4" id="assignment">
                                                         <input type="hidden" id="studentAssignmentID" value=<%= locals.studentAssignments[i][j].student_assignment_id %>>
                                                         <input type="hidden" id="assignmentPointsPossible" value=<%= locals.studentAssignments[i][j].points_possible %>>
+                                                        <input type="hidden" id="studentGradePoints" value=<%= locals.studentAssignments[i][j].grade %>>
 
                                                         <div id="displayGrade">
                                                             <% if (locals.studentAssignments[i][j].status == 'Success') { %>
@@ -156,15 +193,26 @@
                                                         <div id="editGrade" style="display:none">
                                                             <span id="span">
                                                                 <input id="editGradeInput" size="1" type="text" value=<%= locals.studentAssignments[i][j].grade %>> /<%= locals.studentAssignments[i][j].points_possible %>
+                                                                <br><br>
+                                                                Upload Asset:
+                                                                <!--
+                                                                <form id="assetForm" enctype="multipart/form-data" method="post" action="/Gradebook/upload">
+                                                                --><input type="hidden" id="studentAssignmentID" name="studentAssignmentID" value=<%= locals.studentAssignments[i][j].student_assignment_id %>>
+                                                                    <input type="file" id="myFile" name="myFile">
+                                                                <!--</form>-->
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-3" style="display:none" id="gradeSaveBtn">
+                                                    <div class="col-3 text-end" style="display:none" id="gradeSaveBtn">
                                                         <button class="btn btn-primary" onClick="submitGradeEdits(this);">
                                                             Save Grade
                                                         </button>
+                                                        <br><br>
+                                                        <button class="btn btn-primary" onClick="uploadAssignmentAsset(this);">
+                                                            Upload Asset
+                                                        </button>
                                                     </div>
-                                                    <div class="col-3" id="gradeEditBtn">
+                                                    <div class="col-3 text-end" id="gradeEditBtn">
                                                         <button class="btn btn-primary" onClick="beginUpdateGrade(this);">
                                                             Edit Grade
                                                         </button>

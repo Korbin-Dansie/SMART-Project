@@ -8,6 +8,7 @@
     "nodemon": "nodemon -e js,ejs ./bin/www"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
     "cookie-parser": "~1.4.4",
@@ -20,6 +21,7 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.1.0"
   },
   "devDependencies": {
