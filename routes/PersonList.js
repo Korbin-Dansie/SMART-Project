@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 /* GET add Student page. */
 router.get('/addStudent', loadStudentsPage);
 
-function parseStudentClassInfo(studentTable, class_time_table, res){
+function parseStudentClassInfo(studentTable, class_time_table, res, classID){
   // Iterate through the class times, make an array of them and find the highest group number
   var groups = 0;
   var class_time_list = [];
@@ -57,7 +57,7 @@ function parseStudentClassInfo(studentTable, class_time_table, res){
   console.log('studentTable: ');
   console.log(studentArray);
   // Display the page with add/remove buttons
-  res.render('AddStudent', {classTimes: class_time_list, studentTable: studentArray, totalClassGroups: groups});
+  res.render('AddStudent', {classTimes: class_time_list, studentTable: studentArray, totalClassGroups: groups, classID});
 }
 
 router.post('/addStudent', function(req, res, next) {
@@ -126,7 +126,7 @@ function loadStudentsPage(req, res, next) {
       }
   
       console.log(results2[0]);
-      parseStudentClassInfo(results[0], results2[0], res);
+      parseStudentClassInfo(results[0], results2[0], res, classID);
 
     });
   });

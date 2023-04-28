@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>People list</title>
+  <title>S. M. A. R. T. Add/Remove Student Schedule</title>
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
   <%- include('partials/favico') %>
@@ -36,7 +36,15 @@
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-50 shadow-lg p-5 bg-light">
           <div style="text-align:center"><h1>All Active Students</h1></div>
-          <form method="post"> <!-- TODO: Input form post info-->
+          <form method="get" action="/course">
+              <div class="row">
+                  <input type="hidden" name="classID" value="<%= locals.classID %>" >
+                  <button class="btn btn-primary pt-2 float-end col-md-5" >
+                      Back to Course
+                  </button>
+              </div>  
+          </form>
+          <form method="post"> 
             <!-- DROPDOWN MENU OF CLASS TIMES HERE-->
             <div>
               <label for="classTime">Class Time:</label>
@@ -51,9 +59,7 @@
                 </select>
               </div>
             </div>
-            <!-- TODO: Back button-->
             <table class="table table-striped table-hover table-sm">
-              <!-- TODO: ADD/REMOVE BUTTONS-->
               <thead>
                 <tr>
                   <th scope="col">Student Name</th>
