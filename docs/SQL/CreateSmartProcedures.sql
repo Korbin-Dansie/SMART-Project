@@ -1,5 +1,6 @@
 USE `smart_project`;
 
+DROP PROCEDURE IF EXISTS `add_attendance`;
 DROP PROCEDURE IF EXISTS `add_feeding`;
 DROP PROCEDURE IF EXISTS `award_certificate`;
 DROP PROCEDURE IF EXISTS `check_application_id`;
@@ -33,6 +34,7 @@ DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
 DROP PROCEDURE IF EXISTS `get_students`;
+DROP PROCEDURE IF EXISTS `get_students_attendance_by_group`;
 DROP PROCEDURE IF EXISTS `get_students_with_meal_assistance`;
 DROP PROCEDURE IF EXISTS `get_userid_from_email`;
 DROP PROCEDURE IF EXISTS `login_user`;
@@ -1200,25 +1202,54 @@ BEGIN
     END IF;
 END;
 $$
+
+
 /***************************************************************
 * Procedure get_students_attendance_by_group
 * <comment>Procedure get_students_attendance_by_group created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE `get_students_attendance_by_group`(
-    IN class_time_id INT UNSIGNED,
-    IN date_attended_start DATE,
-    IN date_attended_end DATE
+CREATE PROCEDURE IF NOT EXISTS `get_students_attendance_by_group`(
+    IN class_time_id INT UNSIGNED
 )
 BEGIN
-	SELECT
-    att.`student_id`,
-    att.`date_attended`,
-    att.`is_present`
-	FROM `smart_project`.`student_attendance` AS att
-    INNER JOIN `class` AS c
-    ON c.class_id = att.class_id
-    INNER JOIN `class_time` AS ct
-    ON ct.class_id = c.class_id
-	WHERE ct.class_time_id = class_time_id;
+	SELECT 
+	s.student_id,
+	p.first_name,
+	p.last_name
+	FROM `student_schedule` AS ss
+	INNER JOIN `student` AS s
+	ON ss.student_id = s.student_id
+	INNER JOIN `application` AS a
+	ON s.student_id = a.student_id
+    LEFT JOIN `student_attendance`AS sa
+    ON s.student_id = sa.student_id
+	INNER JOIN `person` AS p
+	ON a.person_id = p.person_id
+	WHERE ss.class_time_id = class_time_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure add_attendance
+* <comment>Procedure add_attendance created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `add_attendance`(
+    IN class_time_id INT UNSIGNED,
+	IN attendance_date DATE
+)
+BEGIN
+	SELECT 
+	s.student_id,
+	p.first_name,
+	p.last_name
+	FROM `student_schedule` AS ss
+	INNER JOIN `student` AS s
+	ON ss.student_id = s.student_id
+	INNER JOIN `application` AS a
+	ON s.student_id = a.student_id
+	INNER JOIN `person` AS p
+	ON a.person_id = p.person_id
+	WHERE ss.class_time_id = class_time_id;
 END;
 $$
