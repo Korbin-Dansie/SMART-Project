@@ -6,10 +6,33 @@ var dbCon = require("../lib/database");
 /* GET list of students that are in the group */
 router.get("/students", function (req, res, next) {
   let class_time_id = req.query["class_time_id"];
+
+  let sql = "CALL get_students_by_group(?);";
+  dbCon.query(
+    sql,
+    [class_time_id],
+    function (err, results) {
+      if (err) {
+        throw err;
+      }
+
+      let students = new Array();
+      results[0].forEach((element) => {
+        students.push({ ...element });
+      });
+      return res.send(Object.values(students));
+    }
+  );
+});
+
+
+/* GET list of students that are in the group */
+router.get("/attendance", function (req, res, next) {
+  let class_time_id = req.query["class_time_id"];
   let start_date = req.query["startDate"];
   let end_date = req.query["endDate"];
 
-  let sql = "CALL get_students_attendance_by_group(?, ?, ?);";
+  let sql = "CALL get_attendance_by_group(?, ?, ?);";
   dbCon.query(
     sql,
     [class_time_id, start_date, end_date],

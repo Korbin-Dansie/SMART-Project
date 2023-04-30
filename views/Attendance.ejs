@@ -115,6 +115,27 @@
         let params = new URLSearchParams(url.search);
         params.append("class_time_id", groupId.value);
 
+        url.search = params;
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // Get any attendance for this week
+      let promiseAttendance = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            let feedings = JSON.parse(this.responseText);
+            resolve(feedings);
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("attendance", window.location.href + window.location.pathname);
+        let params = new URLSearchParams(url.search);
+        params.append("class_time_id", groupId.value);
+
         // Find the start day of the week
         let startDate = new Date(getStartOfWeek(date.value));
         let endDate = new Date(startDate);
@@ -131,8 +152,10 @@
 
       // Wait for the students
       let students = new Array();
-      await Promise.all([promiseStudents]).then((values) => {
+      let attendance = new Array();
+      await Promise.all([promiseStudents, promiseAttendance]).then((values) => {
         students = values[0];
+        attendance = values[1];
       });
 
       // Now that we have the students see if any of them have attendance
@@ -145,11 +168,19 @@
       // Add the rows and reset the current feedings
       currentAttendance = new Map();
       students.forEach(student => {
-        if (student.is_present != null) {
+
+        // Find the coropsoning attendance record
+        let studentAttendance = attendance.find(
+          (element) => {
+            return element.student_id == student.student_id
+          }
+        );
+
+        if (studentAttendance != null) {
           tableBody.appendChild(
-            createTableRow(student.student_id, student.first_name, student.last_name, student.is_present)
+            createTableRow(student.student_id, student.first_name, student.last_name, studentAttendance.is_present)
           );
-          currentAttendance.set(student.student_id, student.is_present);
+          currentAttendance.set(student.student_id, studentAttendance.is_present);
         } else {
           tableBody.appendChild(
             createTableRow(student.student_id, student.first_name, student.last_name, null)
