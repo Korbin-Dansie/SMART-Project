@@ -1212,7 +1212,7 @@ CREATE PROCEDURE IF NOT EXISTS `get_students_by_group`(
     IN class_time_id INT UNSIGNED
 )
 BEGIN
-	SELECT 
+	SELECT DISTINCT
 	s.student_id,
 	p.first_name,
 	p.last_name
