@@ -114,6 +114,16 @@
         let url = new URL("students", window.location.href + window.location.pathname);
         let params = new URLSearchParams(url.search);
         params.append("class_time_id", groupId.value);
+
+        // Find the start day of the week
+        let startDate = new Date(getStartOfWeek(date.value));
+        let endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 6);
+
+        params.append("startDate", startDate.toISOString().slice(0, 10));
+        params.append("endDate", endDate.toISOString().slice(0, 10));
+
+
         url.search = params;
         xhttp.open("GET", url, true);
         xhttp.send();
@@ -411,17 +421,17 @@
       return true;
     }
 
-    function addHiddenInputToForm(name, value){
+    function addHiddenInputToForm(name, value) {
       const input = document.createElement("input");
-          input.setAttribute("type", "hidden");
-          input.setAttribute("value", value); // This lets us save the students id
-          input.setAttribute("name", name);
-          form.appendChild(input);
+      input.setAttribute("type", "hidden");
+      input.setAttribute("value", value); // This lets us save the students id
+      input.setAttribute("name", name);
+      form.appendChild(input);
     }
   </script>
 </head>
 
-<body onload="loadStartDate(); loadAttendance(); loadGroupPicker(); showModal();">
+<body onload="loadStartDate(); loadGroupPicker(); loadAttendance(); showModal();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">

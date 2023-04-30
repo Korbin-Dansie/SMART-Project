@@ -1209,7 +1209,9 @@ $$
 * <comment>Procedure get_students_attendance_by_group created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `get_students_attendance_by_group`(
-    IN class_time_id INT UNSIGNED
+    IN class_time_id INT UNSIGNED,
+	IN start_date DATE,
+    IN end_date DATE
 )
 BEGIN
 	SELECT 
@@ -1227,7 +1229,10 @@ BEGIN
     ON s.student_id = sa.student_id
 	INNER JOIN `person` AS p
 	ON a.person_id = p.person_id
-	WHERE ss.class_time_id = class_time_id;
+	WHERE ss.class_time_id = class_time_id AND
+	((sa.date_attended >= start_date AND 
+    sa.date_attended <= end_date) OR
+    sa.date_attended IS NULL);
 END;
 $$
 
@@ -1238,27 +1243,28 @@ $$
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `add_attendance`(
     IN class_time_id INT UNSIGNED,
-	IN attendance_date DATE
+    IN student_id INT UNSIGNED,
+	IN date_attended DATE,
+    IN is_present BOOL
 )
 BEGIN
-	SELECT 
-	s.student_id,
-	p.first_name,
-	p.last_name
-	FROM `student_schedule` AS ss
-	INNER JOIN `student` AS s
-	ON ss.student_id = s.student_id
-	INNER JOIN `application` AS a
-	ON s.student_id = a.student_id
-	INNER JOIN `person` AS p
-	ON a.person_id = p.person_id
-	WHERE ss.class_time_id = class_time_id;
+	INSERT INTO `student_attendance`
+	(`student_id`,
+	`class_time_id`,
+	`date_attended`,
+	`is_present`)
+	VALUES
+	(student_id,
+    class_time_id,
+    date_attended,
+    is_present
+    );
 END;
 $$
 
 /***************************************************************
-* Procedure get_students_attendance_by_group
-* <comment>Procedure get_students_attendance_by_group created if it didn't already exist.</comment>
+* Procedure delete_attendance
+* <comment>Procedure delete_attendance created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `delete_attendance`(
     IN class_time_id INT UNSIGNED,
@@ -1266,7 +1272,7 @@ CREATE PROCEDURE IF NOT EXISTS `delete_attendance`(
     IN end_date DATE
 )
 BEGIN
-	DELETE FROM.`student_attendance` AS sa
+	DELETE FROM `student_attendance` AS sa
 	WHERE sa.class_time_id = class_time_id AND
     sa.date_attended >= start_date AND 
     sa.date_attended <= end_date;

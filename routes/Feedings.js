@@ -73,14 +73,14 @@ router.post("/insertFeedings", function (req, res, next) {
 
     // For each student Id insert it into the database
     for (let index = 0; index < studentIds.length; index++) {
-      let currentStudentIndex = studentIds[index];
+      let currentStudentId = studentIds[index];
       let sql = "CALL add_feeding(?,?,?,?)";
 
       // Get the data from the form to tell wether the user clicked feed or not feed
-      let is_done = req.body[`options-outlined[${currentStudentIndex}]`];
+      let is_done = req.body[`options-outlined[${currentStudentId}]`];
 
       // Now insert into the database
-      dbCon.query(sql, [currentStudentIndex, meal, date, is_done], function (err, results) {
+      dbCon.query(sql, [currentStudentId, meal, date, is_done], function (err, results) {
         if (err) {
           throw err;
         }
