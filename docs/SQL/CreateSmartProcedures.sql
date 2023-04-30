@@ -1215,7 +1215,9 @@ BEGIN
 	SELECT 
 	s.student_id,
 	p.first_name,
-	p.last_name
+	p.last_name,
+    sa.date_attended,
+    sa.is_present
 	FROM `student_schedule` AS ss
 	INNER JOIN `student` AS s
 	ON ss.student_id = s.student_id
@@ -1251,5 +1253,22 @@ BEGIN
 	INNER JOIN `person` AS p
 	ON a.person_id = p.person_id
 	WHERE ss.class_time_id = class_time_id;
+END;
+$$
+
+/***************************************************************
+* Procedure get_students_attendance_by_group
+* <comment>Procedure get_students_attendance_by_group created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `delete_attendance`(
+    IN class_time_id INT UNSIGNED,
+    IN start_date DATE,
+    IN end_date DATE
+)
+BEGIN
+	DELETE FROM.`student_attendance` AS sa
+	WHERE sa.class_time_id = class_time_id AND
+    sa.date_attended >= start_date AND 
+    sa.date_attended <= end_date;
 END;
 $$

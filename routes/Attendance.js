@@ -54,26 +54,29 @@ router.get('/', function(req, res, next) {
 router.post('/insertAttendance', function(req, res, next) {
   let obj = new Object();
   // Get information about the class
-  let sql = "CALL `select_class`(?);";
-  let class_id = req.query['classId'];
+  let class_id = req.body['classId'];
+  let class_time_id = req.body['group-time'];
+  let date = req.body['attendance-date'];
+  let start_date = req.body['startDate'];
+  let end_date = req.body['endDate'];
 
   obj.class_id = class_id;
-  dbCon.query(sql, [class_id], function (err, results) {
+  obj.class_time_id = class_time_id;
+
+  let sql = "CALL `delete_attendance`(?, ?, ?);";
+  dbCon.query(sql, [class_time_id, start_date, end_date], function (err, results) {
     if (err) {
       throw err;
     }
-    // Get the group times
-    let array = new Array();
-    for (const group of results[0]) {
-      array.push(group);
-    }
-    obj.groups = array;
 
-    // Get information about the class
-    obj.subject_name = results[1][0]["subject_name"];
-    obj.level_name = results[1][0]["level_name"];
 
-    res.render('Attendance', {...obj});
+    // Add the params
+    let params = new URLSearchParams();
+    params.append("date", date);
+    params.append("classId", class_id);
+    params.append("class_time_id", class_time_id);
+    params.append("save", 1);
+    return res.redirect(req.baseUrl + "/?" + encodeURI(params.toString()));
   });
 });
 

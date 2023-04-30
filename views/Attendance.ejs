@@ -17,8 +17,8 @@
     // Holds the current attendance that we have changed before submiting them to the database
     let workingAttendance = new Map();
 
-    // Start day of the week, 1 = Sunday, 2 = Monday, 3 = Tuesday
-    const startDay = 1;
+    // Start day of the week, 0 = Sunday, 1 = Monday, 2 = Tuesday
+    const startDay = 0;
 
     /**
      * // https://stackoverflow.com/questions/35948335/how-can-i-check-if-two-map-objects-are-equal
@@ -72,14 +72,14 @@
     function showModal() {
       const urlParams = new URLSearchParams(window.location.search);
       let save = urlParams.get("save");
-      if(save != undefined || save != null){
-        if(Number(save) == 1){
+      if (save != undefined || save != null) {
+        if (Number(save) == 1) {
           const urlParams = new URLSearchParams(window.location.search);
           urlParams.delete("save");
 
           window.history.replaceState(null, null, "?" + urlParams.toString());
           var myModal = new bootstrap.Modal(document.getElementById("myModal"), {});
-         myModal.show();
+          myModal.show();
         }
       }
     }
@@ -360,6 +360,22 @@
       }
     }
 
+
+    // Get the start day of the week
+    function getStartOfWeek(d) {
+      let dateParts = d.split('-')
+      let newDate = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
+
+      let date = new Date();
+
+      // Get the day: Sunday - Saturday : 0 - 6
+      let day = newDate.getDay();
+      let difference = newDate.getDate() - day;
+
+      let returnDate = new Date(newDate.setDate(difference + startDay))
+      return returnDate;
+    }
+
     // Submit the form
     function submitAttendance(e) {
 
@@ -376,19 +392,36 @@
 
       if (workingAttendance.size > 0) {
         for (const [key, value] of workingAttendance) {
-          const input = document.createElement("input");
-          input.setAttribute("type", "hidden");
-          input.setAttribute("value", key); // This lets us save the students id
-          input.setAttribute("name", "student-id");
-          form.appendChild(input);
+          addHiddenInputToForm("student-id", key);
         }
       }
+
+      // Add the class ID from the url
+      const urlParams = new URLSearchParams(window.location.search);
+      addHiddenInputToForm("classId", urlParams.get('classId'));
+
+      // Find the start day of the week
+      let startDate = new Date(getStartOfWeek(date.value));
+      let endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 6);
+
+      addHiddenInputToForm("startDate", startDate.toISOString().slice(0, 10));
+      addHiddenInputToForm("endDate", endDate.toISOString().slice(0, 10));
+
       return true;
+    }
+
+    function addHiddenInputToForm(name, value){
+      const input = document.createElement("input");
+          input.setAttribute("type", "hidden");
+          input.setAttribute("value", value); // This lets us save the students id
+          input.setAttribute("name", name);
+          form.appendChild(input);
     }
   </script>
 </head>
 
-<body onload="loadStartDate(); loadAttendance()">
+<body onload="loadStartDate(); loadAttendance(); loadGroupPicker(); showModal();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
