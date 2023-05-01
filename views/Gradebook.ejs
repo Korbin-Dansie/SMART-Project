@@ -131,7 +131,14 @@
             button.parentElement.children.viewCertBtn.style.display = "initial";
         }, false);
         
-        
+    }
+
+    function downloadAssignmentDocument(button) {
+        let document_path = button.parentElement.children.document_path.value;
+
+        console.log(document_path);
+
+        window.open('Gradebook/download?document_path=' + document_path);
     }
 
 </script>
@@ -230,6 +237,13 @@
                                                         <button class="btn btn-primary" onClick="beginUpdateGrade(this);">
                                                             Edit Grade
                                                         </button>
+                                                        <% if (locals.studentAssignments[i][j].document_link != null) { %>
+                                                            <br>
+                                                            <input type="hidden" name="document_path" id="document_path" value=<%= locals.studentAssignments[i][j].document_link %>>
+                                                            <button class="btn btn-primary" onClick="downloadAssignmentDocument(this)">
+                                                                Download Asset
+                                                            </button>
+                                                        <% } %>
                                                     </div>
                                                 </div>
                                             <% }
