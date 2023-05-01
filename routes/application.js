@@ -5,14 +5,7 @@ var dbCon = require('../lib/database');
 
 /* GET application form page. */
 router.get('/', function (req, res, next) {
-    var sql = "SELECT `public_school_level_id`, `level` FROM `public_school_level`;";
-    dbCon.query(sql, function(err, results) {
-        if (err) {
-            throw err;
-        }
-        let levels = results;
-        res.render('ApplicationForm', {levels: levels});
-    });
+    showApplicationForm(res, false);
 });
 
 /* POST application form page. */
@@ -133,8 +126,7 @@ function createGuardianPerson(applicationID, req, res){
 
     }
 
-    // Fix valid GPA values
-    res.redirect('/');
+    showApplicationForm(res, true);
 }
 
 function  generateContact(contact, contactType, guardianID){
@@ -152,6 +144,17 @@ function generateGuardian(guardianID, applicationID, annual_income, res){
         if (err) {
             throw err;
         }
+    });
+}
+
+function showApplicationForm(res, isSubmitted){
+    var sql = "SELECT `public_school_level_id`, `level` FROM `public_school_level`;";
+    dbCon.query(sql, function(err, results) {
+        if (err) {
+            throw err;
+        }
+        let levels = results;
+        res.render('ApplicationForm', {levels: levels, isSubmitted: isSubmitted});
     });
 }
 
