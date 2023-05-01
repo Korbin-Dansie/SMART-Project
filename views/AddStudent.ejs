@@ -35,15 +35,13 @@
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
         <div class="col-md-4 w-50 shadow-lg p-5 bg-light">
-          <div style="text-align:center"><h1>All Active Students</h1></div>
           <form method="get" action="/course">
-              <div class="row">
-                  <input type="hidden" name="classID" value="<%= locals.classID %>" >
-                  <button class="btn btn-primary pt-2 float-end col-md-5" >
-                      Back to Course
-                  </button>
-              </div>  
-          </form>
+            <input type="hidden" name="classID" value="<%= locals.classID %>">
+            <button class="btn btn-secondary mt-2">
+              Back
+            </button>
+        </form>
+          <div style="text-align:center"><h1>All Active Students</h1></div>
           <form method="post"> 
             <!-- DROPDOWN MENU OF CLASS TIMES HERE-->
             <div>
@@ -52,7 +50,7 @@
                 <span class="input-group-text bg-primary"><i
                         class="bi bi-clock text-white"></i></span>
                 <select id="classTimeSelect" name="classTimeSelect"
-                  class="form-control" placeholder="Select">
+                  class="form-select" placeholder="Select">
                   <% for (var i = 0; i < classTimes.length; i ++) { %>
                     <option value="<%= classTimes[i]['id'] %>"><%= classTimes[i]['value'] %> Group:<%= classTimes[i]['group'] %></option>
                   <% } %>
