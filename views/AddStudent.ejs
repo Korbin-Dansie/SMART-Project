@@ -78,7 +78,7 @@
                           var classTimeID = studentTable[i]['group_'+j]; 
                           for (var k = 0; k < classTimes.length; k ++ ) {
                             if (classTimes[k]['id'] == classTimeID) {
-                                %><%= classTimes[classTimeID-1]['value'] %>
+                                %><%= classTimes[k]['value'] %>
                                   <button class="btn btn-outline-danger mx-2 float-end" onclick="deleteStudentSchedule(<%= studentTable[i]['id'] %>, <%= classTimeID %>);" style="visibility: visible;"><i class="bi bi-x-circle text-danger"></i></button>
                                 <%
                                 break;

@@ -51,7 +51,7 @@ router.get('/', function (req, res, next) {
                 studentAssignments.push(studentAssignmentsResults[i]);
             }
 
-            //console.log(studentAssignments);
+            console.log(studentAssignments);
 
             res.render('Gradebook', {students: results[0], classDetails: results[3][0], studentAssignments: studentAssignments, certifiedStudents: results[5]});
 
@@ -63,12 +63,12 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  console.log(req);
+  //console.log(req);
   let assignmentID = req.body.studentAssignmentID;
   let assignmentGrade = req.body.assignmentGrade;
   let pointsPossible = req.body.pointsPossible;
 
-  console.log(assignmentID, assignmentGrade, pointsPossible);
+  //console.log(assignmentID, assignmentGrade, pointsPossible);
   
   let status = 2; // Pass
 
@@ -98,7 +98,7 @@ router.post('/upload', upload.single('myFile'), function (req, res, next) {
   let fileName = req.file.filename;
 
   let assetSQL = "CALL save_student_assignment_asset(?, ?)";
-  dbCon.query(assetSQL, [req.body.studentAssignmentID, (filePath + "/" + fileName)], function (err, results) {
+  dbCon.query(assetSQL, [req.body.studentAssignmentID, (req.file.path)], function (err, results) {
     if (err) {
       throw err;
     }
@@ -107,6 +107,13 @@ router.post('/upload', upload.single('myFile'), function (req, res, next) {
 
     res.sendStatus(200);
   });
+});
+
+router.get('/download', function (req, res, next) {
+  console.log(req.query);
+
+  res.download(req.query.document_path);
+
 });
 
 module.exports = router;
