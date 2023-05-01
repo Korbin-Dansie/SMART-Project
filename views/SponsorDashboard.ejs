@@ -25,21 +25,30 @@
           </div>
           <div style="text-align:center"><h1>Sponsor Dashboard</h1></div>
           <h5 style="text-align:center;">Click on a student you are sponsoring to see more information</h5><br>
-          <table class="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Student Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Kwame Omer</td>
-              </tr>
-              <tr>
-                <td>Precious Omar</td>
-              </tr>
-            </tbody>
-          </table>
+          <% if (locals.students.length > 0) { %>
+            <table class="table table-striped table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Student Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for (let i = 0; i < locals.students.length; i++) { %>
+                  <tr>
+                    <td><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></td>
+                    <td>
+                      <form method="get" action="/student">
+                        <input type="hidden" name="studentID" value=<%= locals.students[i].student_id %>>
+                        <button class="btn btn-secondary" type="submit">View Report</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          <% } else { %>
+            No sponsored students found
+          <% } %>
         </div>
       </div>
     </div>

@@ -63,12 +63,12 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/', function (req, res, next) {
-  console.log(req);
+  //console.log(req);
   let assignmentID = req.body.studentAssignmentID;
   let assignmentGrade = req.body.assignmentGrade;
   let pointsPossible = req.body.pointsPossible;
 
-  console.log(assignmentID, assignmentGrade, pointsPossible);
+  //console.log(assignmentID, assignmentGrade, pointsPossible);
   
   let status = 2; // Pass
 
