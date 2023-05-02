@@ -101,9 +101,12 @@
                         <div class="col-md-6 mt-4 mx-auto">
                             <div class="row">
                                 <h3 class="text-primary col-md-7">Assignments</h3>
-                                <button class="btn btn-primary pt-2 float-end col-md-5">
-                                    New Assignment
-                                </button>
+                                <form style="display:inline" method="get" action="/NewAssignment">
+                                    <input type="hidden" name="classID" value="<%= locals.classData.class_id %>">
+                                    <button class="btn btn-primary pt-2 float-end col-md-5" type="submit">
+                                        New Assignment
+                                    </button>
+                                </form>
                             </div>
                             <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
                                 <% if (locals.classAssignments.length > 0) { %>
