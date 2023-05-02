@@ -9,28 +9,23 @@ router.get('/', function (req, res, next) {
 });
 
 
-/* GET student overview page. */
+/* Get all the student notes. */
 router.get('/notes', function (req, res, next) {
-    let sql = "CALL `get_userid_from_email`(?, @userId); SELECT @userId;";
-    dbCon.query(sql, [emailAddress], function (err, results) {
-      if (err) {
-        throw err;
-      }   
-      
-      // Store the information in the object
-      obj.student_id = student_id;
-      obj.date = date;
-      obj.note = note;
-      obj.user_id = results[1][0]['@userId'];
+    let sql = "CALL get_notes(?);";
+    dbCon.query(sql, [req.query['student_id']], function (err, results) {
+        if (err) {
+          throw err;
+        } 
 
-      // If user is not logged in while making this request return to the student page
-      if(obj.user_id == null || obj.user_id == undefined){
-        returnToStudentPage(req, res, obj);
-      }else{
-        addNoteStep1(req, res, obj);
-      }
-    });    res.render('Student', {});
+        let notes = new Array();
+        results[0].forEach((element) => {
+          notes.push({ ...element });
+        });
+        return res.send(Object.values(notes));
+    });
 });
+
+
 /* Post student overview page. */
 router.post('/insertNote', function (req, res, next) {
 
@@ -62,7 +57,7 @@ router.post('/insertNote', function (req, res, next) {
     });
 });
 
-// Now that we have the userId and the student Id find the social_worker_student id
+// Now that we have the userId and the student Id find the socail_worker_student id
 function addNoteStep1(req, res, obj){
     let sql = "CALL get_social_worker_student_id(?,?, @social_worker_student_id); SELECT @social_worker_student_id;"
     dbCon.query(sql, [obj.user_id, obj.student_id], function (err, results) {
@@ -75,7 +70,7 @@ function addNoteStep1(req, res, obj){
 }
 
 
-// Now the we have the social_worker_student id insert the note
+// Now the we have the socail_worker_student id insert the note
 function addNoteStep2(req, res, obj){
     //add_new_note
     let sql = "CALL add_new_note(?,?,?);"

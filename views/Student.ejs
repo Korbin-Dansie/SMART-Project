@@ -12,27 +12,6 @@
 </head>
 
 <script>
-  // Create notes
-  function createNote(date, note) {
-    let row = document.createElement("div");
-    row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex")
-
-    let dateDiv = document.createElement("div")
-    let dateElement = document.createElement("h5");
-    dateElement.classList.add("text-primary");
-    dateElement.innerText = date;
-    dateDiv.appendChild(dateElement);
-
-    let noteDiv = document.createElement("div")
-    let noteElement = document.createElement("p");
-    noteElement.innerText = note;
-    noteDiv.appendChild(noteElement);
-
-    row.appendChild(dateDiv);
-    row.appendChild(noteDiv);
-  }
-
-
   async function getNotes() {
     // Get any attendance for this week
     let promiseNotes = new Promise((resolve, reject) => {
@@ -55,46 +34,53 @@
 
 
     // Wait for the students
-    let students = new Array();
-    let attendance = new Array();
-    await Promise.all([promiseStudents, promiseNotes]).then((values) => {
-      students = values[0];
-      attendance = values[1];
+    let notes = new Array();
+    await Promise.all([promiseNotes]).then((values) => {
+      notes = values[0];
     });
 
     // Now that we have the students see if any of them have attendance
     // Delete all current rows
-    let tableBody = document.getElementById("attendance-table-body");
+    let tableBody = document.getElementById("notesSection");
     while (tableBody.firstChild) {
       tableBody.removeChild(tableBody.firstChild);
     }
 
 
-    students.forEach(student => {
+    notes.forEach(note => {
+        // chop of the time part of the datetime
+        let timeString = note.date_taken.substring(0, 10)
+        let date = new Date(timeString);
 
-      // Find the coropsoning attendance record
-      let studentAttendance = attendance.find(
-        (element) => {
-          return element.student_id == student.student_id
-        }
-      );
-
-      if (studentAttendance != null) {
         tableBody.appendChild(
-          createTableRow(student.student_id, student.first_name, student.last_name, studentAttendance.is_present)
+            createNote(note.social_worker_student_note_id, date.toLocaleDateString() , note.note)
         );
-        currentAttendance.set(student.student_id, studentAttendance.is_present);
-      } else {
-        tableBody.appendChild(
-          createTableRow(student.student_id, student.first_name, student.last_name, null)
-        );
-      }
-
     });
 
   }
 
 
+    // Create notes
+    function createNote(id, date, note) {
+    let row = document.createElement("div");
+    row.setAttribute("data-social-worker-student-note-id", id);
+    row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex")
+
+    let dateDiv = document.createElement("div")
+    let dateElement = document.createElement("h5");
+    dateElement.classList.add("text-primary");
+    dateElement.innerText = date;
+    dateDiv.appendChild(dateElement);
+
+    let noteDiv = document.createElement("div")
+    let noteElement = document.createElement("p");
+    noteElement.innerText = note;
+    noteDiv.appendChild(noteElement);
+
+    row.appendChild(dateDiv);
+    row.appendChild(noteDiv);
+    return row;
+  }
 
   // Set the date pickers date to today
   function loadStartDate() {
@@ -250,8 +236,7 @@
                   New Note
                 </button>
               </div>
-              <div id="notesSection">
-                <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
+                <div class="row mt-2 p-2 shadow-sm rounded border border-primary " id="notesSection">
                   <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                     <div class="col-4">
                       <h5 class="text-primary">10/21/2022</h5>
@@ -270,14 +255,8 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
-
             </div>
-
           </div>
-
-
         </div>
       </div>
     </div>
