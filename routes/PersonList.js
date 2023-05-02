@@ -8,6 +8,34 @@ router.get('/', function(req, res, next) {
   res.render('PersonList');
 });
 
+router.post('/', function(req, res, next) {
+  if (req.body.adminManageUsers != undefined) {
+    let sql = "CALL select_users(?);";
+    if (req.body.accountTypeSelect == "noFilter") {
+      dbCon.query(sql, [null], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        
+        console.log(results);
+
+        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true});
+      });
+    } else {
+
+      dbCon.query(sql, [req.body.accountTypeSelect], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        
+        console.log(results);
+
+        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true});
+      });
+    }
+  }
+});
+
 /* GET add Student page. */
 router.get('/addStudent', loadStudentsPage);
 
