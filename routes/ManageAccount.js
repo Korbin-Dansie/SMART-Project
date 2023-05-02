@@ -23,7 +23,7 @@ router.get("/", function (req, res, next) {
 router.post("/", function (req, res, next) {
   let userID = req.query.userID;
 
-  if (req.body.firstName === undefined) {
+  if (req.body.userFirstName === undefined) {
     let salt = req.body.salt;
     let hash = req.body.hash;
   
