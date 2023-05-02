@@ -238,7 +238,7 @@
             <div class="text-center mt-4">
               <h4 class="text-primary">Change Password</h4>
             </div>
-            <form onSubmit="return checkPassword(event);" onSubmit="return checkPassword(event);" method="post">
+            <form onSubmit="return checkPassword(event);" method="post">
               <div class="p-4">
                 <div class="input-group mb-3">
                   <!-- Password does not get sent because there is no name tag -->
@@ -266,7 +266,6 @@
                 <!-- This is the password that gets sent even though they are hidden -->
                 <input type="hidden" id="hash" name="hash" />
                 <input type="hidden" id="salt" name="salt" />
-                <input type="hidden" id="accountNumber" name="accountNumber" value=<%- locals.accountNumber%>>
                 <div class="text-center">
                   <button
                     class="btn btn-primary text-center mt-2"
