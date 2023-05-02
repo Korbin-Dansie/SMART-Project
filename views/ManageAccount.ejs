@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+    <script type="text/javascript" src="crypto-js.js"></script>
+
     <%- include('partials/favico') %>
     <title>Manage Account</title>
 
         <!-- Must include Crypto -->
-        <script type="text/javascript" src="crypto-js.js"></script>
         <script>
           function checkPassword(event) {
             const password1 = document.getElementById("password1").value;
@@ -44,9 +45,18 @@
               document.getElementById("hash").value = hashed;
             }
           }
+
+          function selectAccountType() {
+            document.getElementById("accountType").value = document.getElementById("currentAccountType").value;
+          }
+
+          function submitUserDetailUpdates() {
+            document.getElementById("userForm").submit();
+          }
+
         </script>
   </head>
-  <body>
+  <body onLoad="selectAccountType();">
     <div class="container-fluid vh-100" style="margin-top: 10px">
       <div class="" style="margin-top: 100px">
         <div class="rounded d-flex justify-content-center">
@@ -55,7 +65,7 @@
               <h3 class="text-primary">Manage Account</h3>
             </div>
 
-            <form method="post" action="" onSubmit="">
+            <form id="userForm" method="post">
               <div class="row pt-4">
                 <div class="col-md-6">
                   <!--First Name-->
@@ -66,11 +76,12 @@
                         ><i class="bi bi-person-circle text-white"></i
                       ></span>
                       <input
-                        id="applicantFirstName"
-                        name="applicantFirstName"
+                        id="userFirstName"
+                        name="userFirstName"
                         type="text"
                         class="form-control"
                         placeholder="Jane"
+                        value="<%= locals.userDetails.first_name %>"
                       />
                     </div>
                   </div>
@@ -83,11 +94,12 @@
                         ><i class="bi bi-person-circle text-white"></i
                       ></span>
                       <input
-                        id="applicantLastName"
-                        name="applicantLastName"
+                        id="userLastName"
+                        name="userLastName"
                         type="text"
                         class="form-control"
                         placeholder="Doe"
+                        value="<%= locals.userDetails.last_name %>"
                       />
                     </div>
                   </div>
@@ -100,15 +112,18 @@
                         ><i class="bi bi-envelope text-white"></i
                       ></span>
                       <input
-                        id="applicantDoB"
-                        name="applicantDoB"
+                        id="userEmail"
+                        name="userEmail"
                         type="text"
                         class="form-control"
                         placeholder="someone@example.com"
+                        value="<%= locals.userDetails.email %>"
                       />
                     </div>
                   </div>
                 </div>
+
+                <input type="hidden" id="currentAccountType" value="<%= locals.userDetails.account_type %>">
 
                 <div class="col-md-6">
                   <!--Account Type-->
@@ -124,13 +139,12 @@
                         id="accountType"
                         required
                       >
-                        <option selected value>-- Account Type --</option>
-                        <option value="superAdmin">Super Admin</option>
-                        <option value="admin">Admin</option>
-                        <option value="owner">Owner</option>
-                        <option value="instructor">Instructor</option>
-                        <option value="socialWorker">Social Worker</option>
-                        <option value="sponsor">Sponsor</option>
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Owner">Owner</option>
+                        <option value="Instructor">Instructor</option>
+                        <option value="Social Worker">Social Worker</option>
+                        <option value="USA Sponsor">Sponsor</option>
                       </select>
                     </div>
                   </div>
@@ -138,37 +152,67 @@
                   <!--Is Account Active-->
                   <div class="p-2">
                     <label>Is Account Active:</label>
-                    <div class="input-group mb-1">
-                      <div class="form-check mx-1">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="isAccountActive"
-                          id="noTransportAssist"
-                          value="false"
-                        />
-                        <label class="form-check-label" for="isAccountActive">
-                          No
-                        </label>
+                    <% if (locals.userDetails.is_active == true) { %>
+                      <div class="input-group mb-1">
+                        <div class="form-check mx-1">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="isAccountActive"
+                            id="noTransportAssist"
+                            value="0"
+                          />
+                          <label class="form-check-label" for="isAccountActive">
+                            No
+                          </label>
+                        </div>
+                        <div class="form-check mx-1">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="isAccountActive"
+                            id="yesTransportAssist"
+                            checked
+                            value="1"
+                          />
+                          <label class="form-check-label" for="isAccountActive">
+                            Yes
+                          </label>
+                        </div>
                       </div>
-                      <div class="form-check mx-1">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="isAccountActive"
-                          id="yesTransportAssist"
-                          checked
-                          value="true"
-                        />
-                        <label class="form-check-label" for="isAccountActive">
-                          Yes
-                        </label>
+                    <% } else { %>
+                      <div class="input-group mb-1">
+                        <div class="form-check mx-1">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="isAccountActive"
+                            id="noTransportAssist"
+                            checked
+                            value="0"
+                          />
+                          <label class="form-check-label" for="isAccountActive">
+                            No
+                          </label>
+                        </div>
+                        <div class="form-check mx-1">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="isAccountActive"
+                            id="yesTransportAssist"
+                            value="1"
+                          />
+                          <label class="form-check-label" for="isAccountActive">
+                            Yes
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    <% } %>
                   </div>
                 </div>
               </div>
-
+            </form>
               <div class="text-center">
                 <p id="message" class="text-danger" style="height: 25px">
                   <%- locals.message %>
@@ -177,23 +221,24 @@
 
               <div class="row text-center">
                 <div class="col-md-6">
-                  <button class="btn btn-secondary mt-2" type="button">
-                    Cancel
-                  </button>
+                  <form method="post" action="/personResults" style="display:inline">
+                    <input type="hidden" name="adminManageUsers" value="true">
+                    <input name="accountTypeSelect" id="currentAccountType" type="hidden" value="noFilter">
+                    <button class="btn btn-primary m-1" type="submit">Cancel</button>
+                  </form>
                 </div>
                 <div class="col-md-6">                
-                  <button class="btn btn-primary mt-2" type="submit">
+                  <button class="btn btn-primary mt-2" onClick="submitUserDetailUpdates()">
                   Update
                 </button>
               </div>
               </div>
-            </form>
 
             <!-- Change Password -->
             <div class="text-center mt-4">
               <h4 class="text-primary">Change Password</h4>
             </div>
-            <form onSubmit="return checkPassword(event);" onSubmit="return checkPassword(event);" method="post">
+            <form onSubmit="return checkPassword(event);" method="post">
               <div class="p-4">
                 <div class="input-group mb-3">
                   <!-- Password does not get sent because there is no name tag -->
@@ -204,7 +249,7 @@
                     id="password1"
                     type="password"
                     class="form-control"
-                    placeholder="Password"
+                    placeholder="New Password"
                   />
                 </div>
                 <div class="input-group mb-3">
@@ -215,13 +260,12 @@
                     id="password2"
                     type="password"
                     class="form-control"
-                    placeholder="Re-enter Password"
+                    placeholder="Re-enter New Password"
                   />
                 </div>
                 <!-- This is the password that gets sent even though they are hidden -->
                 <input type="hidden" id="hash" name="hash" />
                 <input type="hidden" id="salt" name="salt" />
-                <input type="hidden" id="accountNumber" name="accountNumber" value=<%- locals.accountNumber%>>
                 <div class="text-center">
                   <button
                     class="btn btn-primary text-center mt-2"

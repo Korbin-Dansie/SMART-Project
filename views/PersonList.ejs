@@ -1,59 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>People list</title>
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css">
-  <%- include('partials/favico') %>
-  <script type="text/javascript" src="crypto-js.js"></script>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+    <title>S. M. A. R. T. User List</title>
+    <%- include('partials/favico') %>
+  </head>
 
-<body>
-  <div class="container-fluid vh-100" style="margin-top:10px">
-    <div class="" style="margin-top:100px">
-      <div class="rounded d-flex justify-content-center">
-        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-          <div style="text-align:center"><h1>Results</h1></div>
-          <h5 style="text-align:center;">All Active Students</h5><br>
-          <table class="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">Student Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Efua Keita</td>
-              </tr>
-              <tr>
-                <td>Kwame Omer</td>
-              </tr>
-              <tr>
-                <td>Zola Isah</td> 
-              </tr>
-              <tr>
-                <td>Oluchi Yao</td>
-              </tr>
-              <tr>
-                <td>Precious Omar</td>
-              </tr>
-              <tr>
-                <td>Hadiza Ngoy</td>
-              </tr>
-              <tr>
-                <td>Chidinma Sani</td>
-              </tr>
-              <tr>
-                <td>Taraji Domingos</td>
-              </tr>
-            </tbody>
-          </table>
+  <script>
+
+    let startSelect = false;
+
+    function filterChanged() {
+      let currentStatus = document.getElementById("currentAccountType").value;
+      let newStatus = document.getElementById("accountTypeSelect").value;
+
+      if (newStatus != currentStatus && !startSelect) {
+        document.getElementById("accountTypeForm").submit();
+      }
+    }
+
+    function selectFilter() {
+      startSelect = true;
+
+      document.getElementById("accountTypeSelect").value = document.getElementById("currentAccountType").value;
+
+      startSelect = false;
+    }
+
+  </script>
+
+  <body onLoad="selectFilter();">
+    <div class="container-fluid vh-100" style="margin-top: 10px">
+      <div class="" style="margin-top: 100px">
+        <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+
+            <a href="/" class="btn btn-secondary mt-2 position-relative top-0 start-0">Back</a>
+
+            <div class="text-center">
+              <h3 class="text-primary">S. M. A. R. T. People</h3>
+            </div>
+            <div class="text-center">
+              <h4 class="text-primary">Manage Users</h4>
+            </div>
+            <% if (locals.admin) { %>
+              <div class="d-flex p-2 justify-content-around">
+                <div class="input-group">
+                  <!-- Account Type -->
+                  <div>
+                    <label>Account Type:</label>
+                    <div class="input-group mb-3 mt-1">
+                      <form method="post" id="accountTypeForm">
+                        <input id="currentAccountType" type="hidden" value="<%= locals.accountType %>">
+                        <input type="hidden" name="adminManageUsers" value="true">
+
+                        <select class="form-select" name="accountTypeSelect" id="accountTypeSelect" required onChange="filterChanged()">
+                          <option id="optionNoFilter" value="noFilter">No Filter</option>
+                          <option id="optionAdmin" value="Admin">Admin</option>
+                          <option id="optionInstructor" value="Instructor">Instructor</option>
+                          <option id="optionSocialWorker" value="Social Worker">Social Worker</option>
+                          <option id="optionOwner" value="Owner">Owner</option>
+                          <option id="optionUSASponsor" value="USA Sponsor">USA Sponsor</option>
+                        </select>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+            <!-- Start of accounts -->
+            <div>
+              <% if (locals.users.length > 0) { %>
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th colspan="4">Users List</th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Account Type</th>
+                      <th scope="col">User ID</th>
+                      <th scope="col">Edit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for(let i = 0; i < locals.users.length; i++) { %>
+                      <tr>
+                        <td><%= locals.users[i].first_name %> <%= locals.users[i].last_name %></td>
+                        <td><%= locals.users[i].email %></td>
+                        <td><%= locals.users[i].account_type %></td>
+                        <td><%= locals.users[i].user_id %></td>
+                        <td>
+                          <form method="get" action="/manageAccount">
+                            <input type="hidden" name="userID" value=<%= locals.users[i].user_id %>>
+                            <button class="btn btn-secondary" type="submit">Edit</button>
+                          </form>
+                        </td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              <% } else { %>
+                <span class="m-4">No Users Found</span>
+              <% } %>
+            </div>
+            <!-- End of applications -->
+            <!-- Start of page buttons -->
+            <% if (locals.users.length > 0) { %>
+              <div class="d-flex justify-content-center ms-5 me-5">
+                <a class="btn btn-info ms-1 me-1" href="#" role="button">Prev</a>
+                <a class="btn btn-info ms-1 me-1" href="#" role="button">1</a>
+                <a class="btn btn-info ms-1 me-1" href="#" role="button">2</a>
+                <a class="btn btn-info ms-1 me-1" href="#" role="button">3</a>
+                <a class="btn btn-info ms-1 me-1" href="#" role="button">Next</a>
+              </div>
+            <% } %>
+            <!-- End of page buttons -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
