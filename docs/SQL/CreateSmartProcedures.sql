@@ -2,6 +2,7 @@ USE `smart_project`;
 
 DROP PROCEDURE IF EXISTS `add_attendance`;
 DROP PROCEDURE IF EXISTS `add_feeding`;
+DROP PROCEDURE IF EXISTS `add_student_sponsor`;
 DROP PROCEDURE IF EXISTS `award_certificate`;
 DROP PROCEDURE IF EXISTS `check_application_id`;
 DROP PROCEDURE IF EXISTS `check_application_status`;
@@ -25,7 +26,9 @@ DROP PROCEDURE IF EXISTS `create_student_status`;
 DROP PROCEDURE IF EXISTS `create_subject`;
 DROP PROCEDURE IF EXISTS `create_subject_name`;
 DROP PROCEDURE IF EXISTS `create_user`;
+DROP PROCEDURE IF EXISTS `delete_attendance`;
 DROP PROCEDURE IF EXISTS `delete_feedings`;
+DROP PROCEDURE IF EXISTS `get_attendance_by_group`;
 DROP PROCEDURE IF EXISTS `get_classes`;
 DROP PROCEDURE IF EXISTS `get_day_of_weeks`;
 DROP PROCEDURE IF EXISTS `get_feedings`;
@@ -33,6 +36,8 @@ DROP PROCEDURE IF EXISTS `get_meal_times`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
+DROP PROCEDURE IF EXISTS `get_socail_worker_student_id`;
+DROP PROCEDURE IF EXISTS `get_sponsored_students`;
 DROP PROCEDURE IF EXISTS `get_students`;
 DROP PROCEDURE IF EXISTS `get_students_by_group`;
 DROP PROCEDURE IF EXISTS `get_students_with_meal_assistance`;
@@ -1253,8 +1258,8 @@ BEGIN
 	INNER JOIN `person` AS p
 	ON a.person_id = p.person_id
 	WHERE ss.class_time_id = class_time_id AND
-	((sa.date_attended >= start_date AND 
-    sa.date_attended <= end_date)
+	(sa.date_attended >= start_date AND 
+    sa.date_attended <= end_date);
     END;
 $$
 
@@ -1298,5 +1303,70 @@ BEGIN
 	WHERE sa.class_time_id = class_time_id AND
     sa.date_attended >= start_date AND 
     sa.date_attended <= end_date;
+END;
+$$
+
+/***************************************************************
+* Procedure get_socail_worker_student_id
+* <comment>Procedure get_socail_worker_student_id created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_socail_worker_student_id`(
+	IN user_id MEDIUMINT UNSIGNED,
+    IN student_id MEDIUMINT UNSIGNED,
+    OUT social_worker_student_id MEDIUMINT UNSIGNED
+)
+BEGIN
+	DECLARE swsid MEDIUMINT UNSIGNED;
+    
+	SELECT `socail_worker_student_id` INTO swsid
+	FROM `social_worker_student` AS sws 
+    WHERE sws.user_id = user_id AND sws.student_id = student_id
+    LIMIT 1;
+    
+    IF (swsid IS NULL)
+    THEN
+		INSERT INTO `social_worker_student`(user_id, student_id) VALUE (user_id, student_id);
+		SELECT LAST_INSERT_ID() INTO swsid;
+    END IF;
+    
+    SET social_worker_student_id = swsid;
+END;
+$$
+
+/***************************************************************
+* Procedure add_new_note
+* <comment>Procedure add_new_note created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `add_new_note`(
+	IN socail_worker_student_id MEDIUMINT UNSIGNED,
+	IN date_taken DATE,
+    IN note VARCHAR(15000)
+)
+BEGIN
+	INSERT INTO `social_worker_student_note`
+	(`social_worker_student_id`,
+	`date_taken`,
+	`note`)
+	VALUES
+    (socail_worker_student_id,
+    date_taken,
+    note);
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_notes
+* <comment>Procedure get_notes created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_notes`(
+	IN student_id MEDIUMINT UNSIGNED
+)
+BEGIN
+	SELECT *
+    FROM `social_worker_student` AS sws
+    INNER JOIN `social_worker_student_note` AS swsn
+    ON sws.social_worker_student_id = swsn.social_worker_student_id
+	WHERE sws.student_id = student_id;
 END;
 $$

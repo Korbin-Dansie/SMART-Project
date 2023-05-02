@@ -8,12 +8,13 @@ router.get('/', function (req, res, next) {
     res.render('Student', {});
 });
 
-
 /* Post student overview page. */
 router.post('/insertNote', function (req, res, next) {
 
     let obj = new Object();
     let student_id = req.body['student_id'];
+    let note = req.body['newNote'];
+    let date = req.body['new-note-date'];
     const emailAddress = req.session.emailAddress;
 
     // Get the user id from their session token
@@ -25,8 +26,9 @@ router.post('/insertNote', function (req, res, next) {
       
       // Store the information in the object
       obj.student_id = student_id;
-
-      obj.user_id = results[1][0];
+      obj.date = date;
+      obj.note = note;
+      obj.user_id = results[1][0]['@userId'];
 
       // If user is not logged in while making this request return to the student page
       if(obj.user_id == null || obj.user_id == undefined){
@@ -39,13 +41,27 @@ router.post('/insertNote', function (req, res, next) {
 
 // Now that we have the userId and the student Id find the socail_worker_student id
 function addNoteStep1(req, res, obj){
-    addNoteStep2(req, res, obj);
+    let sql = "CALL get_socail_worker_student_id(?,?, @social_worker_student_id); SELECT @social_worker_student_id;"
+    dbCon.query(sql, [obj.user_id, obj.student_id], function (err, results) {
+        if (err) {
+          throw err;
+        }   
+        obj.social_worker_student_id = results[1][0]['@social_worker_student_id'];
+        addNoteStep2(req, res, obj);
+      });
 }
 
 
 // Now the we have the socail_worker_student id insert the note
 function addNoteStep2(req, res, obj){
-    returnToStudentPage(req, res, obj);
+    //add_new_note
+    let sql = "CALL add_new_note(?,?, @social_worker_student_id);"
+    dbCon.query(sql, [ obj.social_worker_student_id, obj.date, obj.note], function (err, results) {
+        if (err) {
+          throw err;
+        }   
+        returnToStudentPage(req, res, obj);
+    });
 }
 
 function returnToStudentPage(req, res, obj){
