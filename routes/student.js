@@ -5,6 +5,19 @@ var dbCon = require("../lib/database");
 
 /* GET student overview page. */
 router.get('/', function (req, res, next) {
+    var studentID = req.query.student_id;
+  
+    // Student Name
+    // Contact info
+    // Student status
+    // Public school as of application
+    // Transport meal assistance
+
+    // Guardians names and income
+
+    // All classes
+    // Notes
+  
     res.render('Student', {});
 });
 
