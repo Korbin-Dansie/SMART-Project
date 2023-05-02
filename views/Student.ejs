@@ -46,9 +46,9 @@
       };
 
       // Add the date the the url
-      let url = new URL("notes", window.location.href + window.location.pathname);
+      let url = new URL("notes", window.location.origin + window.location.pathname + "/");
       let params = new URLSearchParams(url.search);
-      url.search = params;
+      url.search = window.location.search;
       xhttp.open("GET", url, true);
       xhttp.send();
     });
@@ -138,7 +138,7 @@
   }
 </script>
 
-<body onload="loadStartDate();">
+<body onload="loadStartDate(); getNotes();">
   <div class="container-fluid vh-100" style="margin-top:10px">
     <div class="" style="margin-top:100px">
       <div class="rounded d-flex justify-content-center">
@@ -250,7 +250,7 @@
                   New Note
                 </button>
               </div>
-              <div id="notesSection" onload="getNotes();">
+              <div id="notesSection">
                 <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
                   <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                     <div class="col-4">

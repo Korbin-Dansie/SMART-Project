@@ -36,7 +36,7 @@ DROP PROCEDURE IF EXISTS `get_meal_times`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
-DROP PROCEDURE IF EXISTS `get_socail_worker_student_id`;
+DROP PROCEDURE IF EXISTS `get_social_worker_student_id`;
 DROP PROCEDURE IF EXISTS `get_sponsored_students`;
 DROP PROCEDURE IF EXISTS `get_students`;
 DROP PROCEDURE IF EXISTS `get_students_by_group`;
@@ -1307,10 +1307,10 @@ END;
 $$
 
 /***************************************************************
-* Procedure get_socail_worker_student_id
-* <comment>Procedure get_socail_worker_student_id created if it didn't already exist.</comment>
+* Procedure get_social_worker_student_id
+* <comment>Procedure get_social_worker_student_id created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `get_socail_worker_student_id`(
+CREATE PROCEDURE IF NOT EXISTS `get_social_worker_student_id`(
 	IN user_id MEDIUMINT UNSIGNED,
     IN student_id MEDIUMINT UNSIGNED,
     OUT social_worker_student_id MEDIUMINT UNSIGNED
@@ -1318,7 +1318,7 @@ CREATE PROCEDURE IF NOT EXISTS `get_socail_worker_student_id`(
 BEGIN
 	DECLARE swsid MEDIUMINT UNSIGNED;
     
-	SELECT `socail_worker_student_id` INTO swsid
+	SELECT `social_worker_student_id` INTO swsid
 	FROM `social_worker_student` AS sws 
     WHERE sws.user_id = user_id AND sws.student_id = student_id
     LIMIT 1;
@@ -1338,7 +1338,7 @@ $$
 * <comment>Procedure add_new_note created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `add_new_note`(
-	IN socail_worker_student_id MEDIUMINT UNSIGNED,
+	IN social_worker_student_id MEDIUMINT UNSIGNED,
 	IN date_taken DATE,
     IN note VARCHAR(15000)
 )
@@ -1348,7 +1348,7 @@ BEGIN
 	`date_taken`,
 	`note`)
 	VALUES
-    (socail_worker_student_id,
+    (social_worker_student_id,
     date_taken,
     note);
 END;
@@ -1363,7 +1363,7 @@ CREATE PROCEDURE IF NOT EXISTS `get_notes`(
 	IN student_id MEDIUMINT UNSIGNED
 )
 BEGIN
-	SELECT *
+	SELECT swsn.social_worker_student_note_id, swsn.date_taken, swsn.note
     FROM `social_worker_student` AS sws
     INNER JOIN `social_worker_student_note` AS swsn
     ON sws.social_worker_student_id = swsn.social_worker_student_id

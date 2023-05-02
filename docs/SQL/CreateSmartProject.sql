@@ -29,9 +29,9 @@ DROP TABLE IF EXISTS `application`;
 
 -- Stores an applications guardian information
 DROP TABLE IF EXISTS `guardian`; 
--- What socail workers have what student
+-- What social workers have what student
 DROP TABLE IF EXISTS `social_worker_student`; 
--- A list of notes that a socail worker has 
+-- A list of notes that a social worker has 
 DROP TABLE IF EXISTS `social_worker_student_note`; 
  -- A list of sponsor(s) a student has 
 DROP TABLE IF EXISTS `student_sponsor`;
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`account_type` (
   `account_type_id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_type` VARCHAR(64) NOT NULL,
   PRIMARY KEY (`account_type_id`))
-COMMENT = 'admin, instructors, socail, workers, owners, and sponsors';
+COMMENT = 'admin, instructors, social, workers, owners, and sponsors';
 
 /***************************************************************
  * Create person
@@ -279,10 +279,10 @@ COMMENT = 'To hold informa tion about an applicants parent/guardian information'
  * Create social_worker_student
  ***************************************************************/
 CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student` (
-  `socail_worker_student_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `social_worker_student_id` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` MEDIUMINT UNSIGNED NOT NULL,
   `student_id` MEDIUMINT UNSIGNED NOT NULL,
-  PRIMARY KEY (`socail_worker_student_id`),
+  PRIMARY KEY (`social_worker_student_id`),
   INDEX `user_id_fk_idx` (`user_id` ASC) VISIBLE,
   INDEX `student_id_fk_idx` (`student_id` ASC) VISIBLE,
   CONSTRAINT `fk_social_worker_student_user_id`
@@ -295,10 +295,10 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student` (
     REFERENCES `smart_project`.`student` (`student_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-COMMENT = 'For a link between socail workers and their students';
+COMMENT = 'For a link between social workers and their students';
 
 /***************************************************************
- * Create socail_worker_student_note
+ * Create social_worker_student_note
  ***************************************************************/
 CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student_note` (
   `social_worker_student_note_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -309,7 +309,7 @@ CREATE TABLE IF NOT EXISTS `smart_project`.`social_worker_student_note` (
   INDEX `social_worker_student_id_fk_idx` (`social_worker_student_id` ASC) VISIBLE,
   CONSTRAINT `fk_social_worker_student_note_social_worker_student_id`
     FOREIGN KEY (`social_worker_student_id`)
-    REFERENCES `smart_project`.`social_worker_student` (`socail_worker_student_id`)
+    REFERENCES `smart_project`.`social_worker_student` (`social_worker_student_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 COMMENT = 'Holds notes about a student from a social worker';
