@@ -8,6 +8,11 @@ router.get('/', function (req, res, next) {
     res.render('Student', {});
 });
 
+
+/* GET student overview page. */
+router.get('/notes', function (req, res, next) {
+    res.render('Student', {});
+});
 /* Post student overview page. */
 router.post('/insertNote', function (req, res, next) {
 
@@ -55,7 +60,7 @@ function addNoteStep1(req, res, obj){
 // Now the we have the socail_worker_student id insert the note
 function addNoteStep2(req, res, obj){
     //add_new_note
-    let sql = "CALL add_new_note(?,?, @social_worker_student_id);"
+    let sql = "CALL add_new_note(?,?,?);"
     dbCon.query(sql, [ obj.social_worker_student_id, obj.date, obj.note], function (err, results) {
         if (err) {
           throw err;

@@ -18,20 +18,81 @@
     row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex")
 
     let dateDiv = document.createElement("div")
-    let date = document.createElement("h5");
-    this.date.classList.add("text-primary");
-    this.date.innerText = date;
-    dateDiv.appendChild(this.date);
+    let dateElement = document.createElement("h5");
+    dateElement.classList.add("text-primary");
+    dateElement.innerText = date;
+    dateDiv.appendChild(dateElement);
 
     let noteDiv = document.createElement("div")
-    let note = document.createElement("p");
-    this.note.innerText = note;
-    noteDiv.appendChild(this.note);
+    let noteElement = document.createElement("p");
+    noteElement.innerText = note;
+    noteDiv.appendChild(noteElement);
 
     row.appendChild(dateDiv);
     row.appendChild(noteDiv);
   }
 
+
+  async function getNotes() {
+    // Get any attendance for this week
+    let promiseNotes = new Promise((resolve, reject) => {
+      // Create an AJAX request to get the students
+      let xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          let feedings = JSON.parse(this.responseText);
+          resolve(feedings);
+        }
+      };
+
+      // Add the date the the url
+      let url = new URL("notes", window.location.href + window.location.pathname);
+      let params = new URLSearchParams(url.search);
+      url.search = params;
+      xhttp.open("GET", url, true);
+      xhttp.send();
+    });
+
+
+    // Wait for the students
+    let students = new Array();
+    let attendance = new Array();
+    await Promise.all([promiseStudents, promiseNotes]).then((values) => {
+      students = values[0];
+      attendance = values[1];
+    });
+
+    // Now that we have the students see if any of them have attendance
+    // Delete all current rows
+    let tableBody = document.getElementById("attendance-table-body");
+    while (tableBody.firstChild) {
+      tableBody.removeChild(tableBody.firstChild);
+    }
+
+
+    students.forEach(student => {
+
+      // Find the coropsoning attendance record
+      let studentAttendance = attendance.find(
+        (element) => {
+          return element.student_id == student.student_id
+        }
+      );
+
+      if (studentAttendance != null) {
+        tableBody.appendChild(
+          createTableRow(student.student_id, student.first_name, student.last_name, studentAttendance.is_present)
+        );
+        currentAttendance.set(student.student_id, studentAttendance.is_present);
+      } else {
+        tableBody.appendChild(
+          createTableRow(student.student_id, student.first_name, student.last_name, null)
+        );
+      }
+
+    });
+
+  }
 
 
 
@@ -185,11 +246,11 @@
             <div class="col-md-5 mt-4 mx-auto">
               <div class="row">
                 <h3 class="text-primary col-md-8">Social Notes</h3>
-                <button class="btn btn-primary pt-2 float-end col-md-4" onclick="showAddNoteModal()">
+                <button class="btn btn-primary pt-2 float-end col-md-4" onclick="showAddNoteModal();">
                   New Note
                 </button>
               </div>
-              <div id="notesSection">
+              <div id="notesSection" onload="getNotes();">
                 <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
                   <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                     <div class="col-4">
