@@ -2,159 +2,294 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S. M. A. R. T. Student Overview</title>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
-    <%- include('partials/favico') %>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S. M. A. R. T. Student Overview</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+  <%- include('partials/favico') %>
 </head>
 
 <script>
+  async function getNotes() {
+    // Get any attendance for this week
+    let promiseNotes = new Promise((resolve, reject) => {
+      // Create an AJAX request to get the students
+      let xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          let feedings = JSON.parse(this.responseText);
+          resolve(feedings);
+        }
+      };
+
+      // Add the date the the url
+      let url = new URL("notes", window.location.origin + window.location.pathname + "/");
+      let params = new URLSearchParams(url.search);
+      url.search = window.location.search;
+      xhttp.open("GET", url, true);
+      xhttp.send();
+    });
+
+
+    // Wait for the students
+    let notes = new Array();
+    await Promise.all([promiseNotes]).then((values) => {
+      notes = values[0];
+    });
+
+    // Now that we have the students see if any of them have attendance
+    // Delete all current rows
+    let tableBody = document.getElementById("notesSection");
+    while (tableBody.firstChild) {
+      tableBody.removeChild(tableBody.firstChild);
+    }
+
+
+    notes.forEach(note => {
+        // chop of the time part of the datetime
+        let timeString = note.date_taken.substring(0, 10)
+        let date = new Date(timeString);
+
+        tableBody.appendChild(
+            createNote(note.social_worker_student_note_id, date.toLocaleDateString() , note.note)
+        );
+    });
+
+  }
+
+
+    // Create notes
+    function createNote(id, date, note) {
+    let row = document.createElement("div");
+    row.setAttribute("data-social-worker-student-note-id", id);
+    row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex")
+
+    let dateDiv = document.createElement("div")
+    let dateElement = document.createElement("h5");
+    dateElement.classList.add("text-primary");
+    dateElement.innerText = date;
+    dateDiv.appendChild(dateElement);
+
+    let noteDiv = document.createElement("div")
+    let noteElement = document.createElement("p");
+    noteElement.innerText = note;
+    noteDiv.appendChild(noteElement);
+
+    row.appendChild(dateDiv);
+    row.appendChild(noteDiv);
+    return row;
+  }
+
+  // Set the date pickers date to today
+  function loadStartDate() {
+    // Check for URL parmas, and if they exist use thoses
+    let datePicker = document.getElementById("datePicker");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let selectedDate = urlParams.get("date");
+    if (selectedDate != undefined || selectedDate != null) {
+      datePicker.valueAsDate = new Date(selectedDate);
+    } else {
+      let date = new Date();
+      datePicker.valueAsDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    }
+  }
+
+  function showAddNoteModal() {
+    let myModal = new bootstrap.Modal(document.getElementById("addNoteModal"), {});
+    myModal.show();
+  }
+
+  function addDataToAddNoteForm() {
+    // Add the class ID from the url
+    const urlParams = new URLSearchParams(window.location.search);
+    let form = document.getElementById("addNoteForm");
+    addHiddenInputToForm(form, "student_id", urlParams.get('student_id'));
+  }
+
+  /**
+   * Add a hidden input the the form
+   * 
+   * @arg {HTMLElement} form 
+   * @arg {String} name
+   */
+  function addHiddenInputToForm(form, name, value) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("value", value); // This lets us save the students id
+    input.setAttribute("name", name);
+    form.appendChild(input);
+  }
 </script>
 
-<body>
-    <div class="container-fluid vh-100" style="margin-top:10px">
-        <div class="" style="margin-top:100px">
-            <div class="rounded d-flex justify-content-center">
-                <div class="col-md-8 col-sm-12 shadow-lg p-5 bg-light">
+<body onload="loadStartDate(); getNotes();">
+  <div class="container-fluid vh-100" style="margin-top:10px">
+    <div class="" style="margin-top:100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-8 col-sm-12 shadow-lg p-5 bg-light">
+          <div class="row">
+            <div class="col px-5">
+              <button class="btn btn-primary mt-2 float-end">
+                Edit Student
+              </button>
+            </div>
+          </div>
 
-                    <div class="row">
-                        <div class="col px-5">
-                            <button class="btn btn-primary mt-2 float-end">
-                                Edit Student
-                            </button>
-                        </div>
+          <div class="text-center pb-4">
+            <h3 class="text-primary">Student Overview</h3>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2">
+              <img src="images/sample_student_photo.jpg" class="img-thumbnail rounded img-fluid">
+            </div>
+
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-6">
+                  <p>
+                    <b>Name: </b>Jane Doe
+                  </p>
+                  <p>
+                    <b>Contact Information: </b>123-456-7890
+                  </p>
+                  <p>
+                    <b>Address: </b>41°24'12.2&quot;N 2°10'26.5&quot;E
+                  </p>
+                  <p>
+                    <b>Guardian: </b>Janet Doe
+                  </p>
+                  <p>
+                    <b>Guardian Income: </b>MT 20,000
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p>
+                    <b>Transportation Assistance: </b>No
+                  </p>
+                  <p>
+                    <b>Meal Assistance: </b>Yes
+                  </p>
+                  <p>
+                    <b>Status: </b>Graduated
+                  </p>
+                  <p>
+                    <b>Public School Grade Level: </b>12
+                  </p>
+                  <p>
+                    <b>Public School GPA: </b>15
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mt-4">
+              <h3 class="text-primary">Courses</h3>
+              <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
+                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                  <div class="col-4">
+                    <h5 class="text-primary">Fall 2022</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-primary">English 3</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-success">Passed</h5>
+                  </div>
+                </div>
+
+                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                  <div class="col-4">
+                    <h5 class="text-primary">Fall 2022</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-primary">IT 3</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-success">Passed</h5>
+                  </div>
+                </div>
+
+                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                  <div class="col-4">
+                    <h5 class="text-primary">Summer 2022</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-primary">IT 3</h5>
+                  </div>
+                  <div class="col-4">
+                    <h5 class="text-danger">Failed</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5 mt-4 mx-auto">
+              <div class="row">
+                <h3 class="text-primary col-md-8">Social Notes</h3>
+                <button class="btn btn-primary pt-2 float-end col-md-4" onclick="showAddNoteModal();">
+                  New Note
+                </button>
+              </div>
+                <div class="row mt-2 p-2 shadow-sm rounded border border-primary " id="notesSection">
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                    <div class="col-4">
+                      <h5 class="text-primary">10/21/2022</h5>
                     </div>
-
-                    <div class="text-center pb-4">
-                        <h3 class="text-primary">Student Overview</h3>
+                    <div class="col-8">
+                      <h5 class="text-primary">This is a sample note</h5>
                     </div>
+                  </div>
 
-                    <div class="row">
-                        <div class="col-md-2">
-                            <img src="images/sample_student_photo.jpg" class="img-thumbnail rounded img-fluid">
-                        </div>
-
-                        <div class="col-md-8">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p>
-                                        <b>Name: </b>Jane Doe
-                                    </p>
-                                    <p>
-                                        <b>Contact Information: </b>123-456-7890
-                                    </p>
-                                    <p>
-                                        <b>Address: </b>41°24'12.2&quot;N 2°10'26.5&quot;E
-                                    </p>
-                                    <p>
-                                        <b>Guardian: </b>Janet Doe
-                                    </p>
-                                    <p>
-                                        <b>Guardian Income: </b>MT 20,000
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p>
-                                        <b>Transportation Assistance: </b>No
-                                    </p>
-                                    <p>
-                                        <b>Meal Assistance: </b>Yes
-                                    </p>
-                                    <p>
-                                        <b>Status: </b>Graduated
-                                    </p>
-                                    <p>
-                                        <b>Public School Grade Level: </b>12
-                                    </p>
-                                    <p>
-                                        <b>Public School GPA: </b>15
-                                    </p>
-                                </div>
-                            </div>
-
-                        </div>
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary d-inline-flex">
+                    <div class="">
+                      <h5 class="text-primary">3/14/2022</h5>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mt-4">
-                            <h3 class="text-primary">Courses</h3>
-                            <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">Fall 2022</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-primary">English 3</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-success">Passed</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">Fall 2022</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-primary">IT 3</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-success">Passed</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">Summer 2022</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-primary">IT 3</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <h5 class="text-danger">Failed</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-1"></div>
-                        <div class="col-md-5 mt-4 mx-auto">
-                            <div class="row">
-                                <h3 class="text-primary col-md-8">Social Notes</h3>
-                                <button class="btn btn-primary pt-2 float-end col-md-4">
-                                    New Note
-                                </button>
-                            </div>
-                            <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">10/21/2022</h5>
-                                    </div>
-                                    <div class="col-8">
-                                        <h5 class="text-primary">This is a sample note</h5>
-                                    </div>
-                                </div>
-
-                                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                                    <div class="col-4">
-                                        <h5 class="text-primary">3/14/2022</h5>
-                                    </div>
-                                    <div class="col-8">
-                                        <h5 class="text-primary">This is a sample note</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                    <div class="">
+                      <p>This is a sample note</p>
                     </div>
-
-
+                  </div>
                 </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  <!-- Modal for adding note-->
+  <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="addNoteModal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Note</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addNoteForm" class="" action="/student/insertNote" method="post" onsubmit="addDataToAddNoteForm()">
+            <div class="">
+              <label for="new-note-date" class="form-label">Date</label>
+              <input type="date" id="datePicker" class="form-control" name="new-note-date" min="1970-01-01" max="9999-12-31">
+            </div>
+            <div class="">
+              <label for="newNote" class="form-label">Note</label>
+              <textarea class="form-control" id="newNote" name="newNote" rows="7" maxlength="15000"></textarea>
+            </div>
+        </div>
+        </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" form="addNoteForm" value="Submit"></input>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 
 </html>
