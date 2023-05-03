@@ -19,7 +19,7 @@ router.post('/', function(req, res, next) {
         
         console.log(results);
 
-        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true});
+        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true, manageUsers: true});
       });
     } else {
 
@@ -30,7 +30,30 @@ router.post('/', function(req, res, next) {
         
         console.log(results);
 
-        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true});
+        res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true, manageUsers: true});
+      });
+    }
+  } else if (req.body.adminManageStudents != undefined) {
+    let sql = "CALL select_students(?);";
+    if (req.body.studentStatusSelect == "noFilter") {
+      dbCon.query(sql, [null], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        
+        console.log(results);
+
+        res.render('PersonList', {users: results[0], studentStatus: req.body.studentStatusSelect, admin: true, manageStudents: true});
+      });
+    } else {
+      dbCon.query(sql, [req.body.studentStatusSelect], function (err, results) {
+        if (err) {
+          throw err;
+        }
+        
+        console.log(results);
+
+        res.render('PersonList', {users: results[0], studentStatus: req.body.studentStatusSelect, admin: true, manageStudents: true});
       });
     }
   }

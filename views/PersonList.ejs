@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
-    <title>S. M. A. R. T. User List</title>
+    <title>S. M. A. R. T. Person List</title>
     <%- include('partials/favico') %>
   </head>
 
@@ -15,18 +15,18 @@
     let startSelect = false;
 
     function filterChanged() {
-      let currentStatus = document.getElementById("currentAccountType").value;
-      let newStatus = document.getElementById("accountTypeSelect").value;
+      let currentStatus = document.getElementById("currentFilter").value;
+      let newStatus = document.getElementById("filterSelect").value;
 
       if (newStatus != currentStatus && !startSelect) {
-        document.getElementById("accountTypeForm").submit();
+        document.getElementById("filterForm").submit();
       }
     }
 
     function selectFilter() {
       startSelect = true;
 
-      document.getElementById("accountTypeSelect").value = document.getElementById("currentAccountType").value;
+      document.getElementById("filterSelect").value = document.getElementById("currentFilter").value;
 
       startSelect = false;
     }
@@ -44,71 +44,139 @@
             <div class="text-center">
               <h3 class="text-primary">S. M. A. R. T. People</h3>
             </div>
-            <div class="text-center">
-              <h4 class="text-primary">Manage Users</h4>
-            </div>
-            <% if (locals.admin) { %>
-              <div class="d-flex p-2 justify-content-around">
-                <div class="input-group">
-                  <!-- Account Type -->
-                  <div>
-                    <label>Account Type:</label>
-                    <div class="input-group mb-3 mt-1">
-                      <form method="post" id="accountTypeForm">
-                        <input id="currentAccountType" type="hidden" value="<%= locals.accountType %>">
-                        <input type="hidden" name="adminManageUsers" value="true">
-
-                        <select class="form-select" name="accountTypeSelect" id="accountTypeSelect" required onChange="filterChanged()">
-                          <option id="optionNoFilter" value="noFilter">No Filter</option>
-                          <option id="optionAdmin" value="Admin">Admin</option>
-                          <option id="optionInstructor" value="Instructor">Instructor</option>
-                          <option id="optionSocialWorker" value="Social Worker">Social Worker</option>
-                          <option id="optionOwner" value="Owner">Owner</option>
-                          <option id="optionUSASponsor" value="USA Sponsor">USA Sponsor</option>
-                        </select>
-                      </form>
+            
+            <% if (locals.admin != undefined && locals.admin) { %>
+              <% if (locals.manageUsers != undefined && locals.manageUsers) { %>
+                <div class="text-center">
+                  <h4 class="text-primary">Manage Users</h4>
+                </div>
+                <div class="d-flex p-2 justify-content-around">
+                  <div class="input-group">
+                    <!-- Account Type -->
+                    <div>
+                      <label>Account Type:</label>
+                      <div class="input-group mb-3 mt-1">
+                        <form method="post" id="filterForm">
+                          <input id="currentFilter" type="hidden" value="<%= locals.accountType %>">
+                          <input type="hidden" name="adminManageUsers" value="true">
+  
+                          <select class="form-select" name="accountTypeSelect" id="filterSelect" required onChange="filterChanged()">
+                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                            <option id="optionAdmin" value="Admin">Admin</option>
+                            <option id="optionInstructor" value="Instructor">Instructor</option>
+                            <option id="optionSocialWorker" value="Social Worker">Social Worker</option>
+                            <option id="optionOwner" value="Owner">Owner</option>
+                            <option id="optionUSASponsor" value="USA Sponsor">USA Sponsor</option>
+                          </select>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            <% } %>
-            <!-- Start of accounts -->
-            <div>
-              <% if (locals.users.length > 0) { %>
-                <table class="table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th colspan="4">Users List</th>
-                    </tr>
-                    <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Account Type</th>
-                      <th scope="col">User ID</th>
-                      <th scope="col">Edit</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% for(let i = 0; i < locals.users.length; i++) { %>
-                      <tr>
-                        <td><%= locals.users[i].first_name %> <%= locals.users[i].last_name %></td>
-                        <td><%= locals.users[i].email %></td>
-                        <td><%= locals.users[i].account_type %></td>
-                        <td><%= locals.users[i].user_id %></td>
-                        <td>
-                          <form method="get" action="/manageAccount">
-                            <input type="hidden" name="userID" value=<%= locals.users[i].user_id %>>
-                            <button class="btn btn-secondary" type="submit">Edit</button>
-                          </form>
-                        </td>
-                      </tr>
-                    <% } %>
-                  </tbody>
-                </table>
-              <% } else { %>
-                <span class="m-4">No Users Found</span>
+
+                <!-- Start of accounts -->
+                <div>
+                  <% if (locals.users.length > 0) { %>
+                    <table class="table table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th colspan="4">Users List</th>
+                        </tr>
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Account Type</th>
+                          <th scope="col">User ID</th>
+                          <th scope="col">Edit</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% for(let i = 0; i < locals.users.length; i++) { %>
+                          <tr>
+                            <td><%= locals.users[i].first_name %> <%= locals.users[i].last_name %></td>
+                            <td><%= locals.users[i].email %></td>
+                            <td><%= locals.users[i].account_type %></td>
+                            <td><%= locals.users[i].user_id %></td>
+                            <td>
+                              <form method="get" action="/manageAccount">
+                                <input type="hidden" name="userID" value=<%= locals.users[i].user_id %>>
+                                <button class="btn btn-secondary" type="submit">Edit</button>
+                              </form>
+                            </td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  <% } else { %>
+                      <span class="m-4">No Users Found</span>
+                  <% } %>
+                </div>
+              <% } else if (locals.manageStudents != undefined && locals.manageStudents) { %>
+                <div class="text-center">
+                  <h4 class="text-primary">Manage Students</h4>
+                </div>
+                <div class="d-flex p-2 justify-content-around">
+                  <div class="input-group">
+                    <!-- Status Type -->
+                    <div>
+                      <label>Student Status:</label>
+                      <div class="input-group mb-3 mt-1">
+                        <form method="post" id="filterForm">
+                          <input id="currentFilter" type="hidden" value="<%= locals.studentStatus %>">
+                          <input type="hidden" name="adminManageStudents" value="true">
+  
+                          <select class="form-select" name="studentStatusSelect" id="filterSelect" required onChange="filterChanged()">
+                            <option id="optionNoFilter" value="noFilter">No Filter</option>
+                            <option id="optionActive" value="Active">Active</option>
+                            <option id="optionGraduated" value="Graduated">Graduated</option>
+                            <option id="optionRemoved" value="Removed">Removed</option>
+                          </select>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Start of students -->
+                <div>
+                  <% if (locals.users.length > 0) { %>
+                    <table class="table table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th colspan="4">Users List</th>
+                        </tr>
+                        <tr>
+                          <th scope="col">Name</th>
+                          <th scope="col">Admission Date</th>
+                          <th scope="col">Student Status</th>
+                          <th scope="col">Student ID</th>
+                          <th scope="col">View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% for(let i = 0; i < locals.users.length; i++) { %>
+                          <tr>
+                            <td><%= locals.users[i].first_name %> <%= locals.users[i].last_name %></td>
+                            <td><%= locals.users[i].date_of_admission.toLocaleDateString('en-US') %></td>
+                            <td><%= locals.users[i].student_status %></td>
+                            <td><%= locals.users[i].student_id %></td>
+                            <td>
+                              <form method="get" action="/student">
+                                <input type="hidden" name="studentID" value=<%= locals.users[i].student_id %>>
+                                <button class="btn btn-secondary" type="submit">View</button>
+                              </form>
+                            </td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  <% } else { %>
+                      <span class="m-4">No Students Found</span>
+                  <% } %>
+                </div>
               <% } %>
-            </div>
+            <% } %>
+            
             <!-- End of applications -->
             <!-- Start of page buttons -->
             <% //if (locals.users.length > 0) { %>
