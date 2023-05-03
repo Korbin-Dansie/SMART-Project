@@ -1,54 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
-    <%- include('partials/favico') %>
-    <title>Admin Dashboard</title>
-  </head>
-  <body>
-    <div class="container-fluid vh-100" style="margin-top: 10px">
-      <div class="" style="margin-top: 100px">
-        <div class="rounded d-flex justify-content-center">
-          <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
-            <div class="row">
-              <div class="col px-5">
-                <button onclick="location.href = '/logout';" class="btn btn-primary mt-2 float-end">
-                  Logout
-                </button>
-              </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css" />
+  <%- include('partials/favico') %>
+  <title>Admin Dashboard</title>
+
+  <script>
+    async function openAttendanceModal() {
+      // Generate the table body
+
+      // Get any attendance for this week
+      let promiseClasses = new Promise((resolve, reject) => {
+        // Create an AJAX request to get the students
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            let feedings = JSON.parse(this.responseText);
+            resolve(feedings);
+          }
+        };
+
+        // Add the date the the url
+        let url = new URL("classes", window.location.origin + window.location.pathname + "/");
+        xhttp.open("GET", url, true);
+        xhttp.send();
+      });
+
+      // Wait for the classes
+      let classes = new Array();
+      await Promise.all([promiseClasses]).then((values) => {
+        classes = values[0];
+      });
+
+      // Delete all current rows
+      let tableBody = document.getElementById('selectClassModalTableBody');
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+      }
+
+      classes.forEach(_class => {
+        tableBody.appendChild(
+            createClass(_class.class_id, _class.subject_name, _class.level_name, _class.description, _class.first_name + " " + _class.last_name)
+        );
+    });
+
+      let myModal = new bootstrap.Modal(document.getElementById("selectClassModal"), {});
+      myModal.show();
+    }
+
+    function createClass(classId, subject, level, semester, teacher){
+      let row = document.createElement("tr");
+      row.appendChild(addDataToRow(classId));
+      row.appendChild(addDataToRow(subject));
+      row.appendChild(addDataToRow(level));
+      row.appendChild(addDataToRow(semester));
+      row.appendChild(addDataToRow(teacher));
+
+      // Create a submit button
+      let td = document.createElement("td");
+      let a = document.createElement("a");
+      a.setAttribute("href", `/attendance/?classId=${classId}`);
+      a.innerText = "Submit";
+      a.classList.add("btn", "btn-primary");
+
+      td.appendChild(a);
+      row.appendChild(td);
+      row.classList.add("pt-1", "pb-1");
+      return row;
+    }
+
+    function addDataToRow(value){
+      let td = document.createElement("td");
+      td.innerText = value;
+      return td;
+    }
+
+
+  </script>
+
+</head>
+
+<body>
+  <div class="container-fluid vh-100" style="margin-top: 10px">
+    <div class="" style="margin-top: 100px">
+      <div class="rounded d-flex justify-content-center">
+        <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+          <div class="row">
+            <div class="col px-5">
+              <button onclick="location.href = '/logout';" class="btn btn-primary mt-2 float-end">
+                Logout
+              </button>
             </div>
-            <div class="text-center mb-4">
-              <h3 class="text-primary">Admin Dashboard</h3>
-            </div>
-            <div class="d-flex my-2 p-2 justify-content-around">
-              <div>
-                <a class="btn btn-primary m-1" href="/CreateAccount" role="button">Create Account</a>
-                <form method="post" action="/personResults" style="display:inline">
-                  <input type="hidden" name="adminManageUsers" value="true">
-                  <input name="accountTypeSelect" id="currentAccountType" type="hidden" value="noFilter">
-                  <button class="btn btn-primary m-1" type="submit">Users</button>
-                </form>
+          </div>
+          <div class="text-center mb-4">
+            <h3 class="text-primary">Admin Dashboard</h3>
+          </div>
+          <div class="d-flex my-2 p-2 justify-content-around">
+            <div>
+              <a class="btn btn-primary m-1" href="/CreateAccount" role="button">Create Account</a>
+              <form method="post" action="/personResults" style="display:inline">
+                <input type="hidden" name="adminManageUsers" value="true">
+                <input name="accountTypeSelect" id="currentAccountType" type="hidden" value="noFilter">
+                <button class="btn btn-primary m-1" type="submit">Users</button>
+              </form>
                 <form method="post" action="/personResults" style="display:inline">
                   <input type="hidden" name="adminManageStudents" value="true">
-                  <input name="studentStatusSelect" id="currentStudentStatus" type="hidden" value="noFilter">
+                <input name="studentStatusSelect" id="currentStudentStatus" type="hidden" value="noFilter">
                   <button class="btn btn-primary m-1" type="submit">Students</button>
                 </form>
-              </div>
             </div>
-            <div class="d-flex my-2 p-2 justify-content-around">
-              <div>
-                <a class="btn btn-primary m-1" href="/ApplicationList" role="button">Applications</a>
-                <a class="btn btn-primary m-1" href="#" role="button">Feedings</a>
-                <a class="btn btn-primary m-1" href="#" role="button">Attendance</a>
-              </div>
+          </div>
+          <div class="d-flex my-2 p-2 justify-content-around">
+            <div>
+              <a class="btn btn-primary m-1" href="/ApplicationList" role="button">Applications</a>
+              <a class="btn btn-primary m-1" href="/feedings" role="button">Feedings</a>
+              <button class="btn btn-primary m-1" onclick="openAttendanceModal()">Attendance</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </body>
+  </div>
+  <!-- Modal for selecting a class-->
+  <div class="modal fade" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="selectClassModal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Select a class</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table id="table" class="table table-striped table-hover table-sm ">
+            <thead>
+              <tr>
+                <!--This page also has access to semester start and end dates if desired for display-->
+                <th scope="col">Class ID</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Level</th>
+                <th scope="col">Semester</th>
+                <th scope="col">Teacher</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="selectClassModalTableBody" class="align-middle">
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+</body>
+
 </html>

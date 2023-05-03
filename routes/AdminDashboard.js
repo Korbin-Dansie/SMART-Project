@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+var dbCon = require('../lib/database');
+
+
 /* GET application form page. */
 router.get('/', function (req, res, next) {
 
@@ -13,4 +16,21 @@ router.get('/', function (req, res, next) {
     res.render('AdminDashboard', {});
 });
 
+
+
+/* Return a list of all the classes*/ 
+router.get('/classes', function(req, res, next) {
+    let sql = "CALL list_all_classes();";
+    dbCon.query(sql, function (err, results) {
+        if (err) {
+          throw err;
+        } 
+  
+        let notes = new Array();
+        results[0].forEach((element) => {
+          notes.push({ ...element });
+        });
+        return res.send(Object.values(notes));
+    });
+  });
 module.exports = router;
