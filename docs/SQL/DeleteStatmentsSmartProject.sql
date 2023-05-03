@@ -13,14 +13,8 @@ from information_schema.routines
 WHERE routine_type = 'PROCEDURE' 
 AND routine_schema = 'smart_project';
 
-SELECT *
-from information_schema.routines 
-WHERE routine_type = 'PROCEDURE' 
-AND routine_schema = 'smart_project';
 
-SELECT * 
-FROM information_schema.parameters 
-WHERE SPECIFIC_NAME = 'check_application_id'; 
+
 
 
 

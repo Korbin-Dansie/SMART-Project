@@ -2,8 +2,11 @@ USE `smart_project`;
 
 DROP PROCEDURE IF EXISTS `add_attendance`;
 DROP PROCEDURE IF EXISTS `add_feeding`;
+DROP PROCEDURE IF EXISTS `add_new_note`;
 DROP PROCEDURE IF EXISTS `add_student_sponsor`;
+DROP PROCEDURE IF EXISTS `assign_student_assignment`;
 DROP PROCEDURE IF EXISTS `award_certificate`;
+DROP PROCEDURE IF EXISTS `change_user_password`;
 DROP PROCEDURE IF EXISTS `check_application_id`;
 DROP PROCEDURE IF EXISTS `check_application_status`;
 DROP PROCEDURE IF EXISTS `create_account_type`;
@@ -11,6 +14,7 @@ DROP PROCEDURE IF EXISTS `create_application`;
 DROP PROCEDURE IF EXISTS `create_application_status`;
 DROP PROCEDURE IF EXISTS `create_assignment_status`;
 DROP PROCEDURE IF EXISTS `create_class`;
+DROP PROCEDURE IF EXISTS `create_class_assignment`;
 DROP PROCEDURE IF EXISTS `create_class_time`;
 DROP PROCEDURE IF EXISTS `create_contact`;
 DROP PROCEDURE IF EXISTS `create_contact_type`;
@@ -33,15 +37,18 @@ DROP PROCEDURE IF EXISTS `get_classes`;
 DROP PROCEDURE IF EXISTS `get_day_of_weeks`;
 DROP PROCEDURE IF EXISTS `get_feedings`;
 DROP PROCEDURE IF EXISTS `get_meal_times`;
+DROP PROCEDURE IF EXISTS `get_notes`;
 DROP PROCEDURE IF EXISTS `get_personid_from_applicationid`;
 DROP PROCEDURE IF EXISTS `get_salt`;
 DROP PROCEDURE IF EXISTS `get_semesters`;
-DROP PROCEDURE IF EXISTS `get_socail_worker_student_id`;
+DROP PROCEDURE IF EXISTS `get_social_worker_student_id`;
 DROP PROCEDURE IF EXISTS `get_sponsored_students`;
 DROP PROCEDURE IF EXISTS `get_students`;
 DROP PROCEDURE IF EXISTS `get_students_by_group`;
 DROP PROCEDURE IF EXISTS `get_students_with_meal_assistance`;
 DROP PROCEDURE IF EXISTS `get_userid_from_email`;
+DROP PROCEDURE IF EXISTS `list_params`;
+DROP PROCEDURE IF EXISTS `list_procs`;
 DROP PROCEDURE IF EXISTS `login_user`;
 DROP PROCEDURE IF EXISTS `save_student_assignment_asset`;
 DROP PROCEDURE IF EXISTS `select_applications`;
@@ -60,8 +67,14 @@ DROP PROCEDURE IF EXISTS `select_person_phone`;
 DROP PROCEDURE IF EXISTS `select_students_and_class_status`;
 DROP PROCEDURE IF EXISTS `select_student_assignments`;
 DROP PROCEDURE IF EXISTS `select_student_certificate`;
+DROP PROCEDURE IF EXISTS `select_student_classes`;
+DROP PROCEDURE IF EXISTS `select_student_guardians`;
+DROP PROCEDURE IF EXISTS `select_student_info`;
+DROP PROCEDURE IF EXISTS `select_users`;
+DROP PROCEDURE IF EXISTS `select_user_details`;
 DROP PROCEDURE IF EXISTS `update_application_status`;
 DROP PROCEDURE IF EXISTS `update_student_assignment_grade`;
+DROP PROCEDURE IF EXISTS `update_user_details`;
 
 DELIMITER $$
 $$ -- Clear it so the next SP output doest not contain all the comments ab
@@ -200,6 +213,101 @@ BEGIN
   JOIN application_status ON application_status.application_status_id = application.application_status_id
   JOIN public_school_level ON public_school_level.public_school_level_id = application.public_school_level_id;
  END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_users
+* <comment>Procedure select_users created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_users`(
+ IN  accountType VARCHAR(45)
+)
+BEGIN
+ IF accountType IS NOT NULL THEN
+  IF accountType = 'Admin' THEN
+   SELECT user.user_id, person.first_name, person.last_name, user.email, account_type.account_type
+   FROM user
+   JOIN person ON person.person_id = user.person_id
+   JOIN account_type ON account_type.account_type_id = user.account_type_id
+   WHERE account_type.account_type = accountType
+   OR account_type.account_type = 'Super Admin'
+   ORDER BY user.user_id;
+  ELSE
+   SELECT user.user_id, person.first_name, person.last_name, user.email, account_type.account_type
+   FROM user
+   JOIN person ON person.person_id = user.person_id
+   JOIN account_type ON account_type.account_type_id = user.account_type_id
+   WHERE account_type.account_type = accountType
+   ORDER BY user.user_id;
+  END IF;
+ ELSE
+  SELECT user.user_id, person.first_name, person.last_name, user.email, account_type.account_type
+  FROM user
+  JOIN person ON person.person_id = user.person_id
+  JOIN account_type ON account_type.account_type_id = user.account_type_id
+  ORDER BY user.user_id;
+ END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_user_details
+* <comment>Procedure select_user_details created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_user_details`(
+ IN  user_id INT
+)
+BEGIN
+ SELECT person.first_name, person.last_name, user.email, account_type.account_type, user.is_active
+ FROM user
+ JOIN person ON person.person_id = user.person_id
+ JOIN account_type ON account_type.account_type_id = user.account_type_id
+ WHERE user.user_id = user_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure update_user_details
+* <comment>Procedure update_user_details created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `update_user_details`(
+ IN  user_id INT,
+ IN  first_name VARCHAR(45),
+ IN  last_name VARCHAR(45),
+ IN  email VARCHAR(45),
+ IN  account_type VARCHAR(45),
+ IN  is_active BOOLEAN
+)
+BEGIN
+ UPDATE person
+ SET person.first_name = first_name, person.last_name = last_name
+ WHERE person.person_id = (SELECT person_id FROM user WHERE user.user_id = user_id);
+
+ UPDATE user
+ SET user.email = email, user.is_active = is_active,
+ user.account_type_id = (SELECT account_type_id FROM account_type WHERE account_type.account_type = account_type)
+ WHERE user.user_id = user_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure change_user_password
+* <comment>Procedure change_user_password created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `change_user_password`(
+ IN  user_id INT,
+ IN  salt VARCHAR(45),
+ IN  hash VARCHAR(255)
+)
+BEGIN
+ UPDATE user
+ SET user.salt = salt, user.hashed_password = hash
+ WHERE user.user_id = user_id;
 END;
 $$
 
@@ -882,10 +990,11 @@ CREATE PROCEDURE IF NOT EXISTS `select_student_assignments`(
  IN class_id INT
 )
 BEGIN
- SELECT student_assignment.student_assignment_id, assignment.assignment_name, assignment.due_date, assignment_status.status, student_assignment.submission_date, student_assignment.grade, assignment.points_possible
+ SELECT student_assignment.student_assignment_id, assignment.assignment_name, assignment.due_date, assignment_status.status, student_assignment.submission_date, student_assignment.grade, assignment.points_possible, student_assignment_document.document_link
  FROM student_assignment
  JOIN assignment ON assignment.assignment_id = student_assignment.assignment_id
  LEFT OUTER JOIN assignment_status ON assignment_status.assignment_status_id = student_assignment.assignment_status_id
+ LEFT OUTER JOIN student_assignment_document ON student_assignment_document.student_assignment_id = student_assignment.student_assignment_id
  WHERE student_assignment.student_id = student_id
  AND assignment.class_id = class_id
  ORDER BY assignment.due_date, assignment.assignment_name;
@@ -967,6 +1076,40 @@ BEGIN
 	SELECT `day_of_week_id`, `name`
 	FROM `smart_project`.`day_of_week`
     ORDER BY `day_of_week_id` ASC;
+END;
+$$
+
+
+/***************************************************************
+* Procedure get_sponsored_students
+* <comment>Procedure get_sponsored_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `get_sponsored_students`(
+ IN sponsor_id INT
+)
+BEGIN
+	SELECT person.first_name, person.last_name, application.student_id
+	FROM student_sponsor
+ JOIN application ON application.student_id = student_sponsor.student_id
+ JOIN person ON person.person_id = application.person_id
+ WHERE student_sponsor.user_id = sponsor_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure add_student_sponsor
+* <comment>Procedure get_sponsored_students created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `add_student_sponsor`(
+ IN student_id INT,
+ IN sponsor_id INT
+)
+BEGIN
+ IF ((SELECT COUNT(*) FROM student_sponsor WHERE student_sponsor.student_id = student_id AND student_sponsor.user_id = sponsor_id) < 1) THEN
+  INSERT INTO student_sponsor(student_id, user_id)
+  VALUES (student_id, sponsor_id);
+ END IF;
 END;
 $$
 
@@ -1231,12 +1374,13 @@ BEGIN
 	INNER JOIN `person` AS p
 	ON a.person_id = p.person_id
 	WHERE ss.class_time_id = class_time_id;
-    END;
+END;
 $$
 
+
 /***************************************************************
-* Procedure get_students_by_group
-* <comment>Procedure get_students_by_group created if it didn't already exist.</comment>
+* Procedure get_attendance_by_group
+* <comment>Procedure get_attendance_by_group created if it didn't already exist.</comment>
 ***************************************************************/
 CREATE PROCEDURE IF NOT EXISTS `get_attendance_by_group`(
     IN class_time_id INT UNSIGNED,
@@ -1289,6 +1433,7 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
 * Procedure delete_attendance
 * <comment>Procedure delete_attendance created if it didn't already exist.</comment>
@@ -1306,11 +1451,12 @@ BEGIN
 END;
 $$
 
+
 /***************************************************************
-* Procedure get_socail_worker_student_id
+* Procedure get_social_worker_student_id
 * <comment>Procedure get_socail_worker_student_id created if it didn't already exist.</comment>
 ***************************************************************/
-CREATE PROCEDURE IF NOT EXISTS `get_socail_worker_student_id`(
+CREATE PROCEDURE IF NOT EXISTS `get_social_worker_student_id`(
 	IN user_id MEDIUMINT UNSIGNED,
     IN student_id MEDIUMINT UNSIGNED,
     OUT social_worker_student_id MEDIUMINT UNSIGNED
@@ -1318,7 +1464,7 @@ CREATE PROCEDURE IF NOT EXISTS `get_socail_worker_student_id`(
 BEGIN
 	DECLARE swsid MEDIUMINT UNSIGNED;
     
-	SELECT `socail_worker_student_id` INTO swsid
+	SELECT `social_worker_student_id` INTO swsid
 	FROM `social_worker_student` AS sws 
     WHERE sws.user_id = user_id AND sws.student_id = student_id
     LIMIT 1;
@@ -1332,6 +1478,7 @@ BEGIN
     SET social_worker_student_id = swsid;
 END;
 $$
+
 
 /***************************************************************
 * Procedure add_new_note
@@ -1368,5 +1515,143 @@ BEGIN
     INNER JOIN `social_worker_student_note` AS swsn
     ON sws.social_worker_student_id = swsn.social_worker_student_id
 	WHERE sws.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_info
+* <comment>Procedure select_student_info created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_info`(
+	IN student_id MEDIUMINT UNSIGNED, 
+	OUT student_first_name VARCHAR(64), 
+	OUT student_last_name VARCHAR(64), 
+	OUT student_status VARCHAR(64), 
+	OUT student_birthdate VARCHAR(255), 
+	OUT student_application_meal_assistance BOOLEAN, 
+	OUT student_application_transport_assistance BOOLEAN 
+)
+BEGIN
+	 SELECT person.first_name, person.last_name, student_status.student_status,
+    application.date_of_birth, application.transportation_assistance, application.meal_assistance
+    INTO
+    student_first_name, student_last_name, student_status, 
+    student_birthdate, student_application_meal_assistance, student_application_transport_assistance
+  FROM student 
+  JOIN student_status ON student_status.student_status_id = student.student_status_id
+  JOIN application ON application.student_id = student.student_id
+  JOIN person ON person.person_id = application.person_id
+	 WHERE student.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_guardians
+* <comment>Procedure select_student_guardians created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_guardians`(
+	IN student_id MEDIUMINT UNSIGNED 
+)
+BEGIN
+	 SELECT person.first_name, person.last_name, guardian.annual_income 
+  FROM guardian 
+  JOIN application ON application.student_id = student.student_id
+  JOIN student ON application.student_id = student.student_id 
+  JOIN person ON person.person_id = application.person_id
+	 WHERE student.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure select_student_classes
+* <comment>Procedure select_student_classes created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `select_student_classes`(
+	IN student_id MEDIUMINT UNSIGNED 
+)
+BEGIN
+	 SELECT subject_name.subject_name, `level`.level_name, semester.`description` 
+  FROM student_schedule   
+  LEFT JOIN class_time ON class_time.class_time_id = student_schedule.class_time_id 
+  LEFT JOIN class ON class.class_id = class_time.class_id  
+  LEFT JOIN semester ON semester.semester_id = class.semester_id 
+  LEFT JOIN `subject` ON `subject`.subject_id = class.subject_id  
+  LEFT JOIN subject_name ON subject_name.subject_name_id = `subject`.subject_name_id 
+  LEFT JOIN `level` ON `level`.level_id = `subject`.level_id 
+	 WHERE student_schedule.student_id = student_id;
+END;
+$$
+
+
+/***************************************************************
+* Procedure assign_student_assignment
+* <comment>Procedure assign_student_assignment created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `assign_student_assignment`(
+	IN student_id MEDIUMINT UNSIGNED,
+ IN assignment_id INT
+)
+BEGIN
+ IF ((SELECT COUNT(*) FROM student_assignment WHERE student_assignment.student_id = student_id AND student_assignment.assignment_id = assignment_id) < 1) THEN
+  INSERT INTO student_assignment(student_id, assignment_id, assignment_status_id, submission_date, grade, can_sponsor_view)
+  VALUES (student_id, assignment_id, NULL, NULL, DEFAULT, true);
+ END IF;
+END;
+$$
+
+
+/***************************************************************
+* Procedure create_class_assignment
+* <comment>Procedure create_class_assignment created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `create_class_assignment`(
+	IN assignment_name VARCHAR(255),
+ IN due_date DATE,
+ IN points_possible INT,
+ IN class_id INT
+)
+BEGIN
+ DECLARE assignment_id INT;
+ DECLARE finished INT DEFAULT 0;
+ DECLARE student_id INT;
+ DECLARE curStudent CURSOR FOR
+  SELECT DISTINCT student_schedule.student_id FROM student_schedule WHERE class_time_id IN (SELECT class_time_id FROM class_time WHERE class_time.class_id = class_id);
+ DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
+
+ INSERT INTO assignment(assignment_name, due_date, points_possible, class_id)
+ VALUES (assignment_name, due_date, points_possible, class_id);
+
+ SET assignment_id = LAST_INSERT_ID();
+
+ OPEN curStudent;
+ getStudents: LOOP
+  FETCH curStudent INTO student_id;
+  IF finished = 1 THEN LEAVE getStudents; END IF;
+  CALL assign_student_assignment(student_id, assignment_id);
+ END LOOP getStudents;
+ CLOSE curStudent;
+END;
+$$
+
+
+/***************************************************************
+* Procedure create_class_assignment
+* <comment>Procedure create_class_assignment created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `list_all_classes`(
+)
+BEGIN
+	SELECT class.class_id, subject_name.subject_name, level.level_name, semester.description, person.first_name, person.last_name
+	FROM class
+	JOIN semester ON semester.semester_id = class.semester_id
+	JOIN subject ON subject.subject_id = class.subject_id
+	JOIN level ON level.level_id = subject.level_id
+	JOIN subject_name ON subject_name.subject_name_id = subject.subject_name_id
+    JOIN instructor_schedule ON instructor_schedule.class_id = class.class_id
+    JOIN user ON instructor_schedule.user_id = user.user_id
+    JOIN person ON user.person_id = person.person_id;
 END;
 $$
