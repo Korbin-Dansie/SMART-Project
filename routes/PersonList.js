@@ -33,7 +33,7 @@ router.post('/', function(req, res, next) {
         res.render('PersonList', {users: results[0], accountType: req.body.accountTypeSelect, admin: true, manageUsers: true});
       });
     }
-  } else if (req.body.adminManageStudents != undefined) {
+  } else if (req.body.adminManageStudents != undefined || req.body.ownerViewStudents != undefined) {
     let sql = "CALL select_students(?);";
     if (req.body.studentStatusSelect == "noFilter") {
       dbCon.query(sql, [null], function (err, results) {

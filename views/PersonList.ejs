@@ -44,8 +44,7 @@
             <div class="text-center">
               <h3 class="text-primary">S. M. A. R. T. People</h3>
             </div>
-            
-            <% if (locals.admin != undefined && locals.admin) { %>
+
               <% if (locals.manageUsers != undefined && locals.manageUsers) { %>
                 <div class="text-center">
                   <h4 class="text-primary">Manage Users</h4>
@@ -91,7 +90,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <% for(let i = 0; i < locals.users.length; i++) { %>
+                        <% for (let i = 0; i < locals.users.length; i++) { %>
                           <tr>
                             <td><%= locals.users[i].first_name %> <%= locals.users[i].last_name %></td>
                             <td><%= locals.users[i].email %></td>
@@ -175,7 +174,6 @@
                   <% } %>
                 </div>
               <% } %>
-            <% } %>
             
             <!-- End of applications -->
             <!-- Start of page buttons -->

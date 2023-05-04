@@ -238,7 +238,7 @@
                                                             Edit Grade
                                                         </button>
                                                         <% if (locals.studentAssignments[i][j].document_link != null) { %>
-                                                            <br>
+                                                            <br><br>
                                                             <input type="hidden" name="document_path" id="document_path" value=<%= locals.studentAssignments[i][j].document_link %>>
                                                             <button class="btn btn-primary" onClick="downloadAssignmentDocument(this)">
                                                                 Download Asset
