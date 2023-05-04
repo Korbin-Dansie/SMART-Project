@@ -54,30 +54,31 @@
             <br><br>
             <h5 class="text-primary">Program Statistics</h5>
             <div class="row mt-2">
-                <div class="col-md-3">
-                  <p>Total Applications: </p>
-                  <p>Total Students: </p>
-                  <p>Active Students: </p>
-                  <p>Graduated Students: </p>
+                <div class="col-md-4">
+                  <p>Total Applications: <%= locals.generalStatistics[0].applications %></p>
+                  <p>Total Students: <%= locals.generalStatistics[1].totalStudents %></p>
+                  <p>Active Students: <%= locals.generalStatistics[2].activeStudents %></p>
+                  <p>Graduated Students: <%= locals.generalStatistics[3].graduatedStudents %></p>
                 </div>
-                <div class="col-md-3">
-                  <p>Total Instructors: </p>
-                  <p>Active Instructors: </p>
-                  <p>Total Social Workers: </p>
-                  <p>Active Social Workers: </p>
+                <div class="col-md-4">
+                  <p>Total Instructors: <%= locals.generalStatistics[4].totalInstructors %></p>
+                  <p>Active Instructors: <%= locals.generalStatistics[5].activeInstructors %></p>
+                  <p>Total Social Workers: <%= locals.generalStatistics[6].totalSocialWorkers %></p>
+                  <p>Active Social Workers: <%= locals.generalStatistics[7].activeSocialWorkers %></p>
                 </div>
-                <div class="col-md-3">
-                  <p>Total Sponsors: </p>
-                  <p>Active Sponsors: </p>
-                  <p>Total Students Sponsored: </p>
-                  <p>Currently Sponsored Students: </p>
-                </div>
-                <div class="col-md-3">
-                  <p>Average Class Size: </p>
-                  <p>Graduation Rate: </p>
-                  <p>Average Household Income: </p>
+                <div class="col-md-4">
+                  <p>Total Sponsors: <%= locals.generalStatistics[8].totalSponsors %></p>
+                  <p>Active Sponsors: <%= locals.generalStatistics[9].activeSponsors %></p>
+                  <p>Total Students Sponsored: <%= locals.generalStatistics[10].totalSponsoredStudents %></p>
+                  <p>Active Sponsored Students: <%= locals.generalStatistics[11].activeSponsoredStudents %></p>
                 </div>
             </div>
+            <div class="row mt-2">
+              <div class="col-md-4">
+                <p>Average Class Size: <%= locals.generalStatistics[12].averageClassSize %></p>
+                <p>Average Household Income: MT <%= locals.generalStatistics[13].averageIncome %></p>
+              </div>
+          </div>
 
             <br>
             <h5 class="text-primary">Certificates</h5>
@@ -93,7 +94,7 @@
                 <% for (let i = 0; i < locals.classSubjectCounts.length; i++) { %>
                   <div id="<%= locals.classSubjectCounts[i].subject_id %>" class="col-md-3" style="display:none">
                     <p>Total Classes of Subject: <%= locals.classSubjectCounts[i]['COUNT(class.subject_id)'] %></p>
-                    <p>Total Certificates Awarded: <%= locals.certificateSubjectCounts[i]['COUNT(student_certificate.certificate_id)'] %></p>
+                    <p>Subject Certificates Awarded: <%= locals.certificateSubjectCounts[i]['COUNT(student_certificate.certificate_id)'] %></p>
                   </div>
                 <% } %>
               </div>
