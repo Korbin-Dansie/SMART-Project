@@ -55,7 +55,7 @@
       let timeString = note.date_taken.substring(0, 10)
       let date = new Date(timeString);
 
-      let newNote = createNote(note.social_worker_student_note_id, date.toLocaleDateString(), note.note);
+      let newNote = createNote(note.social_worker_student_note_id, date.toLocaleDateString(), note.note , date.toISOString().slice(0, 10));
       newNote.addEventListener("click", selectNote);
       tableBody.appendChild(newNote);
     });
@@ -85,27 +85,38 @@
   }
 
   function showEditNoteModal(){
-    
     let myModal = new bootstrap.Modal(document.getElementById("editNoteModal"), {});
     myModal.show();
 
+    let note = document.querySelector(`div[data-social-worker-student-note-id="${selectedNoteId}"]`);
+    console.log(note);
 
+    // Load the information into the form
+    let datePicker = document.getElementById("datePickerForEdit");
+    let noteArea = document.getElementById("newNoteForEdit");
+
+    datePicker.value = note.getElementsByClassName("date-element")[0].getAttribute("data-formated-date");
+    noteArea.value = note.getElementsByClassName("note-element")[0].innerText;
   }
 
   // Create notes
-  function createNote(id, date, note) {
+  function createNote(id, date, note, yyyy_mm_dd_date) {
     let row = document.createElement("div");
     row.setAttribute("data-social-worker-student-note-id", id);
     row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex");
 
     let dateDiv = document.createElement("div")
     let dateElement = document.createElement("h5");
-    dateElement.classList.add("text-primary");
+
+    dateElement.classList.add("text-primary", "date-element");
+    dateElement.setAttribute("data-formated-date", yyyy_mm_dd_date);
     dateElement.innerText = date;
     dateDiv.appendChild(dateElement);
 
     let noteDiv = document.createElement("div")
     let noteElement = document.createElement("p");
+    noteElement.classList.add("note-element");
+
     noteElement.innerText = note;
     noteDiv.appendChild(noteElement);
 
