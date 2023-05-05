@@ -150,36 +150,34 @@
               <div class="row">
                 <div class="col-md-6">
                   <p>
-                    <b>Name: </b>Jane Doe
+                    <b>Name: </b><%- vars.studentName %>
                   </p>
                   <p>
-                    <b>Contact Information: </b>123-456-7890
+                    <b>Birthdate: </b><%- vars.studentBirthdate %>
                   </p>
                   <p>
-                    <b>Address: </b>41°24'12.2&quot;N 2°10'26.5&quot;E
+                    <b>Transportation Assistance: </b><%- vars.transportAssistance? 'Yes' : 'No' %>
                   </p>
                   <p>
-                    <b>Guardian: </b>Janet Doe
+                    <b>Meal Assistance: </b><%- vars.mealAssistance? 'Yes' : 'No' %>
                   </p>
                   <p>
-                    <b>Guardian Income: </b>MT 20,000
+                    <b>Status: </b><%- vars.studentStatus  %>
                   </p>
                 </div>
                 <div class="col-md-6">
                   <p>
-                    <b>Transportation Assistance: </b>No
+                    <b>Contact Information: </b>
+                    <% for (var i = 0; i < vars.contact.length; i ++) { %>
+                    <br><%- vars.contact[i] %>
+                    <% } %>
                   </p>
                   <p>
-                    <b>Meal Assistance: </b>Yes
-                  </p>
-                  <p>
-                    <b>Status: </b>Graduated
-                  </p>
-                  <p>
-                    <b>Public School Grade Level: </b>12
-                  </p>
-                  <p>
-                    <b>Public School GPA: </b>15
+                    <b>Guardians: </b>
+                    <% for (var i = 0; i < vars.parents.length; i ++) { %>
+                    <br><%- vars.parents[i]['parentName'] %>
+                    <br>--Income: <%- vars.parents[i]['parentIncome'] %>
+                    <% } %>
                   </p>
                 </div>
               </div>
@@ -191,41 +189,18 @@
             <div class="col-md-6 mt-4">
               <h3 class="text-primary">Courses</h3>
               <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary">Fall 2022</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-primary">English 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-success">Passed</h5>
-                  </div>
-                </div>
 
+                <% for (var i = 0; i < vars.courses.length; i ++) { %>
                 <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                   <div class="col-4">
-                    <h5 class="text-primary">Fall 2022</h5>
+                    <h5 class="text-primary"><%- vars.courses[i]['courseSubject'] %></h5>
                   </div>
                   <div class="col-4">
-                    <h5 class="text-primary">IT 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-success">Passed</h5>
+                    <h5 class="text-primary"><%- vars.courses[i]['courseSemester'] %></h5>
                   </div>
                 </div>
+                <% } %>
 
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary">Summer 2022</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-primary">IT 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-danger">Failed</h5>
-                  </div>
-                </div>
               </div>
             </div>
             <div class="col-md-1"></div>

@@ -7,19 +7,119 @@ var dbCon = require("../lib/database");
 router.get('/', function (req, res, next) {
     var studentID = req.query.student_id;
   
-    // Student Name
-    // Contact info
-    // Student status
-    // Public school as of application
-    // Transport meal assistance
+    var sql = "CALL `select_student_info` (?, @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance); "
+         + "SELECT @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance;";
+    
+    dbCon.query(sql, [studentID], function (err, results) {
+      if (err) {
+        throw err;
+      }
 
-    // Guardians names and income
+      console.log(results);
+      //set the variables for the student
+      var studentPageVariables = {};
+      studentPageVariables.studentName = results[1][0]['@student_first_name'] + " " + results[1][0]['@student_last_name'];
+      studentPageVariables.studentStatus = results[1][0]['@student_status'];
+      studentPageVariables.studentBirthdate = results[1][0]['@student_birthdate'];
+      studentPageVariables.mealAssistance = results[1][0]['@student_application_meal_assistance'];
+      studentPageVariables.transportAssistance = results[1][0]['@student_application_transport_assistance'];
+      
+      console.log("Student Page Variables Step 1:");
+      console.log(studentPageVariables);
 
-    // All classes
-    // Notes
-  
-    res.render('Student', {});
+      GETPart2(studentPageVariables, studentID, res);
+
+    });
+    // TODO: All certificates
+    // Notes are done by ajax
 });
+
+function GETPart2(studentPageVariables, studentID, res) {
+  // Contact info
+  var sql = "SELECT contact_type.`type`, contact_information.`value` \n" +
+  "FROM application\n" +
+  "LEFT JOIN person ON application.person_id = person.person_id\n" +
+  "LEFT JOIN contact_information ON contact_information.person_id = person.person_id\n" +
+  "LEFT JOIN contact_type ON contact_type.contact_type_id = contact_information.contact_type_id\n" +
+  "WHERE application.student_id = (?);";
+    
+    dbCon.query(sql, [studentID], function (err, results) {
+      if (err) {
+        throw err;
+      }
+
+      console.log(results);
+      //set the variables for the student
+      studentPageVariables.contact = [];
+
+      for (var i = 0; i < results.length; i ++) {
+        studentPageVariables.contact.push(results[i]['value']);
+      }
+
+      console.log("Student Page Variables Step 2:");
+      console.log(studentPageVariables);
+
+      GETPart3(studentPageVariables, studentID, res);
+
+    });
+}
+
+function GETPart3(studentPageVariables, studentID, res) {
+  // Guardians names and income
+  var sql = "CALL `select_student_guardians`(?);";
+    
+    dbCon.query(sql, [studentID], function (err, results) {
+      if (err) {
+        throw err;
+      }
+
+      console.log(results);
+
+      studentPageVariables.parents = [];
+      
+      for (var i = 0; i < results[0].length; i ++) {
+        studentPageVariables.parents.push({
+          parentName: (results[0][i]['first_name'] + " " + results[0][i]['last_name']),
+          parentIncome: results[0][i]['annual_income']});
+      }
+
+      console.log("Student Page Variables Step 3:");
+      console.log(studentPageVariables);
+
+      GETPart4(studentPageVariables, studentID, res);
+
+    });
+}
+
+function GETPart4(studentPageVariables, studentID, res) {
+  // All classes
+  var sql = "CALL `select_student_classes`(?);";
+    
+    dbCon.query(sql, [studentID], function (err, results) {
+      if (err) {
+        throw err;
+      }
+
+      console.log(results);
+
+      studentPageVariables.courses = [];
+      
+      for (var i = 0; i < results[0].length; i ++) {
+        studentPageVariables.courses.push({
+          courseSubject: (results[0][i]['subject_name'] + " " + results[0][i]['level_name']),
+          courseSemester: results[0][i]['description']});
+      }
+
+      console.log("Student Page Variables Step 4:");
+      console.log(studentPageVariables);
+
+  
+      res.render('Student', {vars: studentPageVariables});
+
+    });
+}
+
+//=============================================================================================================
 
 
 /* Get all the student notes. */
