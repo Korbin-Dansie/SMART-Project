@@ -191,41 +191,35 @@
             <div class="col-md-6 mt-4">
               <h3 class="text-primary">Courses</h3>
               <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary">Fall 2022</h5>
+                <% if (locals.studentClasses != undefined && locals.studentClasses.length > 0) { %>
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                    <div class="col-4">
+                      <h5 class="text-primary">Semester</h5>
+                    </div>
+                    <div class="col-4">
+                      <h5 class="text-primary">Subject</h5>
+                    </div>
+                    <div class="col-4">
+                      <h5 class="text-primary">Instructor</h5>
+                    </div>
                   </div>
-                  <div class="col-4">
-                    <h5 class="text-primary">English 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-success">Passed</h5>
-                  </div>
-                </div>
-
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary">Fall 2022</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-primary">IT 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-success">Passed</h5>
-                  </div>
-                </div>
-
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary">Summer 2022</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-primary">IT 3</h5>
-                  </div>
-                  <div class="col-4">
-                    <h5 class="text-danger">Failed</h5>
-                  </div>
-                </div>
+                  <% for (let i = 0; i < locals.studentClasses.length; i++) { %>
+                    <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                      <div class="col-4">
+                        <h5><%= locals.studentClasses[i].description %></h5>
+                      </div>
+                      <div class="col-4">
+                        <h5><%= locals.studentClasses[i].subject_name %> <%= locals.studentClasses[i].level_name %></h5>
+                      </div>
+                      <div class="col-4">
+                        <h5><%= locals.studentClasses[i].first_name %> <%= locals.studentClasses[i].last_name %></h5>
+                      </div>
+                    </div>
+                  <% } %>
+                <% } else { %>
+                  No courses found
+                <% } %>
+                
               </div>
             </div>
             <div class="col-md-1"></div>
@@ -255,6 +249,36 @@
                     </div>
                   </div>
                 </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mt-4">
+              <h3 class="text-primary">Certificates</h3>
+              <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
+                <% if (locals.studentCertificates != undefined && locals.studentCertificates.length > 0) { %>
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                    <div class="col-6">
+                      <h5 class="text-primary">Subject</h5>
+                    </div>
+                    <div class="col-6">
+                      <h5 class="text-primary">Date Awarded</h5>
+                    </div>
+                  </div>
+                  <% for (let i = 0; i < locals.studentCertificates.length; i++) { %>
+                    <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                      <div class="col-6">
+                        <h5><%= locals.studentCertificates[i].name %></h5>
+                      </div>
+                      <div class="col-6">
+                        <h5><%= locals.studentCertificates[i].date_awarded.toLocaleDateString('en-US') %></h5>
+                      </div>
+                    </div>
+                  <% } %>
+                <% } else { %>
+                  No certificates found
+                <% } %>
+                
+              </div>
             </div>
           </div>
         </div>

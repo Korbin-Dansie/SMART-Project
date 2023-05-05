@@ -16,9 +16,24 @@ router.get('/', function (req, res, next) {
     // Guardians names and income
 
     // All classes
+    // Certificates
     // Notes
+
+
+    if (studentID != undefined) {
+      let sql = "CALL select_student_classes(?); CALL select_student_certificates(?);";
+      dbCon.query(sql, [studentID, studentID], function (err, results) {
+          if (err) {
+            throw err;
+          } 
   
-    res.render('Student', {});
+          console.log(results);
+
+          res.render('Student', {studentClasses: results[0], studentCertificates: results[2]});
+      });
+    } else {
+      res.render('Student', {});
+    }
 });
 
 
