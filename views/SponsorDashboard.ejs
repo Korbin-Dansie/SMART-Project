@@ -38,7 +38,7 @@
                     <td><%= locals.students[i].first_name %> <%= locals.students[i].last_name %></td>
                     <td>
                       <form method="get" action="/student">
-                        <input type="hidden" name="studentID" value=<%= locals.students[i].student_id %>>
+                        <input type="hidden" name="student_id" value=<%= locals.students[i].student_id %>>
                         <button class="btn btn-secondary" type="submit">View Report</button>
                       </form>
                     </td>
