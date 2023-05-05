@@ -7,8 +7,8 @@ var dbCon = require("../lib/database");
 router.get('/', function (req, res, next) {
     var studentID = req.query.student_id;
   
-    var sql = "CALL `select_student_info` (?, @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance); "
-         + "SELECT @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance;";
+    var sql = "CALL `select_student_info` (?, @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance, @student_application_latitude, @student_application_longitude); "
+         + "SELECT @student_first_name, @student_last_name, @student_status, @student_birthdate, @student_application_meal_assistance, @student_application_transport_assistance, @student_application_latitude, @student_application_longitude;";
     
     dbCon.query(sql, [studentID], function (err, results) {
       if (err) {
@@ -23,6 +23,8 @@ router.get('/', function (req, res, next) {
       studentPageVariables.studentBirthdate = results[1][0]['@student_birthdate'];
       studentPageVariables.mealAssistance = results[1][0]['@student_application_meal_assistance'];
       studentPageVariables.transportAssistance = results[1][0]['@student_application_transport_assistance'];
+      studentPageVariables.latitude = results[1][0]['@student_application_latitude'];
+      studentPageVariables.longitude = results[1][0]['@student_application_longitude'];
       
       console.log("Student Page Variables Step 1:");
       console.log(studentPageVariables);
