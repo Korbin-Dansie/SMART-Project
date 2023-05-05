@@ -12,6 +12,9 @@
 </head>
 
 <script>
+  // When the user selects a note store the selected id
+  let selectedNoteId = new Number();
+
   async function getNotes() {
     // Get any attendance for this week
     let promiseNotes = new Promise((resolve, reject) => {
@@ -48,32 +51,74 @@
 
 
     notes.forEach(note => {
-        // chop of the time part of the datetime
-        let timeString = note.date_taken.substring(0, 10)
-        let date = new Date(timeString);
+      // chop of the time part of the datetime
+      let timeString = note.date_taken.substring(0, 10)
+      let date = new Date(timeString);
 
-        tableBody.appendChild(
-            createNote(note.social_worker_student_note_id, date.toLocaleDateString() , note.note)
-        );
+      let newNote = createNote(note.social_worker_student_note_id, date.toLocaleDateString(), note.note , date.toISOString().slice(0, 10));
+      newNote.addEventListener("click", selectNote);
+      tableBody.appendChild(newNote);
     });
 
   }
 
+  // When the user clicks a note store the selected id
+  function selectNote() {
+    // This refers to the DOM element
+    let id = this.getAttribute("data-social-worker-student-note-id");
+    selectedNoteId = id;
 
-    // Create notes
-    function createNote(id, date, note) {
+    // Remove any previous highlighting
+    let previousSelectedNote = document.getElementsByClassName("selectedNote");
+    for(const selectedNote of previousSelectedNote){
+      selectedNote.style.removeProperty("background");
+      selectedNote.classList.remove("selectedNote");
+    }
+    // Highlight the btn
+    this.style.backgroundColor ="#dee2e6";
+    this.classList.add("selectedNote");
+
+    // Enable the edit button
+    let editbtn = document.getElementById("editNoteBtn");
+    editbtn.disabled = false;
+    console.log("Edit", id);
+  }
+
+  function showEditNoteModal(){
+    let myModal = new bootstrap.Modal(document.getElementById("editNoteModal"), {});
+    myModal.show();
+
+    let note = document.querySelector(`div[data-social-worker-student-note-id="${selectedNoteId}"]`);
+    console.log(note);
+
+    // Load the information into the form
+    let datePicker = document.getElementById("datePickerForEdit");
+    let noteArea = document.getElementById("newNoteForEdit");
+    let noteId = document.getElementById("noteId");
+
+    datePicker.value = note.getElementsByClassName("date-element")[0].getAttribute("data-formated-date");
+    noteArea.value = note.getElementsByClassName("note-element")[0].innerText;
+    noteId.value = selectedNoteId;
+  }
+
+  // Create notes
+  function createNote(id, date, note, yyyy_mm_dd_date) {
     let row = document.createElement("div");
     row.setAttribute("data-social-worker-student-note-id", id);
-    row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex")
+    row.classList.add("row", "mx-auto", "my-1", "py-1", "shadow-sm", "rounded", "border", "border-primary", "d-inline-flex");
 
     let dateDiv = document.createElement("div")
     let dateElement = document.createElement("h5");
-    dateElement.classList.add("text-primary");
+
+    dateElement.classList.add("text-primary", "date-element");
+    dateElement.setAttribute("data-formated-date", yyyy_mm_dd_date);
     dateElement.innerText = date;
     dateDiv.appendChild(dateElement);
 
     let noteDiv = document.createElement("div")
     let noteElement = document.createElement("p");
+    noteElement.classList.add("note-element");
+
     noteElement.innerText = note;
     noteDiv.appendChild(noteElement);
 
@@ -81,6 +126,7 @@
     row.appendChild(noteDiv);
     return row;
   }
+
 
   // Set the date pickers date to today
   function loadStartDate() {
@@ -102,10 +148,9 @@
     myModal.show();
   }
 
-  function addDataToAddNoteForm() {
+  function addDataToAddNoteForm(form) {
     // Add the class ID from the url
     const urlParams = new URLSearchParams(window.location.search);
-    let form = document.getElementById("addNoteForm");
     addHiddenInputToForm(form, "student_id", urlParams.get('student_id'));
   }
 
@@ -122,6 +167,12 @@
     input.setAttribute("name", name);
     form.appendChild(input);
   }
+
+
+  function delteNote(){
+      addHiddenInputToForm(document.getElementById("editNoteForm"), "delete", "1");
+  };
+
 </script>
 
 <body onload="loadStartDate(); getNotes();">
@@ -189,47 +240,81 @@
             <div class="col-md-6 mt-4">
               <h3 class="text-primary">Courses</h3>
               <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-
-                <% for (var i = 0; i < vars.courses.length; i ++) { %>
-                <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                  <div class="col-4">
-                    <h5 class="text-primary"><%- vars.courses[i]['courseSubject'] %></h5>
+			  <% if (vars.courses != undefined && vars.courses.length > 0) { %>
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                    <div class="col-4">
+                      <h5 class="text-primary">Subject</h5>
+                    </div>
+                    <div class="col-4">
+                      <h5 class="text-primary">Semester</h5>
+                    </div>
                   </div>
-                  <div class="col-4">
-                    <h5 class="text-primary"><%- vars.courses[i]['courseSemester'] %></h5>
-                  </div>
-                </div>
+                  <% for (var i = 0; i < vars.courses.length; i ++) { %>
+					<div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+					  <div class="col-4">
+						<h5 class="text-primary"><%- vars.courses[i]['courseSubject'] %></h5>
+					  </div>
+					  <div class="col-4">
+						<h5 class="text-primary"><%- vars.courses[i]['courseSemester'] %></h5>
+					  </div>
+					</div>
+					<% } %>
+                <% } else { %>
+                  No courses found
                 <% } %>
-
               </div>
             </div>
             <div class="col-md-1"></div>
             <div class="col-md-5 mt-4 mx-auto">
               <div class="row">
-                <h3 class="text-primary col-md-8">Social Notes</h3>
-                <button class="btn btn-primary pt-2 float-end col-md-4" onclick="showAddNoteModal();">
-                  New Note
-                </button>
-              </div>
-                <div class="row mt-2 p-2 shadow-sm rounded border border-primary " id="notesSection">
-                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
-                    <div class="col-4">
-                      <h5 class="text-primary">10/21/2022</h5>
-                    </div>
-                    <div class="col-8">
-                      <h5 class="text-primary">This is a sample note</h5>
-                    </div>
+                <div class="col">
+                  <h3 class="text-primary col-md-8">Social Notes</h3>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                  <div class="d-inline-block">
+                    <button class="btn btn-secondary pt-2 me-1" onclick="showEditNoteModal();" id="editNoteBtn" disabled>
+                      Edit Note
+                    </button>  
                   </div>
-
-                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary d-inline-flex">
-                    <div class="">
-                      <h5 class="text-primary">3/14/2022</h5>
-                    </div>
-                    <div class="">
-                      <p>This is a sample note</p>
-                    </div>
+                  <div class="d-inline-block">
+                    <button class="btn btn-primary pt-2 ms-1" onclick="showAddNoteModal();" id="addNoteBtn">
+                      New Note
+                    </button>
                   </div>
                 </div>
+              </div>
+              <div class="row mt-2 p-2 shadow-sm rounded border border-primary " id="notesSection">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mt-4">
+              <h3 class="text-primary">Certificates</h3>
+              <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
+                <% if (locals.studentCertificates != undefined && locals.studentCertificates.length > 0) { %>
+                  <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                    <div class="col-6">
+                      <h5 class="text-primary">Subject</h5>
+                    </div>
+                    <div class="col-6">
+                      <h5 class="text-primary">Date Awarded</h5>
+                    </div>
+                  </div>
+                  <% for (let i = 0; i < locals.studentCertificates.length; i++) { %>
+                    <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
+                      <div class="col-6">
+                        <h5><%= locals.studentCertificates[i].name %></h5>
+                      </div>
+                      <div class="col-6">
+                        <h5><%= locals.studentCertificates[i].date_awarded.toLocaleDateString('en-US') %></h5>
+                      </div>
+                    </div>
+                  <% } %>
+                <% } else { %>
+                  No certificates found
+                <% } %>
+                
+              </div>
             </div>
           </div>
         </div>
@@ -245,7 +330,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addNoteForm" class="" action="/student/insertNote" method="post" onsubmit="addDataToAddNoteForm()">
+          <form id="addNoteForm" class="" action="/student/insertNote" method="post" onsubmit="addDataToAddNoteForm(this);">
             <div class="">
               <label for="new-note-date" class="form-label">Date</label>
               <input type="date" id="datePicker" class="form-control" name="new-note-date" min="1970-01-01" max="9999-12-31">
@@ -264,6 +349,38 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal for editing a note-->
+  <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="editNoteModal">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Note</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editNoteForm" class="" action="/student/editNote" method="post" onsubmit="addDataToAddNoteForm(this);">
+            <div class="">
+              <label for="new-note-date" class="form-label">Date</label>
+              <input type="date" id="datePickerForEdit" class="form-control" name="new-note-date" min="1970-01-01" max="9999-12-31">
+            </div>
+            <div class="">
+              <label for="newNote" class="form-label">Note</label>
+              <textarea class="form-control" id="newNoteForEdit" name="newNote" rows="7" maxlength="15000"></textarea>
+            </div>
+            <input type="hidden" name="noteId" id="noteId">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-danger me-auto" form="editNoteForm" value="Delete" onclick="delteNote();"></input>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" form="editNoteForm" value="Submit"></input>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 
