@@ -1655,3 +1655,34 @@ BEGIN
     JOIN person ON user.person_id = person.person_id;
 END;
 $$
+
+/***************************************************************
+* Procedure create_class_assignment
+* <comment>Procedure create_class_assignment created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `delete_note`(
+	IN social_worker_student_notes_id INT UNSIGNED
+)
+BEGIN
+	DELETE FROM `social_worker_student_note`
+	WHERE `social_worker_student_notes_id` = social_worker_student_notes_id;
+END;
+$$
+
+/***************************************************************
+* Procedure create_class_assignment
+* <comment>Procedure create_class_assignment created if it didn't already exist.</comment>
+***************************************************************/
+CREATE PROCEDURE IF NOT EXISTS `edit_note`(
+	IN social_worker_student_notes_id INT UNSIGNED,
+	IN date_taken DATE,
+    IN note VARCHAR(15000)
+)
+BEGIN
+	UPDATE `social_worker_student_note` AS swsn
+	SET
+	`date_taken` = date_taken,
+	`note` = note
+	WHERE `social_worker_student_note_id` = social_worker_student_notes_id;
+END;
+$$

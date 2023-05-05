@@ -94,9 +94,11 @@
     // Load the information into the form
     let datePicker = document.getElementById("datePickerForEdit");
     let noteArea = document.getElementById("newNoteForEdit");
+    let noteId = document.getElementById("noteId");
 
     datePicker.value = note.getElementsByClassName("date-element")[0].getAttribute("data-formated-date");
     noteArea.value = note.getElementsByClassName("note-element")[0].innerText;
+    noteId.value = selectedNoteId;
   }
 
   // Create notes
@@ -146,10 +148,9 @@
     myModal.show();
   }
 
-  function addDataToAddNoteForm() {
+  function addDataToAddNoteForm(form) {
     // Add the class ID from the url
     const urlParams = new URLSearchParams(window.location.search);
-    let form = document.getElementById("addNoteForm");
     addHiddenInputToForm(form, "student_id", urlParams.get('student_id'));
   }
 
@@ -166,6 +167,12 @@
     input.setAttribute("name", name);
     form.appendChild(input);
   }
+
+
+  function delteNote(){
+      addHiddenInputToForm(document.getElementById("editNoteForm"), "delete", "1");
+  };
+
 </script>
 
 <body onload="loadStartDate(); getNotes();">
@@ -308,7 +315,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="addNoteForm" class="" action="/student/insertNote" method="post" onsubmit="addDataToAddNoteForm()">
+          <form id="addNoteForm" class="" action="/student/insertNote" method="post" onsubmit="addDataToAddNoteForm(this);">
             <div class="">
               <label for="new-note-date" class="form-label">Date</label>
               <input type="date" id="datePicker" class="form-control" name="new-note-date" min="1970-01-01" max="9999-12-31">
@@ -337,7 +344,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="editNoteForm" class="" action="/student/insertNote" method="post" onsubmit="editDataToAddNoteForm()">
+          <form id="editNoteForm" class="" action="/student/editNote" method="post" onsubmit="addDataToAddNoteForm(this);">
             <div class="">
               <label for="new-note-date" class="form-label">Date</label>
               <input type="date" id="datePickerForEdit" class="form-control" name="new-note-date" min="1970-01-01" max="9999-12-31">
@@ -346,9 +353,11 @@
               <label for="newNote" class="form-label">Note</label>
               <textarea class="form-control" id="newNoteForEdit" name="newNote" rows="7" maxlength="15000"></textarea>
             </div>
+            <input type="hidden" name="noteId" id="noteId">
           </form>
         </div>
         <div class="modal-footer">
+          <input type="submit" class="btn btn-danger me-auto" form="editNoteForm" value="Delete" onclick="delteNote();"></input>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <input type="submit" class="btn btn-primary" form="editNoteForm" value="Submit"></input>
         </div>
