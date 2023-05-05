@@ -252,10 +252,10 @@
                   <% for (var i = 0; i < vars.courses.length; i ++) { %>
 					<div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
 					  <div class="col-4">
-						<h5 class="text-primary"><%- vars.courses[i]['courseSubject'] %></h5>
+						<h5><%- vars.courses[i]['courseSubject'] %></h5>
 					  </div>
 					  <div class="col-4">
-						<h5 class="text-primary"><%- vars.courses[i]['courseSemester'] %></h5>
+						<h5><%- vars.courses[i]['courseSemester'] %></h5>
 					  </div>
 					</div>
 					<% } %>
@@ -291,7 +291,7 @@
             <div class="col-md-4 mt-4">
               <h3 class="text-primary">Certificates</h3>
               <div class="row mt-2 p-2 shadow-sm rounded border border-primary ">
-                <% if (locals.studentCertificates != undefined && locals.studentCertificates.length > 0) { %>
+                <% if (vars.certificates != undefined && vars.certificates.length > 0) { %>
                   <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                     <div class="col-6">
                       <h5 class="text-primary">Subject</h5>
@@ -300,13 +300,13 @@
                       <h5 class="text-primary">Date Awarded</h5>
                     </div>
                   </div>
-                  <% for (let i = 0; i < locals.studentCertificates.length; i++) { %>
+                  <% for (let i = 0; i < vars.certificates.length; i++) { %>
                     <div class="row mx-auto my-1 py-1 shadow-sm rounded border border-primary">
                       <div class="col-6">
-                        <h5><%= locals.studentCertificates[i].name %></h5>
+                        <h5><%= vars.certificates[i].certificateSubject %></h5>
                       </div>
                       <div class="col-6">
-                        <h5><%= locals.studentCertificates[i].date_awarded.toLocaleDateString('en-US') %></h5>
+                        <h5><%= vars.certificates[i].certificateDate.toLocaleDateString('en-US') %></h5>
                       </div>
                     </div>
                   <% } %>

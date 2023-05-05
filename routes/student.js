@@ -93,9 +93,9 @@ function GETPart3(studentPageVariables, studentID, res) {
 
 function GETPart4(studentPageVariables, studentID, res) {
   // All classes
-  var sql = "CALL `select_student_classes`(?);";
+  var sql = "CALL `select_student_classes`(?); CALL select_student_certificates(?);";
     
-    dbCon.query(sql, [studentID], function (err, results) {
+    dbCon.query(sql, [studentID, studentID], function (err, results) {
       if (err) {
         throw err;
       }
@@ -103,11 +103,18 @@ function GETPart4(studentPageVariables, studentID, res) {
       console.log(results);
 
       studentPageVariables.courses = [];
+      studentPageVariables.certificates = [];
       
       for (var i = 0; i < results[0].length; i ++) {
         studentPageVariables.courses.push({
           courseSubject: (results[0][i]['subject_name'] + " " + results[0][i]['level_name']),
           courseSemester: results[0][i]['description']});
+      }
+      
+      for (var i = 0; i < results[2].length; i ++) {
+        studentPageVariables.certificates.push({
+          certificateSubject: (results[2][i]['name']),
+          certificateDate: results[2][i]['date_awarded']});
       }
 
       console.log("Student Page Variables Step 4:");
@@ -121,22 +128,6 @@ function GETPart4(studentPageVariables, studentID, res) {
 
 //=============================================================================================================
 
-
-    if (studentID != undefined) {
-      let sql = "CALL select_student_classes(?); CALL select_student_certificates(?);";
-      dbCon.query(sql, [studentID, studentID], function (err, results) {
-          if (err) {
-            throw err;
-          } 
-  
-          console.log(results);
-
-          res.render('Student', {studentClasses: results[0], studentCertificates: results[2]});
-      });
-    } else {
-      res.render('Student', {});
-    }
-});
 
 /* Get all the student notes. */
 router.get("/notes", function (req, res, next) {
@@ -184,7 +175,7 @@ router.post("/insertNote", function (req, res, next) {
   });
 });
 
-// Now that we have the userId and the student Id find the socail_worker_student id
+// Now that we have the userId and the student Id find the social_worker_student id
 function addNoteStep1(req, res, obj) {
   let sql =
     "CALL get_social_worker_student_id(?,?, @social_worker_student_id); SELECT @social_worker_student_id;";
