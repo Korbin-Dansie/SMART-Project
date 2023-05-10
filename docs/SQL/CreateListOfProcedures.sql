@@ -92,6 +92,10 @@ BEGIN
 END;
 $$
 
+SELECT routine_name
+from information_schema.routines 
+WHERE routine_type = 'PROCEDURE' 
+AND routine_schema = 'smart_project';
+$$
 CALL `list_procs`();
-
 $$

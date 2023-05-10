@@ -13,6 +13,14 @@ from information_schema.routines
 WHERE routine_type = 'PROCEDURE' 
 AND routine_schema = 'smart_project';
 
+SELECT count(*) AS 'Number of Tables'
+FROM information_schema.tables
+WHERE table_schema = 'smart_project';
+
+SELECT count(*) AS 'Number of Procs'
+from information_schema.routines 
+WHERE routine_type = 'PROCEDURE' 
+AND routine_schema = 'smart_project';
 
 
 
